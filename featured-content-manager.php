@@ -24,12 +24,8 @@ spl_autoload_register( function( $class_name ) {
 	require_once dirname( __FILE__ ) . '/includes/' . $filename;
 } );
 
-$featured_content = new Featured_Content();
-$customizer = new Customizer();
-$rest = new Rest();
-
-add_action( 'init', array( $featured_content, 'register' ) );
-add_action( 'customize_register', array( $customizer, 'customize_register' ) );
-add_action( 'customize_controls_print_scripts', array(  $customizer, 'enqueue_admin_scripts' ) );
-add_action( 'customize_controls_print_footer_scripts',  array( $customizer, 'template' ) );
-add_action( 'rest_api_init', array( $rest, 'register_routes' ) );
+add_action( 'init', array( 'Featured_Content_Manager\Featured_Content', 'register' ) );
+add_action( 'customize_register', array( 'Featured_Content_Manager\Customizer', 'customize_register' ) );
+add_action( 'customize_controls_print_scripts', array( 'Featured_Content_Manager\Customizer', 'enqueue_admin_scripts' ) );
+add_action( 'customize_controls_print_footer_scripts',  array( 'Featured_Content_Manager\Customizer', 'template' ) );
+add_action( 'rest_api_init', array( 'Featured_Content_Manager\Rest', 'register_routes' ) );

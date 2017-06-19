@@ -1,0 +1,56 @@
+ol.featured-area {
+	margin: 0;
+	padding: 1px 0 0 0;
+	list-style: none;
+
+	li {
+		margin: -1px 0 0 0;
+		padding: 0;
+
+		.handle {
+			display: block;
+
+			height: auto;
+			min-height: 20px;
+
+			padding: 10px 15px;
+
+			background: #fff;
+			border: 1px solid #ddd;
+			line-height: 30px;
+
+			overflow: hidden;
+			word-wrap: break-word;
+			color: #23282d;
+			font-size: 13px;
+			font-weight: 600;
+			line-height: 20px;
+
+			cursor: move;
+
+			&:hover {
+				border-color: #999;
+			}
+
+			.toggle-indicator {
+				&:before {
+					content: "\f140";
+					display: block;
+					padding: 1px 2px 1px 0;
+					speak: none;
+					-webkit-border-radius: 50%;
+					border-radius: 50%;
+					color: #72777c;
+					font: 400 20px/1 dashicons;
+					-webkit-font-smoothing: antialiased;
+					-moz-osx-font-smoothing: grayscale;
+					text-decoration: none!important;
+				}
+			}
+		}
+
+		ul {
+			margin-left: 20px;
+		}
+	}
+}

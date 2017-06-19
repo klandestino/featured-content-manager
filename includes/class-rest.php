@@ -17,40 +17,56 @@ class Rest {
 
 		register_rest_route( $namespace, '/' . $base, array(
 			array(
-				'methods'         => \WP_REST_Server::READABLE,
-				'callback'        => array( $this, 'get_featured_items' )
+				'methods' => \WP_REST_Server::READABLE,
+				'callback' => array(
+					'Featured_Content_Manager\Rest',
+					'get_featured_items',
+				),
 			),
 			array(
-				'methods'         => \WP_REST_Server::CREATABLE,
-				'callback'        => array( $this, 'create_featured_item' ),
-				'permission_callback' => array( $this, 'check_user_permission' ),
+				'methods' => \WP_REST_Server::CREATABLE,
+				'callback' => array(
+					'Featured_Content_Manager\Rest',
+					'create_featured_item',
+				),
+				'permission_callback' => array( 'Featured_Content_Manager\Rest', 'check_user_permission' ),
 			),
 		) );
 
 		register_rest_route( $namespace, '/' . $base . '/(?P<id>[\d]+)', array(
 			array(
 				'methods'         => \WP_REST_Server::EDITABLE,
-				'callback'        => array( $this, 'update_featured_item' ),
-				'permission_callback' => array( $this, 'check_user_permission' ),
+				'callback'        => array( 'Featured_Content_Manager\Rest', 'update_featured_item' ),
+				'permission_callback' => array( 'Featured_Content_Manager\Rest', 'check_user_permission' ),
 			),
 		) );
 	}
 
-	public static function check_user_permission(){
+	public static function check_user_permission() {
 		return current_user_can( 'edit_posts' );
 	}
 
 	public static function get_featured_items() {
 		$posts = get_posts( array(
 			'post_type' => 'featured-content',
-			'posts_per_page' => 5,
+			'posts_per_page' => -1,
 			'order' => 'ASC',
 			'orderby' => 'menu_order',
+			'post_parent' => 0
 		) );
+		foreach ( $posts as $post ) {
+			$post->children = get_posts( array(
+				'post_type' => 'featured-content',
+				'posts_per_page' => -1,
+				'order' => 'ASC',
+				'orderby' => 'menu_order',
+				'post_parent' => $post->ID
+			) );
+		}
 		return new \WP_REST_Response( $posts, 200 );
 	}
 
-	public function create_featured_item(\WP_REST_Request $request) {
+	public function create_featured_item( \WP_REST_Request $request ) {
 		$author = wp_get_current_user();
 
 		$post = array(
@@ -69,7 +85,7 @@ class Rest {
 		return new \WP_REST_Response( 'ERROR', 500 );
 	}
 
-	public function update_featured_item(\WP_REST_Request $request) {
+	public function update_featured_item( \WP_REST_Request $request ) {
 		$post_id = intval( $request['id'] );
 		$post_parent = intval( $request['post_parent'] );
 		$menu_order = intval( $request['menu_order'] );
