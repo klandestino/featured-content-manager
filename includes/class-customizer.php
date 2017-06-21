@@ -9,8 +9,11 @@
 namespace Featured_Content_Manager;
 
 class Customizer {
+
 	public static function customize_register( $wp_customize ) {
 
+		$wp_customize->register_control_type(  'Featured_Content_Manager\Featured_Area_Control' );
+		
 		$wp_customize->add_setting( 'featured_area' , array(
 			'default'   => '#000000',
 			'transport' => 'refresh',
@@ -21,23 +24,29 @@ class Customizer {
 			'priority'   => 1,
 		) );
 
-		$wp_customize->add_control( new Featured_Area_Control( $wp_customize, 'featured_area_1', array(
-			'label'      => __( 'Featured area 1', 'featured-content-manager' ),
-			'section'    => 'featured_area',
-			'settings'   => 'featured_area',
-		) ) );
+		// Registers example_background control
+		$wp_customize->add_control(
+			new Featured_Area_Control(
+				$wp_customize,
+				'featured_area',
+				array(
+					'label'		=> esc_html__( 'Example Background', 'customizer-background-control' ),
+					'section'	=> 'featured_area',
+					// Tie a setting (defined via `$wp_customize->add_setting()`) to the control.
+					'settings'    => array(
+						'image_url' => 'example_background_image_url',
+						'image_id' => 'example_background_image_id',
+						'repeat' => 'example_background_repeat', // Use false to hide the field
+						'size' => 'example_background_size',
+						'position' => 'example_background_position',
+						'attach' => 'example_background_attach'
+					)
+				)
+			)
+		);
 	}
 
-	public static function enqueue_admin_scripts() {
-		wp_enqueue_script( 'nested-sortable', plugins_url( 'dist/js/jquery.mjs.nestedSortable.js', dirname( __FILE__ ) ), array( 'jquery' ) );
-		wp_enqueue_script( 'featured-area', plugins_url( 'dist/js/customizer-debug.js', dirname( __FILE__ ) ), array( 'jquery', 'nested-sortable' ) );
-		wp_localize_script( 'featured-area', 'wpApiSettings', array(
-			'root' => esc_url_raw( '/wp-json/featured-content-manager/v1/' ),
-			'nonce' => wp_create_nonce( 'wp_rest' ),
-		) );
-	}
-
-	public static function template() {
+	public static function customize_print_template() {
 	?>
 		<script type="text/html" id="tmpl-featured-item">
 			<li id="featured_item_{{data.ID}}">
