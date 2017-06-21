@@ -11,7 +11,7 @@ $(function() {
 						addItemToArea(this, area);
 					});
 					$(area).nestedSortable({
-						handle: 'div',
+						handle: '.handle',
 						items: 'li',
 						toleranceElement: '> div',
 						maxLevels: 2,
@@ -31,6 +31,16 @@ $(function() {
 			item.success(function (item) {
 				addItemToArea(item, area);
 			});
+		});
+
+		$(document).on('click', '.featured-item-edit', function(event){
+			var item = $(this).parent().parent();
+			if( $(item).hasClass('open') ) {
+				$(item).removeClass('open');
+			} else {
+				$('ol.featured-area li').removeClass('open');
+				$(item).addClass('open');
+			}
 		});
 	});
 

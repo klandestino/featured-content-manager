@@ -41,12 +41,28 @@ class Customizer {
 	?>
 		<script type="text/html" id="tmpl-featured-item">
 			<li id="featured_item_{{data.ID}}">
-				<div>{{data.post_title}}</div>
+				<div class="handle">
+					{{data.post_title}}
+					<button type="button" class="button-link featured-item-edit" aria-expanded="false">
+						<span class="screen-reader-text">Edit menu item: Frontpage (Page)</span><span class="toggle-indicator" aria-hidden="true"></span>
+					</button>
+				</div>
+				<div class="featured-item-settings">
+					Inställningar.
+				</div>
 				<# if ( data.children.length >= 1 ) { #>
 					<ol>
 					<# for (i = 0; i < data.children.length; i++) { #>
 						<li id="featured_item_{{data.children[i].ID}}">
-							<div>{{data.children[i].post_title}}</div>
+							<div class="handle">
+								{{data.children[i].post_title}}
+								<button type="button" class="button-link featured-item-edit" aria-expanded="false">
+									<span class="screen-reader-text">Edit menu item: Frontpage (Page)</span><span class="toggle-indicator" aria-hidden="true"></span>
+								</button>
+							</div>
+							<div class="featured-item-settings">
+								Inställningar.
+							</div>
 						</li>
 					<# } #>
 					<ol>

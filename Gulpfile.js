@@ -1,5 +1,6 @@
 var gulp = require('gulp');
 var minify = require('gulp-minify');
+var sass  = require('gulp-sass');
 
 gulp.task('script', function() {
   gulp.src('assets/js/*.js')
@@ -14,4 +15,10 @@ gulp.task('script', function() {
     .pipe(gulp.dest('dist/js'));
     gulp.src('node_modules/nestedSortable/jquery.mjs.nestedSortable.js')
         .pipe(gulp.dest('dist/js'));
+});
+
+gulp.task('style', function() {
+    return gulp.src('assets/scss/**/*.scss')
+    .pipe(sass().on('error', sass.logError))
+    .pipe(gulp.dest('dist/css'));
 });
