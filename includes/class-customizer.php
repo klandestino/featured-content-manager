@@ -16,7 +16,7 @@ class Customizer {
 		
 		$wp_customize->add_setting( 'featured_area' , array(
 			'default'   => '#000000',
-			'transport' => 'refresh',
+			'sanitize_callback' => 'sanitize_text_field'
 		) );
 
 		$wp_customize->add_section( 'featured_area' , array(
@@ -31,16 +31,7 @@ class Customizer {
 				'featured_area',
 				array(
 					'label'		=> esc_html__( 'Example Background', 'customizer-background-control' ),
-					'section'	=> 'featured_area',
-					// Tie a setting (defined via `$wp_customize->add_setting()`) to the control.
-					'settings'    => array(
-						'image_url' => 'example_background_image_url',
-						'image_id' => 'example_background_image_id',
-						'repeat' => 'example_background_repeat', // Use false to hide the field
-						'size' => 'example_background_size',
-						'position' => 'example_background_position',
-						'attach' => 'example_background_attach'
-					)
+					'section'	=> 'featured_area'
 				)
 			)
 		);
