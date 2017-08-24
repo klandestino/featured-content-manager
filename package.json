@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "main": "Gulpfile.js",
   "author": "Jesper Nilsson",
-  "devDependencies": {},
+  "devDependencies": {
+    "gulp-watch": "^4.3.11"
+  },
   "dependencies": {
     "gulp": "^3.9.1",
     "gulp-minify": "^1.0.0",

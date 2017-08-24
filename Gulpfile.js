@@ -1,6 +1,7 @@
 var gulp = require('gulp');
 var minify = require('gulp-minify');
 var sass  = require('gulp-sass');
+var watch = require('gulp-watch');
 
 gulp.task('script', function() {
   gulp.src('assets/js/*.js')
@@ -21,4 +22,9 @@ gulp.task('style', function() {
     return gulp.src('assets/scss/**/*.scss')
     .pipe(sass().on('error', sass.logError))
     .pipe(gulp.dest('dist/css'));
+});
+
+gulp.task('watch', function() {
+    gulp.watch('assets/scss/**/*.scss', ['style']);
+    gulp.watch('assets/js/*.js', ['script']);
 });
