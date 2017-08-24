@@ -2,7 +2,7 @@
 /**
  * Plugin Name:     Featured Content Manager
  * Plugin URI:      https://github.com/redundans/featured-content-manager
- * Description:     Lets users create featured items that mirrors posts - then order them and edit their representation inside featured areas.
+ * Description:     Lets users create featured items that mirrors order posts and edit them inside featured areas.
  * Author:          Jesper Nilsson <jesper@klandestino.se>
  * Author URI:      http://www.klandestino.se
  * Text Domain:     featured-content-manager
@@ -24,6 +24,19 @@ spl_autoload_register( function( $class_name ) {
 	require_once dirname( __FILE__ ) . '/includes/' . $filename;
 } );
 
-add_action( 'customize_register', array( 'Featured_Content_Manager\Customizer', 'customize_register' ) );
-add_action( 'customize_controls_print_footer_scripts', array( 'Featured_Content_Manager\Customizer', 'customize_print_template' ) );
-add_action( 'rest_api_init', array( 'Featured_Content_Manager\Rest', 'register_routes' ) );
+// ONLY FOR TESTING
+add_theme_support( 'featured-content-manager',
+	array(
+		'fields' => [
+			'post_title',
+			'post_content',
+		],
+	)
+);
+
+if ( current_theme_supports( 'featured-content-manager' ) ) {
+	add_action( 'customize_register', array( 'Featured_Content_Manager\Customizer', 'customize_register' ) );
+	add_action( 'customize_controls_enqueue_scripts', array( 'Featured_Content_Manager\Customizer', 'enqueue_customize_control' ) );
+	add_action( 'customize_controls_print_footer_scripts', array( 'Featured_Content_Manager\Customizer', 'customize_print_template' ) );
+	add_action( 'rest_api_init', array( 'Featured_Content_Manager\Rest', 'register_routes' ) );
+}

@@ -9,6 +9,25 @@
 namespace Featured_Content_Manager;
 
 class Featured_Content {
+	public function get_fields() {
+		$fields = [];
+		$args = get_theme_support( 'featured-content-manager' )[0];
+		foreach ( $args['fields'] as $field ) {
+			switch ( $field ) {
+				case 'post_title':
+					$fields['post_title']['name'] = 'post_title';
+					$fields['post_title']['display_name'] = 'Post title';
+					$fields['post_title']['type'] = 'input';
+					break;
+				case 'post_content':
+					$fields['post_content']['name'] = 'post_content';
+					$fields['post_content']['display_name'] = 'Post Content';
+					$fields['post_content']['type'] = 'textarea';
+					break;
+			}
+		}
+		return $fields;
+	}
 
 	public static function register() {
 

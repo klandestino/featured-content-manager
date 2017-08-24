@@ -46,21 +46,26 @@ class Rest {
 		return current_user_can( 'edit_posts' );
 	}
 
-	public static function get_featured_items() {
+	public static function get_featured_items( \WP_REST_Request $request ) {
+		$post_status = (isset( $request['post_status'] ) ? $request['post_status'] : 'publish');
 		$posts = get_posts( array(
 			'post_type' => 'featured-content',
-			'posts_per_page' => -1,
+			'posts_per_page' => 0,
 			'order' => 'ASC',
 			'orderby' => 'menu_order',
-			'post_parent' => 0
+			'post_parent' => 0,
+			'post_status' => $post_status,
+			'suppress_filters' => false,
 		) );
 		foreach ( $posts as $post ) {
 			$post->children = get_posts( array(
 				'post_type' => 'featured-content',
-				'posts_per_page' => -1,
+				'posts_per_page' => 0,
 				'order' => 'ASC',
 				'orderby' => 'menu_order',
-				'post_parent' => $post->ID
+				'post_parent' => $post->ID,
+				'post_status' => $post_status,
+				'suppress_filters' => false,
 			) );
 		}
 		return new \WP_REST_Response( $posts, 200 );
@@ -86,15 +91,21 @@ class Rest {
 	}
 
 	public function update_featured_item( \WP_REST_Request $request ) {
+		$fields = Featured_Content::get_fields();
 		$post_id = intval( $request['id'] );
 		$post_parent = intval( $request['post_parent'] );
 		$menu_order = intval( $request['menu_order'] );
-
 		$post = array(
 			'ID' => $post_id,
 			'post_parent'   => $post_parent,
 			'menu_order' => $menu_order,
+			'post_status' => 'draft',
 		);
+
+		foreach ( $fields as $field ) {
+			$post[ $field['name'] ] = $request[ $field['name'] ];
+		}
+
 		$result = wp_update_post( $post );
 
 		if ( $result ) {
