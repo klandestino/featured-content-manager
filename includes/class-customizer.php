@@ -55,41 +55,90 @@ class Customizer {
 	public function enqueue_customize_preview() {
 	}
 
-	public static function customize_print_template() {
+
+	public static function customize_print_accordion() {
+		?>
+			<div id="available-featured-items" class="accordion-container">
+				<div class="accordion-section-title">
+					<div class="search-icon" aria-hidden="true"></div>
+					<label class="screen-reader-text" for="featured-items-search">Search Featured Items</label>
+					<input type="text" id="featured-items-search" placeholder="Search features items…" aria-describedby="featured-items-search-desc" />
+					<p class="screen-reader-text" id="featured-items-search-desc">The search results will be updated as you type.</p>
+					<span class="spinner"></span>
+					<div class="search-icon" aria-hidden="true"></div>
+				</div>
+				<ul class="accordion-section-content available-featured-items-list">
+					<li class="nothing-found">No results found.</li>
+				</ul>
+			</div>
+		<?php
+	}
+
+	public static function customize_print_featured_item_template() {
 		$fields = Featured_Content::get_fields();
 	?>
 		<script type="text/html" id="tmpl-featured-item">
-			<li id="featured_item_{{data.ID}}">
+			<li id="featured_item_{{data.ID}}" data-featured-item-id="{{data.ID}}">
 				<div class="handle">
 					{{data.post_title}}
 					<button type="button" class="button-link featured-item-edit" aria-expanded="false">
-						<span class="screen-reader-text">Edit menu item: Frontpage (Page)</span><span class="toggle-indicator" aria-hidden="true"></span>
+						<span class="screen-reader-text"><?php echo esc_html( __( 'Edit featured item', 'featured-content-manager' ) ); ?>: {{data.post_title}} ({{data.post_type}})</span><span class="toggle-indicator" aria-hidden="true"></span>
 					</button>
 				</div>
 				<div class="featured-item-settings">
 					<?php foreach ( $fields as $field ) :
 						Customizer::render_input( $field, 'data' );
 					endforeach ?>
+					<div class="featured-item-actions">
+						<button type="button" class="button-link button-link-delete item-delete"><?php echo esc_html( __( 'Remove', 'featured-content-manager' ) ); ?></button>
+						<span class="spinner"></span>
+					</div>
 				</div>
+				<# if ( data.children ) { #>
 				<# if ( data.children.length >= 1 ) { #>
 					<ol>
 					<# for (i = 0; i < data.children.length; i++) { #>
-						<li id="featured_item_{{data.children[i].ID}}">
+						<li id="featured_item_{{data.children[i].ID}}" data-featured-item-id="{{data.children[i].ID}}">
 							<div class="handle">
 								{{data.children[i].post_title}}
 								<button type="button" class="button-link featured-item-edit" aria-expanded="false">
-									<span class="screen-reader-text">Edit menu item: Frontpage (Page)</span><span class="toggle-indicator" aria-hidden="true"></span>
+									<span class="screen-reader-text"><?php echo esc_html( __( 'Edit featured item', 'featured-content-manager' ) ); ?>: {{data.children[i].post_title}} ({{data.children[i].port_type}})</span><span class="toggle-indicator" aria-hidden="true"></span>
 								</button>
 							</div>
 							<div class="featured-item-settings">
 								<?php foreach ( $fields as $field ) :
 									Customizer::render_input( $field, 'data.children[i]' );
 								endforeach ?>
+								<div class="featured-item-actions">
+									<button type="button" class="button-link button-link-delete item-delete"><?php echo esc_html( __( 'Remove', 'featured-content-manager' ) ); ?></button>
+									<span class="spinner"></span>
+								</div>
 							</div>
 						</li>
 					<# } #>
 					<ol>
+					<# } #>
 				<# } #>
+			</li>
+		</script>
+	<?php
+	}
+
+	public static function customize_print_search_result_item_template() {
+	?>
+		<script type="text/html" id="tmpl-search-item">
+			<li id="search-item-tpl-post-{{data.id}}" class="search-item-tpl" data-search-item-id="{{data.id}}">
+				<div class="search-item-bar">
+					<div class="search-item-handle">
+						<span class="search-type" aria-hidden="true">{{data.type}}</span>
+						<span class="search-title" aria-hidden="true">
+							<span class="search-item-title">{{data.title.rendered}}</span>
+						</span>
+						<button type="button" class="button-link item-add">
+							<span class="screen-reader-text"><?php echo esc_html( __( 'Add to featured area', 'featured-content-manager' ) ); ?>: {{data.title.rendered}} ({{data.post_type}})</span>
+						</button>
+					</div>
+				</div>
 			</li>
 		</script>
 	<?php

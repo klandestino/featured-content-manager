@@ -39,6 +39,14 @@ class Rest {
 				'callback'        => array( 'Featured_Content_Manager\Rest', 'update_featured_item' ),
 				'permission_callback' => array( 'Featured_Content_Manager\Rest', 'check_user_permission' ),
 			),
+			array(
+				'methods' => \WP_REST_Server::DELETABLE,
+				'callback' => array(
+					'Featured_Content_Manager\Rest',
+					'delete_featured_item',
+				),
+				'permission_callback' => array( 'Featured_Content_Manager\Rest', 'check_user_permission' ),
+			),
 		) );
 	}
 
@@ -48,7 +56,8 @@ class Rest {
 
 	public static function get_featured_items( \WP_REST_Request $request ) {
 		$post_status = (isset( $request['post_status'] ) ? $request['post_status'] : 'publish');
-		$posts = get_posts( array(
+
+		$args = array(
 			'post_type' => 'featured-content',
 			'posts_per_page' => 0,
 			'order' => 'ASC',
@@ -56,9 +65,13 @@ class Rest {
 			'post_parent' => 0,
 			'post_status' => $post_status,
 			'suppress_filters' => false,
-		) );
+		);
+
+		$featured_item_query = new \WP_Query( $args );
+		$posts = $featured_item_query->posts;
+
 		foreach ( $posts as $post ) {
-			$post->children = get_posts( array(
+			$children_args = array(
 				'post_type' => 'featured-content',
 				'posts_per_page' => 0,
 				'order' => 'ASC',
@@ -66,22 +79,32 @@ class Rest {
 				'post_parent' => $post->ID,
 				'post_status' => $post_status,
 				'suppress_filters' => false,
-			) );
+			);
+
+			$featured_item_children_query = new \WP_Query( $children_args );
+			$post->children = $featured_item_children_query->posts;
 		}
 		return new \WP_REST_Response( $posts, 200 );
 	}
 
 	public function create_featured_item( \WP_REST_Request $request ) {
 		$author = wp_get_current_user();
+		$post_id = $request['post_id'];
+		$accepted_values = [
+			'post_title' => '',
+			'post_content' => '',
+		];
 
-		$post = array(
-			'post_title' => 'Nytt inlägg',
-			'post_content' => 'Innehåll',
-			'post_status' => 'publish',
+		$org_post = get_post( $request['post_id'], ARRAY_A );
+		$new_post = array_intersect_key( $org_post, $accepted_values );
+		$new_data = array(
+			'post_status' => 'draft',
 			'post_author' => $author->ID,
 			'post_type' => 'featured-content',
 		);
-		$result = wp_insert_post( $post );
+
+		$new_post = array_merge( $new_post, $new_data );
+		$result = wp_insert_post( $new_post );
 
 		if ( $result ) {
 			return new \WP_REST_Response( get_post( $result ), 200 );
@@ -107,6 +130,17 @@ class Rest {
 		}
 
 		$result = wp_update_post( $post );
+
+		if ( $result ) {
+			return new \WP_REST_Response( get_post( $result ), 200 );
+		}
+		return new \WP_REST_Response( 'ERROR', 500 );
+	}
+
+	public function delete_featured_item( \WP_REST_Request $request ) {
+		$post_id = intval( $request['id'] );
+
+		$result = wp_delete_post( $post_id, true );
 
 		if ( $result ) {
 			return new \WP_REST_Response( get_post( $result ), 200 );

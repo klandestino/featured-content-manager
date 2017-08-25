@@ -19,7 +19,7 @@ class Featured_Area_Control extends \WP_Customize_Control {
 		parent::content_template();
 	?>
 		<ol class="featured-area"></ol>
-		<span class="add-featured-item button">Lägg till</span>
+		<button class="add-featured-item button">Lägg till</button>
 	<?php
 	}
 }
