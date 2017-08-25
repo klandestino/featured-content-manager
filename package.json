@@ -4,6 +4,7 @@
   "main": "Gulpfile.js",
   "author": "Jesper Nilsson",
   "devDependencies": {
+    "gulp-imagemin": "^3.3.0",
     "gulp-watch": "^4.3.11"
   },
   "dependencies": {
