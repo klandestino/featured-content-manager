@@ -86,13 +86,15 @@ class Customizer {
 					</button>
 				</div>
 				<div class="featured-item-settings">
-					<?php foreach ( $fields as $field ) :
-						Customizer::render_input( $field, 'data' );
-					endforeach ?>
-					<div class="featured-item-actions">
-						<button type="button" class="button-link button-link-delete item-delete"><?php echo esc_html( __( 'Remove', 'featured-content-manager' ) ); ?></button>
-						<span class="spinner"></span>
-					</div>
+					<form>
+						<?php foreach ( $fields as $field ) :
+							Customizer::render_input( $field, 'data' );
+						endforeach ?>
+						<div class="featured-item-actions">
+							<button type="button" class="button-link button-link-delete item-delete"><?php echo esc_html( __( 'Remove', 'featured-content-manager' ) ); ?></button>
+							<span class="spinner"></span>
+						</div>
+					</form>
 				</div>
 				<# if ( data.children ) { #>
 				<# if ( data.children.length >= 1 ) { #>
@@ -106,13 +108,15 @@ class Customizer {
 								</button>
 							</div>
 							<div class="featured-item-settings">
-								<?php foreach ( $fields as $field ) :
-									Customizer::render_input( $field, 'data.children[i]' );
-								endforeach ?>
-								<div class="featured-item-actions">
-									<button type="button" class="button-link button-link-delete item-delete"><?php echo esc_html( __( 'Remove', 'featured-content-manager' ) ); ?></button>
-									<span class="spinner"></span>
-								</div>
+								<form>
+									<?php foreach ( $fields as $field ) :
+										Customizer::render_input( $field, 'data.children[i]' );
+									endforeach ?>
+									<div class="featured-item-actions">
+										<button type="button" class="button-link button-link-delete item-delete"><?php echo esc_html( __( 'Remove', 'featured-content-manager' ) ); ?></button>
+										<span class="spinner"></span>
+									</div>
+								</form>
 							</div>
 						</li>
 					<# } #>
@@ -149,9 +153,18 @@ class Customizer {
 			case 'textarea':
 				?>
 				<p>
-					<label for="edit-post-title">
+					<label>
 						<?php echo esc_html( $field['display_name'] ); ?><br/>
 						<textarea rows="4" name="<?php echo esc_html( $field['name'] ); ?>" class="featured-item-edit-input">{{<?php echo esc_html( $sign ); ?>.<?php echo esc_html( $field['name'] ); ?>}}</textarea>
+					</label>
+				</p>
+				<?php
+				break;
+			case 'media':
+				?>
+				<p>
+					<label>
+						<?php echo esc_html( $field['display_name'] ); ?><br/>
 					</label>
 				</p>
 				<?php
@@ -159,7 +172,7 @@ class Customizer {
 			default:
 				?>
 				<p>
-					<label for="edit-post-title">
+					<label>
 						<?php echo esc_html( $field['display_name'] ); ?><br/>
 						<input type="text" name="<?php echo esc_html( $field['name'] ); ?>" class="featured-item-edit-input" value="{{<?php echo esc_html( $sign ); ?>.<?php echo esc_html( $field['name'] ); ?>}}"/>
 					</label>
@@ -167,5 +180,9 @@ class Customizer {
 				<?php
 				break;
 		}
+	}
+
+	public function customize_save_customizer( $wp_customize ) {
+
 	}
 }

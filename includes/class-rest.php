@@ -90,9 +90,13 @@ class Rest {
 	public function create_featured_item( \WP_REST_Request $request ) {
 		$author = wp_get_current_user();
 		$post_id = $request['post_id'];
+		$menu_order = $request['menu_order'];
+
+		// Array to define witch post date to copy
 		$accepted_values = [
 			'post_title' => '',
 			'post_content' => '',
+			'featured_media' => '',
 		];
 
 		$org_post = get_post( $request['post_id'], ARRAY_A );
@@ -101,6 +105,7 @@ class Rest {
 			'post_status' => 'draft',
 			'post_author' => $author->ID,
 			'post_type' => 'featured-content',
+			'menu_order' => $menu_order,
 		);
 
 		$new_post = array_merge( $new_post, $new_data );
