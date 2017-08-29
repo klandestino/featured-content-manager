@@ -9,7 +9,6 @@
 				search_template = wp.template('search-item');
 			let timer, timer_ms = 500;
 			
-			//control.setting.set('TEST2');
 			$.ajax( {
 				url: wpApiSettings.root + 'items',
 				data: { post_status : 'draft' },
@@ -80,10 +79,15 @@
 
 			// Function for updating customizer setting
 			function updateSetting(){
-				const area_array = $(area).nestedSortable('toArray');
-				let setting = control.setting.get();
-				if(area_array!=setting){
-					control.setting.set(area_array);
+				const old_setting = control.setting.get();
+				let area_array = $(area).nestedSortable('toArray').map(function(item, index) {
+					item.post_data = collectData(item);
+					return item;
+				});
+				const new_setting = JSON.stringify(area_array);
+
+				if(new_setting!=old_setting){
+					control.setting.set(new_setting);
 				}
 			}
 
