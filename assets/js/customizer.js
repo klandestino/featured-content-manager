@@ -1,22 +1,257 @@
 ( function( wp, $ ) {
-
 	wp.customize.FeaturedAreaControl = wp.customize.Control.extend({
+
 		ready: function() {
-			let control = this,
-				area = $( 'ol.featured-area', control.container ),
-				value = control.setting.get(),
-				featured_item_template = wp.template('featured-item'),
-				search_template = wp.template('search-item');
-			let timer, timer_ms = 500;
-			
-			$.ajax( {
-				url: wpApiSettings.root + 'items',
-				data: { post_status : 'draft' },
-				success: function (data) {
-					$(data).each( (index, item) => {
-						addItemToArea(item);
+			const control = this,
+				container = this.container[0],
+				areaContainer = container.querySelector('ol.featured-area'),
+				addItemButton = container.querySelector('.add-featured-item');
+			let featuredArea,
+				itemObjects = new Map(),
+				timer,
+				timer_ms = 500;
+
+			class ListItem {
+				constructor(post) {
+					this.itemTimer = false;
+					this.key = post.ID;
+					this.postData = post;
+					this.element_id = 'item_' + post.ID;
+					
+					// Add item element to list
+					this.addItem();
+				}
+
+				// Create featured item from the Set and the DOM
+				addItem() {
+					let item = document.getElementById(this.element_id),
+						featuredTtemTemplate = wp.template('featured-item');
+					if (!item) {
+						item = document.createElement('li');
+						item.id = 'item_' + this.key;
+						item.innerHTML = featuredTtemTemplate(this.postData); // WP templating the markup
+						item.querySelector('.item-delete').addEventListener('click', (event) => this.deleteItem(event));
+						item.querySelector('.handle').addEventListener('click', (event) => this.toggleItemEdit(event));
+						item.querySelector('input').addEventListener('keyup', (event) => this.updateItem(event));
+						item.querySelector('textarea').addEventListener('keyup', (event) => this.updateItem(event));
+
+						// If item has parent add it to parent else add it last
+						if( this.postData.post_parent !== 0 ){
+							const parentItemOl = areaContainer.querySelector('#item_'+this.postData.post_parent+' ol');
+							parentItemOl.appendChild(item);
+						} else {
+							areaContainer.appendChild(item);
+						}
+						itemObjects.set(this.key, this);
+					}
+				}
+
+				getPostData() {
+					return this.postData;
+				}
+
+				setPostData(key, val) {
+					this.postData[key] = val;
+					this.setSettings();
+				}
+
+				toggleItemEdit(event) {
+					event.preventDefault();
+					const item = document.getElementById(this.element_id);
+					const open = container.querySelector('li.open');
+
+					if( open !== null )
+						open.classList.remove('open');
+					if(open == item) {
+						item.classList.remove('open');
+					} else {
+						item.classList.add('open');
+					}
+				}
+
+				updateItem(event) {
+					event.preventDefault();
+					const key = event.srcElement.name;
+					const val = event.srcElement.value;
+					this.setPostData(key, val);
+				}
+
+				setSettings() {			
+					clearTimeout(this.itemTimer);
+					this.itemTimer = setTimeout(() => {
+						fetch(wpApiSettings.root + wpFeaturedContentApiSettings.base + 'items/' + this.key, {
+							method: 'POST',
+							headers: {
+								'Accept': 'application/json',
+								'Content-Type': 'application/json',
+								'X-WP-Nonce': wpApiSettings.nonce,
+							},
+							credentials: 'same-origin',
+							body: JSON.stringify(this.postData),
+						}).then(data => data.json()).then(data => {
+							featuredArea.setSettings();
+						});
+					}, timer_ms);
+				}
+
+				// Returns an array of keys for items children
+				getChildren() {
+					let children = [];
+					itemObjects.forEach((item) => {
+						let postData = item.getPostData();
+						if(postData.post_parent == this.key)
+							children.push(postData.ID);
 					});
-					$(area).nestedSortable({
+					return children;
+				}
+
+				// Delete featured item from the Set and the DOM
+				deleteItem(){
+					let item = areaContainer.querySelector('#'+this.element_id);
+					if (item) {
+						let children = this.getChildren();
+						if(children.length !== 0){
+							children.forEach((childID) => {
+								let child = itemObjects.get(parseInt(childID));
+								child.deleteItem();
+							});
+						}
+						item.remove();
+					}
+					itemObjects.delete(parseInt(this.key));
+					featuredArea.setSettings();
+				}
+			}
+
+			class FeaturedItemSearch {
+				constructor() {
+					this.searchPanel = document.getElementById('available-featured-items');
+					document.getElementById('featured-items-search').addEventListener('keyup', (event) => this.search(event));
+				}
+
+				toggle() {
+					const body = document.querySelector('body');
+
+					if(body.classList.contains('adding-featured-items')) {
+						body.classList.remove('adding-featured-items');
+					} else {
+						body.classList.add('adding-featured-items');
+					}
+				}
+
+				search(event) {
+					event.preventDefault();
+					const search = event.srcElement.value;
+
+					clearTimeout(timer);
+					timer = setTimeout(function() {
+						document.querySelectorAll('.search-item-tpl').forEach(e => e.parentNode.removeChild(e));
+
+						fetch(wpApiSettings.root + wpFeaturedContentApiSettings.base + 'posts?s=' + search).then(data => data.json()).then(data => {
+							let featuredSearchItemTemplate = wp.template('search-item');
+							data.forEach((obj, index) => {
+								let item = document.createElement('li');
+								item.id = obj.ID;
+								item.classList.add('search-item-tpl');
+								item.innerHTML = featuredSearchItemTemplate(obj);
+
+								document.querySelector('#available-featured-items-list').appendChild(item).addEventListener('click', (event) => {
+									fetch(wpApiSettings.root + wpFeaturedContentApiSettings.base + 'items', {
+										method: 'POST',
+										headers: {
+											'Accept': 'application/json',
+											'Content-Type': 'application/json',
+											'X-WP-Nonce': wpApiSettings.nonce,
+										},
+										credentials: 'same-origin',
+										body: JSON.stringify({
+											obj,
+										}),
+									}).then(data => data.json()).then(data => {
+										data.forEach((item) => {
+											new ListItem(item);
+										});
+										featuredArea.setSettings();
+									});
+								});
+							});
+						});
+					}, timer_ms);
+				}
+			}
+
+			class FeaturedArea {
+				constructor() {
+					this.searchPanel = new FeaturedItemSearch();
+				    // Add item on button click.
+				    addItemButton.addEventListener('click', (event) => this.toggleSearchPanel(event));
+
+				    // Initialize nestledSortable
+				    this.initSortable();
+
+				}
+
+				loadSettings() {
+					let settings = JSON.parse(control.setting.get());
+					fetch(wpApiSettings.root + wpFeaturedContentApiSettings.base + 'items', {
+						method: 'POST',
+						headers: {
+							'Accept': 'application/json',
+							'Content-Type': 'application/json',
+							'X-WP-Nonce': wpApiSettings.nonce,
+						},
+						credentials: 'same-origin',
+						body: JSON.stringify({
+							settings,
+						}),
+					}).then(data => data.json()).then(data => {
+						data.forEach((item) => {
+							new ListItem(item);
+						});
+					});
+				}
+
+				setSettings() {
+					let oldSettings = control.setting.get(),
+						newSettings = [];
+					itemObjects.forEach((item) => {
+						newSettings.push(item.getPostData());
+					});
+					newSettings.sort((a, b) => a.menu_order > b.menu_order);
+					console.log(newSettings);
+					if(newSettings!=oldSettings){
+						control.setting.set(JSON.stringify(newSettings));
+					}
+				}
+
+				updateOrder(array) {
+					let newItems = new Map();
+					array.forEach((obj, index) => {
+						let key = parseInt(obj.id);
+						let item = itemObjects.get(key);
+
+						item.setPostData('menu_order', index);
+						item.setPostData('post_parent', (obj.parent_id ? obj.parent_id : 0));
+					});
+				}
+
+				toggleSearchPanel(event) {
+					event.preventDefault();
+					this.searchPanel.toggle();
+				}
+
+				// Saves a new sticky item on localStorage.
+				addItem() {
+					event.preventDefault();
+					fetch(wpApiSettings.root + wpFeaturedContentApiSettings.base + 'items').then(data => data.json()).then(data => {
+						new ListItem(data[0]);
+						new ListItem(data[1]);
+					});
+				}
+
+				// Initialize jQuery nestedSortable
+				initSortable() {
+					$(areaContainer).nestedSortable({
 						handle: '.handle',
 						items: 'li',
 						toleranceElement: '> div',
@@ -24,173 +259,25 @@
 						excludeRoot: true,
 						forcePlaceholderSize: true,
 						placeholder: 'placeholder',
-						stop: function() { 
-							updateArea();
+						stop: () => {
+							let array = $(areaContainer).nestedSortable('toArray', {attribute: 'id'});
+							this.updateOrder(array);
 						}
 					});
-				},
-				cache: false
-			});
-
-			// Add featured item to list
-			function addItemToArea(item) {
-				$(area).append(featured_item_template(item));
-			}
-
-			// Update the wholre featured area
-			function updateArea() {
-				let area_array = $(area).nestedSortable('toArray');
-				$(area_array).each(function(index, item){
-					updateItem(item, index);
-				});
-			}
-
-			// Update a single features item
-			function updateItem(item, index){
-				const data = {
-					menu_order: index,
-					post_parent: item.parent_id,
-				};			
-				const extra_data = collectData(item);
-
-				return $.ajax({
-					method: 'POST',
-					url: wpApiSettings.root + 'items/' + item.id,
-					data: Object.assign(data, extra_data),
-					beforeSend: function (xhr) {
-						xhr.setRequestHeader( 'X-WP-Nonce', wpApiSettings.nonce );
-					},
-					success: function(data){
-						updateSetting();
-					}
-				});
-			}
-
-			// Collect post data from input fields
-			function collectData(item){
-				const id = '#featured_item_'+item.id;
-				let post_data = {};
-
-				$(id + ' form:first', control.container).serializeArray().map(function(item) {
-        			post_data[item.name] = item.value;
-				});
-				return post_data;
-			}
-
-			// Function for updating customizer setting
-			function updateSetting(){
-				const old_setting = control.setting.get();
-				let area_array = $(area).nestedSortable('toArray').map(function(item, index) {
-					item.post_data = collectData(item);
-					return item;
-				});
-				const new_setting = JSON.stringify(area_array);
-
-				if(new_setting!=old_setting){
-					control.setting.set(new_setting);
 				}
 			}
 
-			// Action trigged when uppdating input fields
-			$(document).on('input', '.featured-item-edit-input', function(event){
-				clearTimeout(timer);
-				timer = setTimeout(function() {
-					const list_element = $(event.currentTarget).closest('li');
-					const index = $(list_element).index('ol.featured-area li');
-					const area_array = $(area).nestedSortable('toArray');
-					const item = area_array[index];
-					updateItem(item, index, area);
-				}, timer_ms);
-			});
+			function menuOrder(a,b) {
+				if (a.menu_order < b.menu_order)
+					return -1;
+				if (a.menu_order > b.menu_order)
+					return 1;
+				return 0;
+			}
 
-			// Action trigged when extending featured item
-			$(document).on('click', '.handle', function(event){
-				const item = $(this).parent();
-				if( $(item).hasClass('open') ) {
-					$(item).removeClass('open');
-				} else {
-					$('ol.featured-area li', control.container).removeClass('open');
-					$(item).addClass('open');
-				}
-			});
-
-			// Action trigged when clicking on a search item
-			$(document).on('click', '.button-link-delete', function(event){
-				const list_element = $(event.currentTarget).closest('li');
-				const post_id = $(list_element).data('featured-item-id');
-				
-				// Show spinner
-				$(list_element).find('.spinner').css('visibility', 'visible');
-
-				return $.ajax({
-					method: 'DELETE',
-					url: wpApiSettings.root + 'items/' + post_id,
-					beforeSend: function ( xhr ) {
-						xhr.setRequestHeader( 'X-WP-Nonce', wpApiSettings.nonce );
-					},
-					success: function (item) {
-						$(list_element).remove();
-						updateSetting();
-					},
-				});
-			});
-
-			// Action trigged when clicking add featured item
-			$(document).on('click', '.add-featured-item', function(event){
-				event.preventDefault();
-				$('body').toggleClass('adding-featured-items');
-			});
-
-			// Action trigged when clicking outside avalible featured items
-			$(document).on('click', 'body.wp-customizer', function(event){
-				if( !$(event.target).hasClass('add-featured-item') && $(event.target).closest('div#available-featured-items').length == 0 ){
-					$('body').removeClass('adding-featured-items');
-				}
-			});
-		
-			// Action trigged when typing in search field
-			$(document).on('input', '#featured-items-search', function(event){
-				const searchterm = $('#featured-items-search').val();
-				clearTimeout(timer);
-
-				timer = setTimeout(function() {
-					$('#available-featured-items .spinner').css('visibility', 'visible');
-					$.ajax( {
-						url: '/wp-json/wp/v2/posts',
-						data: { search : searchterm },
-						success: function (data) {
-							$('#available-featured-items .spinner').css('visibility', 'hidden');
-							$('.search-item-tpl').remove();
-							$(data).each( (index, item) => {
-								$('.available-featured-items-list').append(search_template(item));
-							});
-						},
-						cache: false
-					} );
-				}, timer_ms);
-			});
-
-			// Action trigged when clicking on a search item
-			$(document).on('click', '.search-item-tpl', function(event){
-				const index = $(area).find('li').length;
-				const data = { 
-					post_id : $(event.currentTarget).data('search-item-id'),
-					menu_order: index
-				};
-
-				return $.ajax({
-					method: 'POST',
-					url: wpApiSettings.root + 'items',
-					data: Object.assign(data),
-					beforeSend: function ( xhr ) {
-						xhr.setRequestHeader( 'X-WP-Nonce', wpApiSettings.nonce );
-					},
-					success: function (item) {
-						addItemToArea(item);
-						updateSetting();
-					},
-				});
-			});
+			
+			featuredArea = new FeaturedArea();
+			featuredArea.loadSettings();
 		}
 	});
 

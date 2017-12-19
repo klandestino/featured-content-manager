@@ -24,12 +24,15 @@ spl_autoload_register( function( $class_name ) {
 	require_once dirname( __FILE__ ) . '/includes/' . $filename;
 } );
 
+require_once dirname( __FILE__ ) . '/includes/class-featured-query.php';
+
 // ONLY FOR TESTING
 add_theme_support( 'featured-content-manager',
 	array(
 		'fields' => [
 			'post_title',
 			'post_content',
+			'thumbnail',
 		],
 	)
 );
@@ -42,4 +45,6 @@ if ( current_theme_supports( 'featured-content-manager' ) ) {
 	add_action( 'customize_controls_print_footer_scripts', array( 'Featured_Content_Manager\Customizer', 'customize_print_accordion' ) );
 	add_action( 'customize_save_after', array( 'Featured_Content_Manager\Customizer', 'customize_save_customizer' ) );
 	add_action( 'rest_api_init', array( 'Featured_Content_Manager\Rest', 'register_routes' ) );
+	add_action( 'customize_controls_init', array( 'Featured_Content_Manager\Customizer', 'customize_init_customizer' ) );
+	add_action( 'query_featured_content', array( 'Featured_Content_Manager\Featured_Content', 'query_featured_content' ), 999 );
 }
