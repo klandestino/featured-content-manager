@@ -62,6 +62,9 @@
 							);
 							parentItemOl.appendChild(item);
 						} else {
+							var menu_order = ( areaContainer.querySelectorAll("li") ? areaContainer.querySelectorAll("li").length : 0 );
+							this.postData['menu_order'] = menu_order;
+							console.log(menu_order);
 							areaContainer.appendChild(item);
 						}
 						itemObjects.set(this.key, this);
