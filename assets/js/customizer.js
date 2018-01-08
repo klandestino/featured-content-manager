@@ -64,7 +64,6 @@
 						} else {
 							var menu_order = ( areaContainer.querySelectorAll("li") ? areaContainer.querySelectorAll("li").length : 0 );
 							this.postData['menu_order'] = menu_order;
-							console.log(menu_order);
 							areaContainer.appendChild(item);
 						}
 						itemObjects.set(this.key, this);
@@ -302,7 +301,8 @@
 						.then(data => data.json())
 						.then(data => {
 							data.forEach(item => {
-								new ListItem(item);
+								if ( item != null )
+									new ListItem(item);
 							});
 						});
 				}

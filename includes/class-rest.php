@@ -151,7 +151,7 @@ class Rest {
 			'ID' => intval( $post->ID ),
 			'post_status' => 'draft',
 		) );
-		if ( ! is_wp_error( $result ) ) {
+		if ( ! is_wp_error( $result ) && 0 != $result ) {
 			$result = get_post( $result );
 			return self::populate_thumbnail( get_post( $result ) );
 		}
