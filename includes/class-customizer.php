@@ -236,7 +236,9 @@ class Customizer {
 		$post->post_status = 'publish';
 		$post_id           = wp_insert_post( $post );
 		wp_set_post_terms( $post_id, $post->featured_area, 'featured-area', false );
-		update_post_meta( $post_id, 'thumbnail_id', get_post_meta( $draft_id, '_thumbnail_id', true ) );
+		if ( get_post_meta( $draft_id, '_thumbnail_id', true ) ) :
+			update_post_meta( $post_id, 'thumbnail_id', get_post_meta( $draft_id, '_thumbnail_id', true ) );
+		endif;
 		update_post_meta( $post_id, 'original_post_id', get_post_meta( $draft_id, 'original_post_id', true ) );
 	}
 }
