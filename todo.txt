@@ -1,8 +1,0 @@
-Todo:
-✓ Skapa rest end point som skapar featured item utifrån customizerns datamodel (och duplicerar posten)
-✓ Ser till att customizern skiljer på Create item och Add item (skapar featured item, lägger till den grafiskt)
-✓ Skapar Featured items vid sparning utifrån det som finns i customizerns setting
-• Fixa thumbnail media
-• Lägg till tag/category (select) som variabel
-• RENSA I JS
-• Refacturing av FCM (publika funktioner/privata/vilken klass/delade funktioner osv)

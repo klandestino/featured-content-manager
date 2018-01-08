@@ -9,7 +9,7 @@ gulp.task('script', function() {
     .pipe(minify({
         ext:{
             src:'-debug.js',
-            min:'.js'
+            min:'.min.js'
         },
         exclude: ['tasks'],
         ignoreFiles: ['.combo.js', '-min.js']

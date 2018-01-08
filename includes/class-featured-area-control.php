@@ -18,8 +18,9 @@ class Featured_Area_Control extends \WP_Customize_Control {
 	public function content_template() {
 		parent::content_template();
 	?>
-		<ol class="featured-area"></ol>
+		<ol id={{data.section}} class="featured-area"></ol>
 		<button class="add-featured-item button">Lägg till</button>
+		<div class="search-panel"></div>
 	<?php
 	}
 }

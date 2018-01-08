@@ -20,19 +20,12 @@ class Rest {
 				'methods' => \WP_REST_Server::READABLE,
 				'callback' => array(
 					'Featured_Content_Manager\Rest',
-					'get_posts',
+					'search_posts',
 				),
 			),
 		) );
 
 		register_rest_route( $namespace, '/' . $base, array(
-			array(
-				'methods' => \WP_REST_Server::READABLE,
-				'callback' => array(
-					'Featured_Content_Manager\Rest',
-					'get_featured_items',
-				),
-			),
 			array(
 				'methods' => \WP_REST_Server::CREATABLE,
 				'callback' => array(
@@ -45,8 +38,11 @@ class Rest {
 
 		register_rest_route( $namespace, '/' . $base . '/(?P<id>[\d]+)', array(
 			array(
-				'methods'         => \WP_REST_Server::EDITABLE,
-				'callback'        => array( 'Featured_Content_Manager\Rest', 'update_featured_item' ),
+				'methods' => \WP_REST_Server::EDITABLE,
+				'callback' => array(
+					'Featured_Content_Manager\Rest',
+					'update_featured_item',
+				),
 				'permission_callback' => array( 'Featured_Content_Manager\Rest', 'check_user_permission' ),
 			),
 			array(
@@ -58,13 +54,24 @@ class Rest {
 				'permission_callback' => array( 'Featured_Content_Manager\Rest', 'check_user_permission' ),
 			),
 		) );
+
+		register_rest_route( $namespace, '/settings', array(
+			array(
+				'methods' => \WP_REST_Server::CREATABLE,
+				'callback' => array(
+					'Featured_Content_Manager\Rest',
+					'save_settings',
+				),
+				'permission_callback' => array( 'Featured_Content_Manager\Rest', 'check_user_permission' ),
+			),
+		) );
 	}
 
 	public static function check_user_permission() {
 		return current_user_can( 'edit_posts' );
 	}
 
-	public static function get_posts( \WP_REST_Request $request ) {
+	public static function search_posts( \WP_REST_Request $request ) {
 		$search_term = (isset( $request['s'] ) ? $request['s'] : '');
 		$args = array(
 			'post_type' => 'post',
@@ -79,8 +86,12 @@ class Rest {
 		return new \WP_REST_Response( $posts, 200 );
 	}
 
+	/**
+	 * DEPRECATED
+	 *
 	public static function get_featured_items( \WP_REST_Request $request ) {
 		$post_status = (isset( $request['post_status'] ) ? $request['post_status'] : 'publish');
+		$featured_area = (isset( $request['featured_area'] ) ? $request['featured_area'] : '');
 
 		$args = array(
 			'post_type' => 'featured-content',
@@ -90,6 +101,14 @@ class Rest {
 			'post_parent' => 0,
 			'post_status' => $post_status,
 			'suppress_filters' => false,
+			'numberposts' => -1,
+			'tax_query' => array(
+				array(
+					'taxonomy' => 'featured-area',
+					'field' => 'slug',
+					'terms' => $featured_area,
+				),
+			),
 		);
 
 		$featured_item_query = new \WP_Query( $args );
@@ -113,8 +132,32 @@ class Rest {
 		}
 		return new \WP_REST_Response( $posts, 200 );
 	}
+	*/
 
-	public function copy_post_to_featured_content( $post, $post_status, $post_parent = 0 ) {
+	private function create_featured_content( $post_data ) {
+		$post = $post_data;
+
+		// If featured content already exist make sure its a draft and return it
+		// Else make a copy of the original post and return the copy
+		if ( 'featured-content' === get_post_type( $post ) ) {
+			return self::update_featured_content( $post );
+		} else {
+			return self::create_featured_content_from_post( $post, 'draft' );
+		}
+	}
+
+	private function update_featured_content( $post ) {
+		$result = wp_update_post( array(
+			'ID' => intval( $post->ID ),
+			'post_status' => 'draft',
+		) );
+		if ( ! is_wp_error( $result ) ) {
+			$result = get_post( $result );
+			return self::populate_thumbnail( get_post( $result ) );
+		}
+	}
+
+	private function create_featured_content_from_post( $post, $post_status, $post_parent = 0 ) {
 		$author = wp_get_current_user();
 		$org_post_id = $post->ID;
 		$menu_order = $post->menu_order;
@@ -138,35 +181,14 @@ class Rest {
 		$new_post = array_merge( $new_post, $new_data );
 		$result = wp_insert_post( $new_post );
 
+		wp_set_post_terms( $result, $post->featured_area, 'featured-area', false );
+
 		// If orgininal post has thumbnail, set same thumbnail for featured item
 		$org_post_thumbnail = get_post_thumbnail_id( $post->ID );
 		if ( $org_post_thumbnail ) {
 			set_post_thumbnail( $result, $org_post_thumbnail );
 		}
 		return self::populate_thumbnail( get_post( $result ) );
-	}
-
-	private function create_featured_content( $post_data ) {
-		$post = get_post( $post_data->ID );
-
-		// If featured content already exist make sure its a draft and return it
-		// Else make a copy of the original post and return the copy
-		if ( 'featured-content' === get_post_type( $post ) ) {
-			return self::draft_featured_content( $post );
-		} else {
-			return self::copy_post_to_featured_content( $post, 'draft' );
-		}
-	}
-
-	private function draft_featured_content( $post ) {
-		$result = wp_update_post( array(
-			'ID' => intval( $post->ID ),
-			'post_status' => 'draft',
-		) );
-		if ( ! is_wp_error( $result ) ) {
-			$result = get_post( $result );
-			return self::populate_thumbnail( get_post( $result ) );
-		}
 	}
 
 	public function create_featured_item( \WP_REST_Request $request ) {
@@ -191,7 +213,7 @@ class Rest {
 		return new \WP_REST_Response( 'ERROR', 200 );
 	}
 
-	public function update_featured_item( \WP_REST_Request $request ) {
+	private function update_featured_item( \WP_REST_Request $request ) {
 		$fields = Featured_Content::get_fields();
 		$post_id = intval( $request['id'] );
 		$post_parent = intval( $request['post_parent'] );
@@ -228,6 +250,50 @@ class Rest {
 
 		if ( $result ) {
 			return new \WP_REST_Response( get_post( $result ), 200 );
+		}
+		return new \WP_REST_Response( 'ERROR', 500 );
+	}
+
+	public function save_settings( \WP_REST_Request $request ) {
+		global $wpdb;
+
+		$featured_items = json_decode( $request->get_body() );
+		$featured_area = $featured_items[0]->featured_area;
+		
+		$post_ids = get_posts(
+			array(
+				'numberposts' => -1,
+				'tax_query' => array(
+					array(
+						'taxonomy' => 'featured-area',
+						'field' => 'slug',
+						'terms' => $featured_area,
+					),
+				),
+				'post_type' => 'featured-content',
+				'post_status' => 'draft',
+				'fields' => 'ids',
+			)
+		);
+
+		$how_many = count( $post_ids );
+		$placeholders = array_fill( 0, $how_many, '%d' );
+		$format = implode( ', ', $placeholders );
+		$query = "UPDATE $wpdb->posts SET post_status = 'trash' WHERE ID IN($format)";
+		$wpdb->query(
+			$wpdb->prepare( $query, $post_ids )
+		);
+
+		$error = false;
+		foreach ( $featured_items as $featured_item ) {
+			$result = wp_update_post( $featured_item, true );
+			if ( is_wp_error( $result ) ) {
+				$error = true;
+			}
+		}
+
+		if ( ! $error ) {
+			return new \WP_REST_Response( 'OK', 200 );
 		}
 		return new \WP_REST_Response( 'ERROR', 500 );
 	}

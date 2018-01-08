@@ -11,38 +11,52 @@ namespace Featured_Content_Manager;
 class Customizer {
 
 	public static function customize_register( $wp_customize ) {
+		$featured_areas = Featured_Content::get_areas();
 
 		$wp_customize->register_control_type( 'Featured_Content_Manager\Featured_Area_Control' );
 
-		$wp_customize->add_setting( 'featured_area' , array(
-			'default'   => '[]',
-			'sanitize_callback' => 'sanitize_text_field',
-		) );
+		if ( $featured_areas ) {
 
-		$wp_customize->add_section( 'featured_area' , array(
-			'title'      => __( 'Featured Content Manager', 'featured-content-manager' ),
-			'priority'   => 1,
-		) );
+			$wp_customize->add_panel( 'featured_content_panel', array(
+				'title' => __( 'Featured Content Manager', 'featured-content-manager' ),
+				'description' => 'This is a description of this panel',
+				'priority' => 10,
+			) );
 
-		// Registers example_background control
-		$wp_customize->add_control(
-			new Featured_Area_Control(
-				$wp_customize,
-				'featured_area',
-				array(
-					'label' => esc_html__( 'Example Background', 'customizer-background-control' ),
-					'section' => 'featured_area',
-				)
-			)
-		);
+			foreach ( $featured_areas as $featured_area ) {
+				$featured_area_slug = sanitize_title( $featured_area );
 
+				$wp_customize->add_setting( $featured_area_slug , array(
+					'default' => '[]',
+					'sanitize_callback' => 'sanitize_text_field',
+				) );
+
+				$wp_customize->add_section( $featured_area_slug , array(
+					'title' => esc_html( $featured_area ),
+					'priority' => 1,
+					'panel' => 'featured_content_panel',
+				) );
+
+				// Registers example_background control
+				$wp_customize->add_control(
+					new Featured_Area_Control(
+						$wp_customize,
+						$featured_area_slug,
+						array(
+							'label' => esc_html__( 'Featured Area', 'customizer-background-control' ),
+							'section' => $featured_area_slug,
+						)
+					)
+				);
+			}
+		}
 	}
 
 	public function enqueue_customize_control() {
 		$fields = Featured_Content::get_fields();
 		wp_enqueue_style( 'featured-area-style', plugins_url( 'dist/css/customizer.css', dirname( __FILE__ ) ), array(), '1', 'screen' );
 		wp_enqueue_script( 'nested-sortable', plugins_url( 'dist/js/jquery.mjs.nestedSortable.js', dirname( __FILE__ ) ), array( 'jquery' ) );
-		wp_register_script( 'featured-area-script', plugins_url( 'dist/js/customizer-debug.js', dirname( __FILE__ ) ), array( 'jquery', 'customize-controls', 'nested-sortable' ) );
+		wp_register_script( 'featured-area-script', plugins_url( 'dist/js/customizer.min.js', dirname( __FILE__ ) ), array( 'jquery', 'customize-controls', 'nested-sortable' ) );
 		wp_localize_script( 'featured-area-script', 'wpFeaturedContentApiSettings', array(
 			'base' => 'featured-content-manager/v1/',
 			'fields' => wp_json_encode( $fields ),
@@ -59,14 +73,14 @@ class Customizer {
 			<div id="available-featured-items" class="accordion-container">
 				<div class="accordion-section-title">
 					<div class="search-icon" aria-hidden="true"></div>
-					<label class="screen-reader-text" for="featured-items-search"><?php _e( 'Search Featured Items', 'featured-content-manager' ); ?></label>
+					<label class="screen-reader-text" for="featured-items-search"><?php echo esc_html( __( 'Search Featured Items', 'featured-content-manager' ) ); ?></label>
 					<input type="text" id="featured-items-search" placeholder="Search features items…" aria-describedby="featured-items-search-desc" />
-					<p class="screen-reader-text" id="featured-items-search-desc"><?php _e( 'The search results will be updated as you type.', 'featured-content-manager' ); ?></p>
+					<p class="screen-reader-text" id="featured-items-search-desc"><?php echo esc_html( __( 'The search results will be updated as you type.', 'featured-content-manager' ) ); ?></p>
 					<span class="spinner"></span>
 					<div class="search-icon" aria-hidden="true"></div>
 				</div>
 				<ul id="available-featured-items-list" class="accordion-section-content">
-					<li class="nothing-found"><?php _e( 'No results found.', 'featured-content-manager' ); ?></li>
+					<li class="nothing-found"><?php echo esc_html( __( 'No results found.', 'featured-content-manager' ) ); ?></li>
 				</ul>
 			</div>
 		<?php
@@ -85,9 +99,13 @@ class Customizer {
 			</div>
 			<div class="featured-item-settings">
 				<form>
-					<?php foreach ( $fields as $field ) :
-						Customizer::render_input( $field, 'data' );
-					endforeach ?>
+					<?php
+					if ( $fields ) :
+						foreach ( $fields as $field ) :
+							Customizer::render_input( $field, 'data' );
+						endforeach;
+					endif;
+					?>
 					<div class="featured-item-actions">
 						<button type="button" class="button-link button-link-delete item-delete"><?php echo esc_html( __( 'Remove', 'featured-content-manager' ) ); ?></button>
 						<span class="spinner"></span>
@@ -173,29 +191,49 @@ class Customizer {
 		);
 	}
 
-	public function customize_save_customizer() {
+	public function customize_save_customizer( $wp_customize ) {
 		global $wpdb;
 
-		// Delete all featured content that is sitll trashed
-		$wpdb->delete( $wpdb->posts,
-			array(
-				'post_type' => 'featured-content',
-				'post_status' => 'publish',
-			)
-		);
-		$wpdb->delete( $wpdb->posts,
-			array(
-				'post_type' => 'featured-content',
-				'post_status' => 'trash',
-			)
-		);
+		$featured_areas = Featured_Content::get_areas();
 
-		$drafts = get_posts( array(
-			'post_type' => 'featured-content',
-			'post_status' => 'draft',
-		));
-		foreach ( $drafts as $post ) {
-			Rest::copy_post_to_featured_content( $post, 'publish', $post->post_parent );
+		if ( $featured_areas ) {
+
+			// Delete all published featured content
+			$wpdb->delete( $wpdb->posts,
+				array(
+					'post_type' => 'featured-content',
+					'post_status' => 'publish',
+				)
+			);
+
+			// Delete all featured content in trash
+			$wpdb->delete( $wpdb->posts,
+				array(
+					'post_type' => 'featured-content',
+					'post_status' => 'trash',
+				)
+			);
+
+			foreach ( $featured_areas as $featured_area ) {
+				$featured_area_slug = sanitize_title( $featured_area );
+				$theme_mod = get_theme_mod( $featured_area_slug, array() );
+				if ( $theme_mod ) {
+					$featured_items = json_decode( $theme_mod );
+
+					// Update all featured content in settings
+					foreach ( $featured_items as $featured_item ) {
+						Customizer::publish_featured_item( $featured_item );
+					}
+				}
+			}
 		}
+
+	}
+
+	private function publish_featured_item( $post ) {
+		$post->ID = null;
+		$post->post_status = 'publish';
+		$post_id = wp_insert_post( $post );
+		wp_set_post_terms( $post_id, $post->featured_area, 'featured-area', false );
 	}
 }

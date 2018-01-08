@@ -12,30 +12,42 @@ class Featured_Content {
 	public function get_fields() {
 		$fields = [];
 		$args = get_theme_support( 'featured-content-manager' )[0];
-		foreach ( $args['fields'] as $field ) {
-			switch ( $field ) {
-				case 'post_title':
-					$fields['post_title']['name'] = 'post_title';
-					$fields['post_title']['display_name'] = 'Post title';
-					$fields['post_title']['type'] = 'input';
-					break;
-				case 'post_content':
-					$fields['post_content']['name'] = 'post_content';
-					$fields['post_content']['display_name'] = 'Post Content';
-					$fields['post_content']['type'] = 'textarea';
-					break;
-				case 'thumbnail':
-					$fields['thumbnail']['name'] = 'thumbnail';
-					$fields['thumbnail']['display_name'] = 'Thumbnail';
-					$fields['thumbnail']['type'] = 'media';
-					break;
+		if ( $args['fields'] ) {
+			foreach ( $args['fields'] as $field ) {
+				switch ( $field ) {
+					case 'post_title':
+						$fields['post_title']['name'] = 'post_title';
+						$fields['post_title']['display_name'] = 'Post title';
+						$fields['post_title']['type'] = 'input';
+						break;
+					case 'post_content':
+						$fields['post_content']['name'] = 'post_content';
+						$fields['post_content']['display_name'] = 'Post Content';
+						$fields['post_content']['type'] = 'textarea';
+						break;
+					case 'thumbnail':
+						$fields['thumbnail']['name'] = 'thumbnail';
+						$fields['thumbnail']['display_name'] = 'Thumbnail';
+						$fields['thumbnail']['type'] = 'media';
+						break;
+				}
 			}
 		}
 		return $fields;
 	}
 
-	public static function register() {
+	public function get_areas() {
+		$areas = [];
+		$args = get_theme_support( 'featured-content-manager' )[0];
+		if ( $args['featured_areas'] ) {
+			foreach ( $args['featured_areas'] as $area ) {
+				$areas[] = $area;
+			}
+		}
+		return $areas;
+	}
 
+	public static function register() {
 		register_post_type( 'featured-content', array(
 			'public' => true,
 			'show_ui' => true,
@@ -58,5 +70,16 @@ class Featured_Content {
 				'not_found_in_trash' => __( 'No Featured Items found in Trash', 'featured-content-manager' ),
 			),
 		));
+
+		register_taxonomy(
+			'featured-area',
+			'featured-content',
+			array(
+				'label' => __( 'Featured Area', 'featured-content-manager' ),
+				'rewrite' => array(
+					'slug' => 'featured-area',
+				),
+			)
+		);
 	}
 }
