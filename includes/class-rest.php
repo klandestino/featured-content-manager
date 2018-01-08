@@ -181,6 +181,12 @@ class Rest {
 		$new_post = array_merge( $new_post, $new_data );
 		$result = wp_insert_post( $new_post );
 
+		add_post_meta( $result, 'original_post_id', $org_post_id );
+
+		if ( get_post_meta( $org_post_id, '_thumbnail_id', true ) ) {
+			add_post_meta( $result, '_thumbnail_id', get_post_meta( $org_post_id, '_thumbnail_id', true ) );
+		}
+
 		wp_set_post_terms( $result, $post->featured_area, 'featured-area', false );
 
 		// If orgininal post has thumbnail, set same thumbnail for featured item
