@@ -133,8 +133,30 @@
 						}
 						item.remove();
 					}
-					itemObjects.delete(parseInt(this.key));
-					featuredArea.setSettings();
+
+					fetch(
+						wpApiSettings.root +
+							wpFeaturedContentApiSettings.base +
+							"items/" + this.key,
+						{
+							method: "DELETE",
+							headers: {
+								Accept:
+									"application/json",
+								"Content-Type":
+									"application/json",
+								"X-WP-Nonce":
+									wpApiSettings.nonce
+							},
+							credentials: "same-origin"
+						}
+					)
+					.then(data => data.json())
+					.then(data => {
+						console.log(data);
+						itemObjects.delete(parseInt(this.key));
+						featuredArea.setSettings();
+					});
 				}
 			}
 
