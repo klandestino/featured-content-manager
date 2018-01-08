@@ -24,18 +24,6 @@ spl_autoload_register( function( $class_name ) {
 	require_once dirname( __FILE__ ) . '/includes/' . $filename;
 } );
 
-add_theme_support( 'featured-content-manager',
-	array(
-		'fields' => [
-			'post_title', // Namnet på en variabel i post-objectet
-		],
-		'featured_areas' => [
-			'Första',
-			'Andra',
-		],
-	)
-);
-
 require_once dirname( __FILE__ ) . '/includes/class-featured-query.php';
 
 if ( current_theme_supports( 'featured-content-manager' ) ) {
