@@ -26,12 +26,12 @@ class Customizer {
 			foreach ( $featured_areas as $featured_area ) {
 				$featured_area_slug = sanitize_title( $featured_area );
 
-				$wp_customize->add_setting( $featured_area_slug , array(
+				$wp_customize->add_setting( $featured_area_slug, array(
 					'default' => '[]',
 					'sanitize_callback' => 'sanitize_text_field',
 				) );
 
-				$wp_customize->add_section( $featured_area_slug , array(
+				$wp_customize->add_section( $featured_area_slug, array(
 					'title' => esc_html( $featured_area ),
 					'priority' => 1,
 					'panel' => 'featured_content_panel',
@@ -102,7 +102,7 @@ class Customizer {
 					<?php
 					if ( $fields ) :
 						foreach ( $fields as $field ) :
-							Customizer::render_input( $field, 'data' );
+							self::render_input( $field, 'data' );
 						endforeach;
 					endif;
 					?>
@@ -222,7 +222,7 @@ class Customizer {
 
 					// Update all featured content in settings
 					foreach ( $featured_items as $featured_item ) {
-						Customizer::publish_featured_item( $featured_item );
+						self::publish_featured_item( $featured_item );
 					}
 				}
 			}
@@ -231,9 +231,12 @@ class Customizer {
 	}
 
 	private function publish_featured_item( $post ) {
-		$post->ID = null;
+		$draft_id          = $post->ID;
+		$post->ID          = null;
 		$post->post_status = 'publish';
-		$post_id = wp_insert_post( $post );
+		$post_id           = wp_insert_post( $post );
 		wp_set_post_terms( $post_id, $post->featured_area, 'featured-area', false );
+		update_post_meta( $post_id, 'thumbnail_id', get_post_meta( $draft_id, '_thumbnail_id', true ) );
+		update_post_meta( $post_id, 'original_post_id', get_post_meta( $draft_id, 'original_post_id', true ) );
 	}
 }
