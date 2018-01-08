@@ -219,20 +219,23 @@ class Customizer {
 				$theme_mod = get_theme_mod( $featured_area_slug, array() );
 				if ( $theme_mod ) {
 					$featured_items = json_decode( $theme_mod );
+					$converts = array();
 					$last_item = null;
 
 					// Update all featured content in settings
 					foreach ( $featured_items as $featured_item ) {
-						$last_item = self::publish_featured_item( $featured_item, $last_item );
+						$post_parent = $converts[ $featured_item->post_parent ];
+						error_log( $post_parent );
+						$converts[ $featured_item->ID ] = self::publish_featured_item( $featured_item, $post_parent );
 					}
 				}
 			}
 		}
 	}
 
-	private function publish_featured_item( $post, $last_item ) {
+	private function publish_featured_item( $post, $post_parent ) {
 		$draft_id = $post->ID;
-		$post->post_parent = ( $post->post_parent > 0 ? $last_item : $post->post_parent );
+		$post->post_parent = $post_parent;
 		$post->ID = null;
 		$post->post_status = 'publish';
 		$post_id = wp_insert_post( $post );
