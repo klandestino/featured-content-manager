@@ -219,26 +219,32 @@ class Customizer {
 				$theme_mod = get_theme_mod( $featured_area_slug, array() );
 				if ( $theme_mod ) {
 					$featured_items = json_decode( $theme_mod );
+					$last_item = null;
 
 					// Update all featured content in settings
 					foreach ( $featured_items as $featured_item ) {
-						self::publish_featured_item( $featured_item );
+						$last_item = self::publish_featured_item( $featured_item, $last_item );
 					}
 				}
 			}
 		}
-
 	}
 
-	private function publish_featured_item( $post ) {
-		$draft_id          = $post->ID;
-		$post->ID          = null;
+	private function publish_featured_item( $post, $last_item ) {
+		$draft_id = $post->ID;
+		$post->post_parent = ( $post->post_parent > 0 ? $last_item : $post->post_parent );
+		$post->ID = null;
 		$post->post_status = 'publish';
-		$post_id           = wp_insert_post( $post );
+		$post_id = wp_insert_post( $post );
+
 		wp_set_post_terms( $post_id, $post->featured_area, 'featured-area', false );
+
 		if ( get_post_meta( $draft_id, '_thumbnail_id', true ) ) :
 			update_post_meta( $post_id, 'thumbnail_id', get_post_meta( $draft_id, '_thumbnail_id', true ) );
 		endif;
+
 		update_post_meta( $post_id, 'original_post_id', get_post_meta( $draft_id, 'original_post_id', true ) );
+
+		return $post_id;
 	}
 }
