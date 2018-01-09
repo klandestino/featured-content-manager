@@ -153,7 +153,6 @@
 					)
 					.then(data => data.json())
 					.then(data => {
-						console.log(data);
 						itemObjects.delete(parseInt(this.key));
 						featuredArea.setSettings();
 					});

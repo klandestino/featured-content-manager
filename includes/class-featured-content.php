@@ -49,9 +49,9 @@ class Featured_Content {
 
 	public static function register() {
 		register_post_type( 'featured-content', array(
-			'public' => true,
-			'show_ui' => true,
-			'show_in_menu' => true,
+			'public' => defined( 'WP_DEBUG' ) && WP_DEBUG ? true : false,
+			'show_ui' => defined( 'WP_DEBUG' ) && WP_DEBUG ? true : false,
+			'show_in_menu' => defined( 'WP_DEBUG' ) && WP_DEBUG ? true : false,
 			'show_in_rest' => true,
 			'rest_base' => 'featured-content',
 			'rest_controller_class' => 'WP_REST_Posts_Controller',

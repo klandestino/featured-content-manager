@@ -225,7 +225,6 @@ class Customizer {
 					// Update all featured content in settings
 					foreach ( $featured_items as $featured_item ) {
 						$post_parent = $converts[ $featured_item->post_parent ];
-						error_log( $post_parent );
 						$converts[ $featured_item->ID ] = self::publish_featured_item( $featured_item, $post_parent );
 					}
 				}
