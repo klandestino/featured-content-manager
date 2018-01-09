@@ -9,10 +9,10 @@
 namespace Featured_Content_Manager;
 
 class Featured_Content {
-	public function get_fields() {
+	public static function get_fields() {
 		$fields = [];
 		$args = get_theme_support( 'featured-content-manager' )[0];
-		if ( $args['fields'] ) {
+		if ( isset( $args['fields'] ) ) {
 			foreach ( $args['fields'] as $field ) {
 				switch ( $field ) {
 					case 'post_title':
@@ -36,7 +36,7 @@ class Featured_Content {
 		return $fields;
 	}
 
-	public function get_areas() {
+	public static function get_areas() {
 		$areas = [];
 		$args = get_theme_support( 'featured-content-manager' )[0];
 		if ( $args['featured_areas'] ) {

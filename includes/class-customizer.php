@@ -52,7 +52,7 @@ class Customizer {
 		}
 	}
 
-	public function enqueue_customize_control() {
+	public static function enqueue_customize_control() {
 		$fields = Featured_Content::get_fields();
 		wp_enqueue_style( 'featured-area-style', plugins_url( 'dist/css/customizer.css', dirname( __FILE__ ) ), array(), '1', 'screen' );
 		wp_enqueue_script( 'nested-sortable', plugins_url( 'dist/js/jquery.mjs.nestedSortable.js', dirname( __FILE__ ) ), array( 'jquery' ) );
@@ -178,7 +178,7 @@ class Customizer {
 		}
 	}
 
-	public function customize_init_customizer() {
+	public static function customize_init_customizer() {
 		global $wpdb;
 
 		$wpdb->update( $wpdb->posts,
