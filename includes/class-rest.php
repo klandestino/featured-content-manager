@@ -76,7 +76,6 @@ class Rest {
 		$args = array(
 			'post_type' => 'post',
 			'posts_per_page' => 10,
-			'order' => 'ASC',
 			'post_status' => 'publish',
 			's' => $search_term,
 		);
