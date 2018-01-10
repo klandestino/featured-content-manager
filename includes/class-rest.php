@@ -264,33 +264,7 @@ class Rest {
 		global $wpdb;
 
 		$featured_items = json_decode( $request->get_body() );
-		$featured_area = $featured_items[0]->featured_area;
-		
-		$post_ids = get_posts(
-			array(
-				'numberposts' => -1,
-				'tax_query' => array(
-					array(
-						'taxonomy' => 'featured-area',
-						'field' => 'slug',
-						'terms' => $featured_area,
-					),
-				),
-				'post_type' => 'featured-content',
-				'post_status' => 'draft',
-				'fields' => 'ids',
-			)
-		);
-
-		$how_many = count( $post_ids );
-		$placeholders = array_fill( 0, $how_many, '%d' );
-		$format = implode( ', ', $placeholders );
-		$query = "UPDATE $wpdb->posts SET post_status = 'trash' WHERE ID IN($format)";
-		$wpdb->query(
-			$wpdb->prepare( $query, $post_ids )
-		);
-
-		$error = false;
+		$error          = false;
 		foreach ( $featured_items as $featured_item ) {
 			$result = wp_update_post( $featured_item, true );
 			if ( is_wp_error( $result ) ) {
