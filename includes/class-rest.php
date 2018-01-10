@@ -134,7 +134,7 @@ class Rest {
 	}
 	*/
 
-	private function create_featured_content( $post_data ) {
+	private static function create_featured_content( $post_data ) {
 		$post = $post_data;
 
 		// If featured content already exist make sure its a draft and return it
@@ -146,12 +146,12 @@ class Rest {
 		}
 	}
 
-	private function update_featured_content( $post ) {
+	private static function update_featured_content( $post ) {
 		$result = wp_update_post( array(
 			'ID' => intval( $post->ID ),
 			'post_status' => 'draft',
-		) );
-		if ( ! is_wp_error( $result ) && 0 != $result ) {
+		), true );
+		if ( ! is_wp_error( $result ) ) {
 			$result = get_post( $result );
 			return self::populate_thumbnail( get_post( $result ) );
 		}
@@ -197,7 +197,7 @@ class Rest {
 		return self::populate_thumbnail( get_post( $result ) );
 	}
 
-	public function create_featured_item( \WP_REST_Request $request ) {
+	public static function create_featured_item( \WP_REST_Request $request ) {
 		// Get request body as JSON Object
 		$data = json_decode( $request->get_body() );
 
