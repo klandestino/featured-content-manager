@@ -136,7 +136,7 @@ class Customizer {
 	<?php
 	}
 
-	public function render_input( $field, $sign ) {
+	public static function render_input( $field, $sign ) {
 		switch ( $field['type'] ) {
 			case 'textarea':
 				?>
