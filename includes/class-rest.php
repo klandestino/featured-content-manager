@@ -157,7 +157,7 @@ class Rest {
 		}
 	}
 
-	private function create_featured_content_from_post( $post, $post_status, $post_parent = 0 ) {
+	private static function create_featured_content_from_post( $post, $post_status, $post_parent = 0 ) {
 		$author = wp_get_current_user();
 		$org_post_id = $post->ID;
 		$menu_order = $post->menu_order;
@@ -205,7 +205,7 @@ class Rest {
 		$result = array();
 
 		// If request contains more than one post loop through
-		if ( is_array( $data->settings ) ) {
+		if ( isset( $data->settings ) && is_array( $data->settings ) ) {
 			foreach ( $data->settings as $post_data ) {
 				$result[] = self::create_featured_content( $post_data );
 			}
@@ -250,7 +250,7 @@ class Rest {
 		return new \WP_REST_Response( 'ERROR', 500 );
 	}
 
-	public function delete_featured_item( \WP_REST_Request $request ) {
+	public static function delete_featured_item( \WP_REST_Request $request ) {
 		$post_id = intval( $request['id'] );
 		$result = wp_delete_post( $post_id, true );
 
@@ -260,7 +260,7 @@ class Rest {
 		return new \WP_REST_Response( 'ERROR', 500 );
 	}
 
-	public function save_settings( \WP_REST_Request $request ) {
+	public static function save_settings( \WP_REST_Request $request ) {
 		global $wpdb;
 
 		$featured_items = json_decode( $request->get_body() );
@@ -304,7 +304,7 @@ class Rest {
 		return new \WP_REST_Response( 'ERROR', 500 );
 	}
 
-	private function populate_thumbnail( $args ) {
+	private static function populate_thumbnail( $args ) {
 		$result = array();
 		if ( is_array( $args ) ) {
 			foreach ( $args as $post ) {

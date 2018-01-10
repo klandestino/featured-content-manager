@@ -191,7 +191,7 @@ class Customizer {
 		);
 	}
 
-	public function customize_save_customizer( $wp_customize ) {
+	public static function customize_save_customizer( $wp_customize ) {
 		global $wpdb;
 
 		$featured_areas = Featured_Content::get_areas();
@@ -224,7 +224,7 @@ class Customizer {
 
 					// Update all featured content in settings
 					foreach ( $featured_items as $featured_item ) {
-						$post_parent = $converts[ $featured_item->post_parent ];
+						$post_parent = ( $featured_item->post_parent === 0 ? 0 : $converts[ $featured_item->post_parent ] );
 						$converts[ $featured_item->ID ] = self::publish_featured_item( $featured_item, $post_parent );
 					}
 				}
@@ -232,7 +232,7 @@ class Customizer {
 		}
 	}
 
-	private function publish_featured_item( $post, $post_parent ) {
+	private static function publish_featured_item( $post, $post_parent ) {
 		$draft_id = $post->ID;
 		$post->post_parent = $post_parent;
 		$post->ID = null;
