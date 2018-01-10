@@ -86,54 +86,6 @@ class Rest {
 		return new \WP_REST_Response( $posts, 200 );
 	}
 
-	/**
-	 * DEPRECATED
-	 *
-	public static function get_featured_items( \WP_REST_Request $request ) {
-		$post_status = (isset( $request['post_status'] ) ? $request['post_status'] : 'publish');
-		$featured_area = (isset( $request['featured_area'] ) ? $request['featured_area'] : '');
-
-		$args = array(
-			'post_type' => 'featured-content',
-			'posts_per_page' => 0,
-			'order' => 'ASC',
-			'orderby' => 'menu_order',
-			'post_parent' => 0,
-			'post_status' => $post_status,
-			'suppress_filters' => false,
-			'numberposts' => -1,
-			'tax_query' => array(
-				array(
-					'taxonomy' => 'featured-area',
-					'field' => 'slug',
-					'terms' => $featured_area,
-				),
-			),
-		);
-
-		$featured_item_query = new \WP_Query( $args );
-		$posts = $featured_item_query->posts;
-		$posts = self::populate_thumbnail( $posts );
-
-		foreach ( $posts as $post ) {
-			$children_args = array(
-				'post_type' => 'featured-content',
-				'posts_per_page' => 0,
-				'order' => 'ASC',
-				'orderby' => 'menu_order',
-				'post_parent' => $post->ID,
-				'post_status' => $post_status,
-				'suppress_filters' => false,
-			);
-
-			$featured_item_children_query = new \WP_Query( $children_args );
-			$post->children = $featured_item_children_query->posts;
-			$post->children = self::populate_thumbnail( $post->children );
-		}
-		return new \WP_REST_Response( $posts, 200 );
-	}
-	*/
-
 	private static function create_featured_content( $post_data ) {
 		$post = $post_data;
 
@@ -264,18 +216,10 @@ class Rest {
 		global $wpdb;
 
 		$featured_items = json_decode( $request->get_body() );
-		$error          = false;
 		foreach ( $featured_items as $featured_item ) {
 			$result = wp_update_post( $featured_item, true );
-			if ( is_wp_error( $result ) ) {
-				$error = true;
-			}
 		}
-
-		if ( ! $error ) {
-			return new \WP_REST_Response( 'OK', 200 );
-		}
-		return new \WP_REST_Response( 'ERROR', 500 );
+		return new \WP_REST_Response( 'OK', 200 );
 	}
 
 	private static function populate_thumbnail( $args ) {
