@@ -54,7 +54,9 @@ class Customizer {
 
 	public static function enqueue_customize_control() {
 		$fields = Featured_Content::get_fields();
+
 		wp_enqueue_style( 'featured-area-style', plugins_url( 'dist/css/customizer.css', dirname( __FILE__ ) ), array(), '1', 'screen' );
+		wp_enqueue_script( 'whatwg-fetch-script', plugins_url( 'dist/js/fetch.js', dirname( __FILE__ ) ), array() );
 		wp_enqueue_script( 'nested-sortable', plugins_url( 'dist/js/jquery.mjs.nestedSortable.js', dirname( __FILE__ ) ), array( 'jquery' ) );
 		wp_register_script( 'featured-area-script', plugins_url( 'dist/js/customizer.min.js', dirname( __FILE__ ) ), array( 'jquery', 'customize-controls', 'nested-sortable' ) );
 		wp_localize_script( 'featured-area-script', 'wpFeaturedContentApiSettings', array(

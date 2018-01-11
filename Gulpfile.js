@@ -3,9 +3,14 @@ var minify = require('gulp-minify');
 var sass  = require('gulp-sass');
 var watch = require('gulp-watch');
 var imagemin = require('gulp-imagemin');
+var babel = require('gulp-babel');
+
 
 gulp.task('script', function() {
   gulp.src('assets/js/*.js')
+    .pipe(babel({
+        presets: ['env']
+    }))
     .pipe(minify({
         ext:{
             src:'-debug.js',
@@ -16,6 +21,8 @@ gulp.task('script', function() {
     }))
     .pipe(gulp.dest('dist/js'));
     gulp.src('node_modules/nestedSortable/jquery.mjs.nestedSortable.js')
+        .pipe(gulp.dest('dist/js'));
+    gulp.src('node_modules/whatwg-fetch/fetch.js')
         .pipe(gulp.dest('dist/js'));
 });
 

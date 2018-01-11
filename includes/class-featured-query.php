@@ -11,8 +11,8 @@ class Featured_Query extends WP_Query {
 		$args = wp_parse_args( array(
 			'numberposts' => -1,
 			'post_type' => 'featured-content',
-			'orderby' => 'menu_order',
 			'post_parent' => 0,
+			'orderby' => 'menu_order',
 			'order' => 'ASC',
 			'post_status' => ( is_customize_preview() ? 'draft' : 'publish'),
 		), $args );

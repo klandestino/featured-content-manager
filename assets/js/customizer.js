@@ -8,11 +8,11 @@
 			let featuredArea,
 				itemObjects = new Map(),
 				timer,
+				search_timer,
 				timer_ms = 500;
 
 			class ListItem {
 				constructor(post) {
-					this.itemTimer = false;
 					this.key = post.ID;
 					this.postData = post;
 					this.featured_area = control.id;
@@ -101,8 +101,8 @@
 				}
 
 				setSettings() {
-					clearTimeout(this.itemTimer);
-					this.itemTimer = setTimeout(() => {
+					clearTimeout(timer);
+					timer = setTimeout(() => {
 						featuredArea.setSettings();
 					}, timer_ms);
 				}
@@ -134,7 +134,7 @@
 						item.remove();
 					}
 
-					fetch(
+					window.fetch(
 						wpApiSettings.root +
 							wpFeaturedContentApiSettings.base +
 							"items/" + this.key,
@@ -222,13 +222,16 @@
 
 					const search = event.target.value;
 
-					clearTimeout(timer);
-					timer = setTimeout(() => {
-						document
-							.querySelectorAll(".search-item-tpl")
-							.forEach(e => e.parentNode.removeChild(e));
+					clearTimeout(search_timer);
+					search_timer = setTimeout(() => {
+						var search_item_tpl = document
+							.querySelectorAll(".search-item-tpl");
+						[].forEach.call(search_item_tpl, function(item) {
+							item.remove();
+						});
+							//.forEach(e => e.parentNode.removeChild(e));
 
-						fetch(
+						window.fetch(
 							wpApiSettings.root +
 								wpFeaturedContentApiSettings.base +
 								"posts?s=" +
@@ -254,7 +257,7 @@
 										.appendChild(item)
 										.addEventListener("click", event => {
 											obj.featured_area = this.featured_area;
-											fetch(
+											window.fetch(
 												wpApiSettings.root +
 													wpFeaturedContentApiSettings.base +
 													"items",
@@ -302,7 +305,7 @@
 
 				loadSettings() {
 					let settings = JSON.parse(control.setting.get());
-					fetch(
+					window.fetch(
 						wpApiSettings.root +
 							wpFeaturedContentApiSettings.base +
 							"items",
@@ -338,7 +341,7 @@
 					if (newSettings != oldSettings) {
 						control.setting.set(JSON.stringify(newSettings));
 
-						fetch(
+						window.fetch(
 							wpApiSettings.root +
 								wpFeaturedContentApiSettings.base +
 								"settings",
@@ -385,7 +388,7 @@
 				// Saves a new sticky item on localStorage.
 				addItem() {
 					event.preventDefault();
-					fetch(
+					window.fetch(
 						wpApiSettings.root +
 							wpFeaturedContentApiSettings.base +
 							"items"
