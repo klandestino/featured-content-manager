@@ -234,7 +234,7 @@ class Rest {
 			'fields' => 'ids',
 		) );
 
-		if ( 0 < count( $old_posts ) ) {
+		if ( ! empty( $old_posts ) ) {
 			$old_posts = array_map( function( $v ) {
 				return "'" . esc_sql( $v ) . "'";
 			}, $old_posts );
