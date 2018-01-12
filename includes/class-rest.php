@@ -234,7 +234,7 @@ class Rest {
 			'fields' => 'ids',
 		) );
 
-		foreach ( $old_posts as $old_post) {
+		foreach ( $old_posts as $old_post ) {
 			wp_delete_post( $old_post, true );
 		}
 
