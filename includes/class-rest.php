@@ -234,14 +234,8 @@ class Rest {
 			'fields' => 'ids',
 		) );
 
-		if ( ! empty( $old_posts ) ) {
-			$old_posts = array_map( function( $v ) {
-				return "'" . esc_sql( $v ) . "'";
-			}, $old_posts );
-			$old_posts = implode( ',', $old_posts );
-			$wpdb->query(
-				$wpdb->prepare( "DELETE FROM $wpdb->posts WHERE ID IN (%s)", $old_posts )
-			);
+		foreach ( $old_posts as $old_post) {
+			wp_delete_post( $old_post, true );
 		}
 
 		return new \WP_REST_Response( 'OK', 200 );
