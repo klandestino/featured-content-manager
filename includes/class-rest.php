@@ -234,13 +234,15 @@ class Rest {
 			'fields' => 'ids',
 		) );
 
-		$old_posts = array_map( function( $v ) {
-			return "'" . esc_sql( $v ) . "'";
-		}, $old_posts );
-		$old_posts = implode( ',', $old_posts );
-		$wpdb->query(
-			$wpdb->prepare( "DELETE FROM $wpdb->posts WHERE ID IN (%s)", $old_posts )
-		);
+		if ( 0 < count( $old_posts ) ) {
+			$old_posts = array_map( function( $v ) {
+				return "'" . esc_sql( $v ) . "'";
+			}, $old_posts );
+			$old_posts = implode( ',', $old_posts );
+			$wpdb->query(
+				$wpdb->prepare( "DELETE FROM $wpdb->posts WHERE ID IN (%s)", $old_posts )
+			);
+		}
 
 		return new \WP_REST_Response( 'OK', 200 );
 	}
