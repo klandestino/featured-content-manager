@@ -302,6 +302,7 @@
 
 				loadSettings() {
 					let settings = JSON.parse(control.setting.get());
+					settings.sort((a, b) => a.menu_order > b.menu_order);
 					window.fetch(
 						wpApiSettings.root +
 							wpFeaturedContentApiSettings.base +
@@ -360,7 +361,7 @@
 								.then(data => data.json())
 								.then(data => {});
 						}
-						
+
 					}, timer_ms);
 				}
 
