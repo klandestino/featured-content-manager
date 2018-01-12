@@ -101,10 +101,7 @@
 				}
 
 				setSettings() {
-					clearTimeout(timer);
-					timer = setTimeout(() => {
-						featuredArea.setSettings();
-					}, timer_ms);
+					featuredArea.setSettings();
 				}
 
 				// Returns an array of keys for items children
@@ -332,33 +329,39 @@
 				}
 
 				setSettings() {
-					let oldSettings = control.setting.get(),
-						newSettings = [];
-					itemObjects.forEach(item => {
-						newSettings.push(item.getPostData());
-					});
-					newSettings.sort((a, b) => a.menu_order > b.menu_order);
-					if (newSettings != oldSettings) {
-						control.setting.set(JSON.stringify(newSettings));
 
-						window.fetch(
-							wpApiSettings.root +
-								wpFeaturedContentApiSettings.base +
-								"settings",
-							{
-								method: "POST",
-								headers: {
-									Accept: "application/json",
-									"Content-Type": "application/json",
-									"X-WP-Nonce": wpApiSettings.nonce
-								},
-								credentials: "same-origin",
-								body: control.setting.get()
-							}
-						)
-							.then(data => data.json())
-							.then(data => {});
-					}
+					clearTimeout(timer);
+					timer = setTimeout(() => {
+
+						let oldSettings = control.setting.get(),
+							newSettings = [];
+						itemObjects.forEach(item => {
+							newSettings.push(item.getPostData());
+						});
+						newSettings.sort((a, b) => a.menu_order > b.menu_order);
+						if (newSettings != oldSettings) {
+							control.setting.set(JSON.stringify(newSettings));
+
+							window.fetch(
+								wpApiSettings.root +
+									wpFeaturedContentApiSettings.base +
+									"settings",
+								{
+									method: "POST",
+									headers: {
+										Accept: "application/json",
+										"Content-Type": "application/json",
+										"X-WP-Nonce": wpApiSettings.nonce
+									},
+									credentials: "same-origin",
+									body: control.setting.get()
+								}
+							)
+								.then(data => data.json())
+								.then(data => {});
+						}
+						
+					}, timer_ms);
 				}
 
 				updateOrder(array) {
