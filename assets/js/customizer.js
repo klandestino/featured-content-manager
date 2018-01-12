@@ -302,7 +302,7 @@
 
 				loadSettings() {
 					let settings = JSON.parse(control.setting.get());
-					settings.sort((a, b) => a.menu_order > b.menu_order);
+					settings.sort((a, b) => a.menu_order - b.menu_order);
 					window.fetch(
 						wpApiSettings.root +
 							wpFeaturedContentApiSettings.base +
@@ -339,7 +339,7 @@
 						itemObjects.forEach(item => {
 							newSettings.push(item.getPostData());
 						});
-						newSettings.sort((a, b) => a.menu_order > b.menu_order);
+						newSettings.sort((a, b) => a.menu_order - b.menu_order);
 						if (newSettings != oldSettings) {
 							control.setting.set(JSON.stringify(newSettings));
 

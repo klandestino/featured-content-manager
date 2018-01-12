@@ -215,9 +215,33 @@ class Rest {
 		global $wpdb;
 
 		$featured_items = json_decode( $request->get_body() );
+		$saved_items = [];
 		foreach ( $featured_items as $featured_item ) {
 			$result = wp_update_post( $featured_item, true );
+			$saved_items[] = $result;
 		}
+		$old_posts = get_posts( array(
+			'post_type' => 'featured-content',
+			'post_status' => 'draft',
+			'tax_query' => array(
+				array(
+					'taxonomy' => 'featured-area',
+					'field'    => 'slug',
+					'terms'    => $featured_items[0]->featured_area,
+				),
+			),
+			'post__not_in' => $saved_items,
+			'fields' => 'ids',
+		) );
+
+		$old_posts = array_map( function( $v ) {
+			return "'" . esc_sql( $v ) . "'";
+		}, $old_posts );
+		$old_posts = implode( ',', $old_posts );
+		$wpdb->query(
+			$wpdb->prepare( "DELETE FROM $wpdb->posts WHERE ID IN (%s)", $old_posts )
+		);
+
 		return new \WP_REST_Response( 'OK', 200 );
 	}
 
