@@ -212,14 +212,23 @@ class Rest {
 	}
 
 	public static function save_settings( \WP_REST_Request $request ) {
-		global $wpdb;
-
 		$featured_items = json_decode( $request->get_body() );
+		if ( empty( $featured_items ) ) {
+			return new \WP_REST_Response( 'OK', 200 );
+		}
+
 		$saved_items = [];
 		foreach ( $featured_items as $featured_item ) {
+			// Här blir det fel när man försöker spara saker som ser rätt uti customizern för att den försöker uppdatera ett item som redan tagits bort ur databasen (se nedan). Den borde kanske skapa/eller uppdatera? Finns det inte en funktion ovan för det?
+
+			//INTE HÄR MEN I class-customizer så lyckas den publicera saker som inte finns i draft men i anpassaren men om det inte finns draft får de inget original id så därför de inte skrivs ut...
+
 			$result = wp_update_post( $featured_item, true );
-			$saved_items[] = $result;
+			if ( ! is_wp_error( $result ) ) {
+				$saved_items[] = $result;
+			}
 		}
+		// Den här körs flera gånger, och om man lägger till flera saker snabbt på rad i anpassaren så hinner den ta bort saker som har sparats i en session efteråt...
 		$old_posts = get_posts( array(
 			'post_type' => 'featured-content',
 			'post_status' => 'draft',
@@ -233,7 +242,6 @@ class Rest {
 			'post__not_in' => $saved_items,
 			'fields' => 'ids',
 		) );
-
 		foreach ( $old_posts as $old_post ) {
 			wp_delete_post( $old_post, true );
 		}
