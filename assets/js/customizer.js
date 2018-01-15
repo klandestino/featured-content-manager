@@ -327,7 +327,6 @@
 									new ListItem(item);
 							});
 							if( !!window.MSInputMethodContext && !!document.documentMode ) {
-								console.log('IE11 bugfix refresh preview');
 								wp.customize.previewer.refresh();
 							}
 						});
