@@ -91,9 +91,13 @@ class Rest {
 		// If featured content already exist make sure its a draft and return it
 		// Else make a copy of the original post and return the copy
 		if ( 'featured-content' === get_post_type( $post ) ) {
-			return self::update_featured_content( $post );
+			if ( false === get_post_status( $post->ID ) ) {
+				return self::create_featured_content_from_post( $post->ID, $post->original_post_id, 'draft' );
+			} else {
+				return self::update_featured_content( $post );
+			}
 		} else {
-			return self::create_featured_content_from_post( $post, 'draft' );
+			return self::create_featured_content_from_post( $post, $post->ID, 'draft' );
 		}
 	}
 
@@ -104,11 +108,12 @@ class Rest {
 		), true );
 		if ( ! is_wp_error( $result ) ) {
 			$result = get_post( $result );
-			return self::populate_thumbnail( get_post( $result ) );
+			$result = self::populate_original_post_id( $result );
+			return self::populate_thumbnail( $result );
 		}
 	}
 
-	private static function create_featured_content_from_post( $post, $post_status, $post_parent = 0 ) {
+	private static function create_featured_content_from_post( $post, $org_post_id, $post_status, $post_parent = 0 ) {
 		$author = wp_get_current_user();
 		$org_post_id = $post->ID;
 		$menu_order = $post->menu_order;
@@ -145,7 +150,9 @@ class Rest {
 		if ( $org_post_thumbnail ) {
 			set_post_thumbnail( $result, $org_post_thumbnail );
 		}
-		return self::populate_thumbnail( get_post( $result ) );
+		$result = get_post( $result );
+		$result = self::populate_original_post_id( $result );
+		return self::populate_thumbnail( $result );
 	}
 
 	public static function create_featured_item( \WP_REST_Request $request ) {
@@ -192,8 +199,9 @@ class Rest {
 		if ( null !== $thumbnail ) {
 			set_post_thumbnail( $result, $thumbnail );
 		}
-
-		$result = self::populate_thumbnail( get_post( $result ) );
+		$result = get_post( $result );
+		$result = self::populate_original_post_id( $result );
+		$result = self::populate_thumbnail( $result );
 
 		if ( $result ) {
 			return new \WP_REST_Response( $result, 200 );
@@ -213,40 +221,26 @@ class Rest {
 
 	public static function save_settings( \WP_REST_Request $request ) {
 		$featured_items = json_decode( $request->get_body() );
+
 		if ( empty( $featured_items ) ) {
 			return new \WP_REST_Response( 'OK', 200 );
 		}
 
 		$saved_items = [];
 		foreach ( $featured_items as $featured_item ) {
-			// Här blir det fel när man försöker spara saker som ser rätt uti customizern för att den försöker uppdatera ett item som redan tagits bort ur databasen (se nedan). Den borde kanske skapa/eller uppdatera? Finns det inte en funktion ovan för det?
-
-			//INTE HÄR MEN I class-customizer så lyckas den publicera saker som inte finns i draft men i anpassaren men om det inte finns draft får de inget original id så därför de inte skrivs ut...
-
 			$result = wp_update_post( $featured_item, true );
 			if ( ! is_wp_error( $result ) ) {
 				$saved_items[] = $result;
 			}
 		}
-		// Den här körs flera gånger, och om man lägger till flera saker snabbt på rad i anpassaren så hinner den ta bort saker som har sparats i en session efteråt...
-		$old_posts = get_posts( array(
-			'post_type' => 'featured-content',
-			'post_status' => 'draft',
-			'tax_query' => array(
-				array(
-					'taxonomy' => 'featured-area',
-					'field'    => 'slug',
-					'terms'    => $featured_items[0]->featured_area,
-				),
-			),
-			'post__not_in' => $saved_items,
-			'fields' => 'ids',
-		) );
-		foreach ( $old_posts as $old_post ) {
-			wp_delete_post( $old_post, true );
-		}
 
 		return new \WP_REST_Response( 'OK', 200 );
+	}
+
+	private static function populate_original_post_id( $post ) {
+		$original_post_id = get_post_meta( $post->ID, 'original_post_id', true );
+		$post->original_post_id = $original_post_id;
+		return $post;
 	}
 
 	private static function populate_thumbnail( $args ) {

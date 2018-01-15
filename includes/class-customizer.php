@@ -186,8 +186,6 @@ class Customizer {
 
 	public static function customize_init_customizer() {
 		global $wpdb;
-
-		/**
 		$wpdb->update( $wpdb->posts,
 			array(
 				'post_status' => 'trash',
@@ -196,7 +194,6 @@ class Customizer {
 				'post_status' => 'draft',
 			)
 		);
-		*/
 	}
 
 	public static function customize_save_customizer( $wp_customize ) {
