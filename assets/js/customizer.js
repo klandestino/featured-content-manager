@@ -41,16 +41,43 @@
 								this.toggleItemEdit(event)
 							);
 						if (item.querySelector("input")) {
-							item
-								.querySelector("input")
-								.addEventListener("keyup", event =>
+							var inputs = item
+								.querySelectorAll("input");
+							for (var i = 0; i < inputs.length; i++) {
+								inputs[i].addEventListener("keyup", event =>
 									this.updateItem(event)
 								);
+							}
+						}
+						if (item.querySelector(".featured-item-image-field-upload")) {
+							var buttons = item
+								.querySelectorAll(".featured-item-image-field-upload");
+							for (var x = 0; x < buttons.length; x++) {
+								buttons[x].addEventListener("click", event =>
+									this.selectMedia(event)
+								);
+							}
+						}
+						if (item.querySelector(".featured-item-image-field-remove")) {
+							var remove = item
+								.querySelectorAll(".featured-item-image-field-remove");
+							for (var y = 0; y < remove.length; y++) {
+								remove[y].addEventListener("click", event =>
+									this.removeMedia(event)
+								);
+							}
 						}
 						if (item.querySelector("textarea")) {
 							item
 								.querySelector("textarea")
 								.addEventListener("keyup", event =>
+									this.updateItem(event)
+								);
+						}
+						if (item.querySelector("select")) {
+							item
+								.querySelector("select")
+								.addEventListener("change", event =>
 									this.updateItem(event)
 								);
 						}
@@ -80,6 +107,39 @@
 					this.setSettings();
 				}
 
+				selectMedia(e) {
+					e.preventDefault();
+					var selector = $(e.target).parent( '.featured-item-image-field-container' );
+					var fcm_uploader = wp.media({
+		                title: 'Select or upload image',
+		                button: {
+		                    text: 'Set image'
+		                },
+		                multiple: false
+					}).on('select', () => {
+						var attachment = fcm_uploader.state().get('selection').first().toJSON();
+						var input = selector.find( 'input' );
+						selector.find( 'img' ).attr( 'src', attachment.url).show();
+						input.val(attachment.id);
+						selector.find('.featured-item-image-field-remove').show();
+						selector.find('.featured-item-image-field-upload').hide();
+						this.setPostData( input.attr('name'), attachment.id);
+					}).open();
+				}
+
+				removeMedia(e) {
+					e.preventDefault();
+					var selector = $(e.target).parent( '.featured-item-image-field-container' );
+					var input = selector.find( 'input' );
+					input.val('');
+					selector.find( 'img' ).attr( 'src', '#').hide();
+
+					selector.find('.featured-item-image-field-remove').hide();
+					selector.find('.featured-item-image-field-upload').show();
+
+					this.setPostData( input.attr('name'), '');
+				}
+
 				toggleItemEdit(event) {
 					event.preventDefault();
 					const item = document.getElementById(this.element_id);
@@ -94,9 +154,8 @@
 				}
 
 				updateItem(event) {
-					event.preventDefault();
-					const key = event.srcElement.name;
-					const val = event.srcElement.value;
+					const key = event.target.name;
+					const val = event.target.value;
 					this.setPostData(key, val);
 				}
 

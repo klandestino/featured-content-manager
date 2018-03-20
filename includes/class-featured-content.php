@@ -13,7 +13,7 @@ class Featured_Content {
 		$fields = [];
 		$args = get_theme_support( 'featured-content-manager' )[0];
 		if ( isset( $args['fields'] ) ) {
-			foreach ( $args['fields'] as $field ) {
+			foreach ( $args['fields'] as $key => $field ) {
 				switch ( $field ) {
 					case 'post_title':
 						$fields['post_title']['name'] = 'post_title';
@@ -30,6 +30,20 @@ class Featured_Content {
 						$fields['thumbnail']['display_name'] = 'Thumbnail';
 						$fields['thumbnail']['type'] = 'media';
 						break;
+				}
+				if ( 'taxonomy' === $key ) {
+					$taxonomy = get_taxonomy( $field );
+					if ( $taxonomy ) {
+						$terms = get_terms( $taxonomy->name, array(
+							'hide_empty' => false,
+							'orderby' => 'term_id',
+							'order' => 'ASC',
+						) );
+						$fields[ $taxonomy->name ]['name'] = $taxonomy->name;
+						$fields[ $taxonomy->name ]['display_name'] = $taxonomy->label;
+						$fields[ $taxonomy->name ]['type'] = 'taxonomy';
+						$fields[ $taxonomy->name ]['terms'] = $terms;
+					}
 				}
 			}
 		}

@@ -54,7 +54,7 @@ class Customizer {
 
 	public static function enqueue_customize_control() {
 		$fields = Featured_Content::get_fields();
-
+		wp_enqueue_media();
 		wp_enqueue_style( 'featured-area-style', plugins_url( 'dist/css/customizer.css', dirname( __FILE__ ) ), array(), '1', 'screen' );
 		wp_enqueue_script( 'whatwg-fetch-script', plugins_url( 'dist/js/fetch.js', dirname( __FILE__ ) ), array() );
 		wp_enqueue_script( 'nested-sortable', plugins_url( 'dist/js/jquery.mjs.nestedSortable.js', dirname( __FILE__ ) ), array( 'jquery' ) );
@@ -160,13 +160,34 @@ class Customizer {
 					<label>
 						<?php echo esc_html( $field['display_name'] ); ?><br/>
 						<div class="featured-item-image-field-wrapper">
-							<div class="featured-item-image-field-container" >
-								<# if ( <?php echo esc_html( $sign ); ?>.<?php echo esc_html( $field['name'] ); ?> ) { #>
-									<img src="{{<?php echo esc_html( $sign ); ?>.<?php echo esc_html( $field['name'] . '_src' ); ?>}}" alt="" />
-								<# } #>
+							<div class="featured-item-image-field-container">
+							<# if ( <?php echo esc_html( $sign ); ?>.<?php echo esc_html( $field['name'] ); ?> ) { #>
+								<img src="{{<?php echo esc_html( $sign ); ?>.<?php echo esc_html( $field['name'] . '_src' ); ?>}}" alt="" />
+								<input type="hidden" name="<?php echo esc_html( $field['name'] ); ?>" class="featured-item-edit-hidden" value="{{<?php echo esc_html( $sign ); ?>.<?php echo esc_html( $field['name'] ); ?>}}">
+								<a class="featured-item-image-field-upload" style="display: none;" href="#">Välj bild</a>
+								<a class="featured-item-image-field-remove" href="#">Ta bort</a>
+							<# } else { #>
+								<img src="#" style="display: none;" />
+								<input type="hidden" name="<?php echo esc_html( $field['name'] ); ?>" class="featured-item-edit-hidden" value="">
+								<a class="featured-item-image-field-upload" href="#">Välj bild</a>
+								<a class="featured-item-image-field-remove" href="#">Ta bort</a>
+							<# } #>
 							</div>
-							<input type="hidden" name="<?php echo esc_html( $field['name'] ); ?>" class="featured-item-edit-hidden" value="{{<?php echo esc_html( $sign ); ?>.<?php echo esc_html( $field['name'] ); ?>}}"/>
 						</div>
+					</label>
+				</p>
+				<?php
+				break;
+			case 'taxonomy':
+				?>
+				<p>
+					<label>
+						<?php echo esc_html( $field['display_name'] ); ?><br/>
+						<select name="taxonomy_<?php echo esc_html( $field['name'] ); ?>">
+						<?php foreach ( $field['terms'] as $term ) { ?>
+							<option name="<?php echo esc_html( $term->name ); ?>" value="<?php echo esc_html( $term->name ); ?>" <# if (<?php echo esc_html( $sign ); ?>.taxonomy_<?php echo esc_html( $field['name'] ); ?>=='<?php echo esc_html( $term->name ); ?>' ) { #>selected<# } #>><?php echo esc_html( $term->name ); ?></option>
+						<?php } ?>
+						</select>
 					</label>
 				</p>
 				<?php
@@ -229,7 +250,7 @@ class Customizer {
 
 					// Update all featured content in settings
 					foreach ( $featured_items as $featured_item ) {
-						$post_parent = ( $featured_item->post_parent === 0 ? 0 : $converts[ $featured_item->post_parent ] );
+						$post_parent = ( 0 === $featured_item->post_parent ? 0 : $converts[ $featured_item->post_parent ] );
 						$converts[ $featured_item->ID ] = self::publish_featured_item( $featured_item, $post_parent );
 					}
 				}
@@ -251,6 +272,19 @@ class Customizer {
 		endif;
 
 		update_post_meta( $post_id, 'original_post_id', get_post_meta( $draft_id, 'original_post_id', true ) );
+
+		$org_post_thumbnail = get_post_thumbnail_id( $draft_id );
+		if ( $org_post_thumbnail ) {
+			set_post_thumbnail( $post_id, $org_post_thumbnail );
+		}
+
+		$taxonomies = get_object_taxonomies( 'featured-content' );
+		foreach ( $taxonomies as $taxonomy ) {
+			$terms = get_the_terms( $draft_id, $taxonomy );
+			foreach ( $terms as $term ) {
+				wp_set_post_terms( $post_id, $term->name, $taxonomy, false );
+			}
+		}
 
 		return $post_id;
 	}

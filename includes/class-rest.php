@@ -102,15 +102,30 @@ class Rest {
 	}
 
 	private static function update_featured_content( $post ) {
-		$result = wp_update_post( array(
+		$result = self::update_post( array(
 			'ID' => intval( $post->ID ),
 			'post_status' => 'draft',
-		), true );
+		) );
 		if ( ! is_wp_error( $result ) ) {
 			$result = get_post( $result );
 			$result = self::populate_original_post_id( $result );
+			$result = self::populate_taxonomies( $result );
 			return self::populate_thumbnail( $result );
 		}
+	}
+
+	private static function populate_taxonomies( $post ) {
+		$fields = Featured_Content::get_fields();
+		foreach ( $fields as $field ) {
+			if ( 'taxonomy' === $field['type'] ) {
+				$terms = get_the_terms( $post->ID, $field['name'] );
+				if ( ! empty( $terms ) ) {
+					$key = 'taxonomy_' . $field['name'];
+					$post->$key = $terms[0]->name;
+				}
+			}
+		}
+		return $post;
 	}
 
 	private static function create_featured_content_from_post( $post, $org_post_id, $post_status, $post_parent = 0 ) {
@@ -142,7 +157,6 @@ class Rest {
 		if ( get_post_meta( $org_post_id, '_thumbnail_id', true ) ) {
 			add_post_meta( $result, '_thumbnail_id', get_post_meta( $org_post_id, '_thumbnail_id', true ) );
 		}
-
 		wp_set_post_terms( $result, $post->featured_area, 'featured-area', false );
 
 		// If orgininal post has thumbnail, set same thumbnail for featured item
@@ -152,6 +166,7 @@ class Rest {
 		}
 		$result = get_post( $result );
 		$result = self::populate_original_post_id( $result );
+		$result = self::populate_taxonomies( $result );
 		return self::populate_thumbnail( $result );
 	}
 
@@ -194,13 +209,15 @@ class Rest {
 			$post[ $field['name'] ] = $request[ $field['name'] ];
 		}
 
-		$result = wp_update_post( $post );
+		$result = self::update_post( $post );
 
 		if ( null !== $thumbnail ) {
 			set_post_thumbnail( $result, $thumbnail );
 		}
+
 		$result = get_post( $result );
 		$result = self::populate_original_post_id( $result );
+		$result = self::populate_taxonomies( $result );
 		$result = self::populate_thumbnail( $result );
 
 		if ( $result ) {
@@ -228,13 +245,29 @@ class Rest {
 
 		$saved_items = [];
 		foreach ( $featured_items as $featured_item ) {
-			$result = wp_update_post( $featured_item, true );
+			$result = self::update_post( $featured_item );
 			if ( ! is_wp_error( $result ) ) {
 				$saved_items[] = $result;
 			}
 		}
 
 		return new \WP_REST_Response( 'OK', 200 );
+	}
+
+	private static function update_post( $featured_item ) {
+		$result = wp_update_post( $featured_item, true );
+
+		foreach ( $featured_item as $key => $value ) {
+			if ( 0 === strrpos( $key, 'taxonomy_' ) ) {
+				wp_set_post_terms( $result, $value, substr( $key, 9 ), false );
+			}
+		}
+
+		if ( isset( $featured_item->thumbnail ) ) {
+			( '' === $featured_item->thumbnail ) ? delete_post_thumbnail( $result ) : set_post_thumbnail( $result, $featured_item->thumbnail );
+		}
+
+		return $result;
 	}
 
 	private static function populate_original_post_id( $post ) {
