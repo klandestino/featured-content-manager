@@ -32,3 +32,4 @@ Dessa saker finns kvar att göra
 * ☐ Lägg till tag/category (select) som variabel
 * ☐ RENSA I JS
 * ☐ Refacturing av FCM (publika funktioner/privata/vilken klass/delade funktioner osv)
+* ☐ Visa tio senaste under sök när en ska lägga till
