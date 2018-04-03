@@ -184,10 +184,11 @@ ol.featured-area {
       padding: 6px 30px; }
     #available-featured-items .accordion-section-title .spinner {
       position: absolute;
-      background-image: url(../images/spinner-2x.gif);
       top: 20px;
       right: 21px;
       margin: 0 !important; }
+      body.searching #available-featured-items .accordion-section-title .spinner {
+        visibility: visible !important; }
     #available-featured-items .accordion-section-title:after {
       display: none; }
   #available-featured-items .accordion-section-content {

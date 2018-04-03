@@ -236,8 +236,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					this.active = true;
 					this.featured_area = control.id;
 					this.searchPanel = document.getElementById("available-featured-items");
+					this.search('');
 					document.getElementById("featured-items-search").addEventListener("keyup", function (event) {
-						return _this5.search(event);
+						return _this5.onInputChange(event);
 					});
 					document.addEventListener("click", function (event) {
 						if (!event.target.classList.contains("add-featured-item") && !isChildOf(event.target, "accordion-container")) {
@@ -252,6 +253,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 						var body = document.querySelector("body");
 						body.classList.add("adding-featured-items");
 						this.active = true;
+						this.search('');
 					}
 				}, {
 					key: "close",
@@ -277,29 +279,34 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					value: function clear() {
 						this.active = false;
 						document.getElementById("featured-items-search").value = "";
-						document.querySelector("#available-featured-items-list").innerHTML = "";
+					}
+				}, {
+					key: "onInputChange",
+					value: function onInputChange(event) {
+						event.preventDefault();
+						var search = event.target.value;
+						this.search(search);
 					}
 				}, {
 					key: "search",
-					value: function search(event) {
+					value: function search(_search) {
 						var _this6 = this;
 
-						event.preventDefault();
 						if (!this.active) return;
 
-						var search = event.target.value;
-
+						var body = document.querySelector("body");
 						clearTimeout(search_timer);
 						search_timer = setTimeout(function () {
+							body.classList.add("searching");
 							var search_item_tpl = document.querySelectorAll(".search-item-tpl");
 							[].forEach.call(search_item_tpl, function (item) {
 								item.remove();
 							});
-							//.forEach(e => e.parentNode.removeChild(e));
 
-							window.fetch(wpApiSettings.root + wpFeaturedContentApiSettings.base + "posts?s=" + search).then(function (data) {
+							window.fetch(wpApiSettings.root + wpFeaturedContentApiSettings.base + "posts?s=" + _search).then(function (data) {
 								return data.json();
 							}).then(function (data) {
+								body.classList.remove("searching");
 								var featuredSearchItemTemplate = wp.template("search-item");
 								data.forEach(function (obj, index) {
 									var item = document.createElement("li");

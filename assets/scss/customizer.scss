@@ -254,10 +254,13 @@ ol.featured-area {
 
 	    .spinner {
 		    position: absolute;
-		    background-image: url(../images/spinner-2x.gif);
 		    top: 20px;
 		    right: 21px;
 		    margin: 0!important;
+
+			body.searching & {
+				visibility: visible !important;
+			}
 		}
 
 		&:after {
