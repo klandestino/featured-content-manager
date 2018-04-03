@@ -1,0 +1,196 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Featured Content Manager\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-04-04 00:11+0200\n"
+"PO-Revision-Date: 2018-04-04 00:11+0200\n"
+"Last-Translator: Jesper Nilsson <jesper@klandestino.se>\n"
+"Language-Team: Klandestino AB <kontakt@klandestino.se>\n"
+"Language: sv_SE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.0.6\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-KeywordsList: __;_e;_e\n"
+"X-Poedit-SearchPath-0: featured-content-manager.php\n"
+"X-Poedit-SearchPath-1: includes/class-customizer.php\n"
+"X-Poedit-SearchPath-2: includes/class-featured-area-control.php\n"
+"X-Poedit-SearchPath-3: includes/class-featured-content.php\n"
+"X-Poedit-SearchPath-4: includes/class-featured-query.php\n"
+"X-Poedit-SearchPath-5: includes/class-rest.php\n"
+
+#: includes/class-customizer.php:21
+msgid "Featured Content Manager"
+msgstr "Hantering av Utvalt Innehåll"
+
+#: includes/class-customizer.php:82 includes/class-featured-content.php:87
+msgid "Search Featured Items"
+msgstr "Sök utvalt innehåll"
+
+#: includes/class-customizer.php:83
+msgid "The search results will be updated as you type."
+msgstr "Sökresultatet kommer uppdateras när du börjar skriva."
+
+#: includes/class-customizer.php:88
+msgid "No results found."
+msgstr "Tyvärr hittades ingenting."
+
+#: includes/class-customizer.php:102
+msgid "Edit featured item"
+msgstr "Ändra"
+
+#: includes/class-customizer.php:115
+msgid "Remove"
+msgstr "Ta bort"
+
+#: includes/class-customizer.php:136
+msgid "Add to featured area"
+msgstr "Skapa nytt anpassat område"
+
+#: includes/class-featured-content.php:83
+msgid "Add New Featured Item"
+msgstr "Lägg till"
+
+#: includes/class-featured-content.php:84
+msgid "Edit Featured Item"
+msgstr "Ändra"
+
+#: includes/class-featured-content.php:85
+msgid "New Featured Item"
+msgstr "Nytt område"
+
+#: includes/class-featured-content.php:86
+msgid "View Featured Item"
+msgstr "Se utvalt innehåll"
+
+#: includes/class-featured-content.php:88
+msgid "No Featured Items found"
+msgstr "Inget utvalt innehåll hittades"
+
+#: includes/class-featured-content.php:89
+msgid "No Featured Items found in Trash"
+msgstr "Inget utvalt innehåll hittades i papperskorgen"
+
+#: includes/class-featured-content.php:97
+msgid "Featured Area"
+msgstr "Utvalt område"
+
+#, fuzzy
+#~| msgid "Search Featured Items"
+#~ msgid "Search features items"
+#~ msgstr "Sök utvalt innehåll"
+
+#~ msgid "Feature Content Manager"
+#~ msgstr "Hantering av Utvalt Innehåll"
+
+#~ msgid "This panel is used for managing featured areas. You can add pages and posts."
+#~ msgstr "Denna panel är till för att organisera utvalda objekt. Du kan lägga till sidor och poster."
+
+#~ msgid "Nothing found."
+#~ msgstr "Hittade tyvärr ingenting."
+
+#~ msgid "Search Content"
+#~ msgstr "Sök innehåll"
+
+#~ msgid "Search content"
+#~ msgstr "Sök innehåll"
+
+#~ msgid "Delete thumbnail"
+#~ msgstr "Ta bort tumnagel"
+
+#~ msgid "Select thumbnail"
+#~ msgstr "Välj tumnagel"
+
+#~ msgid "Title"
+#~ msgstr "Titel"
+
+#~ msgid "Delete"
+#~ msgstr "Ta bort"
+
+#~ msgid "Featured Items"
+#~ msgstr "Nytt område"
+
+#~ msgid "Featured Item"
+#~ msgstr "Nytt område"
+
+#~ msgid "Add New"
+#~ msgstr "Lägg till"
+
+#~ msgid "Search Featured Areas"
+#~ msgstr "Sök utvalda områden"
+
+#~ msgid "All Featured Areas"
+#~ msgstr "Alla utvalda områden"
+
+#~ msgid "Parent Featured Area"
+#~ msgstr "Förälder till utvalt område"
+
+#~ msgid "Parent Featured Area:"
+#~ msgstr "Förälder till utvalt område:"
+
+#~ msgid "Edit Featured Area"
+#~ msgstr "Ändra utvalt område"
+
+#~ msgid "Update Featured Area"
+#~ msgstr "Uppdater utvalt område"
+
+#~ msgid "New Featured Area Name"
+#~ msgstr "Nytt anpassat område"
+
+#~ msgid "Featured Content Style"
+#~ msgstr "Stil för utvalt innehåll"
+
+#~ msgid "Search Featured Content Styles"
+#~ msgstr "Sök stil för utvalt innehåll"
+
+#~ msgid "All Featured Content Styles"
+#~ msgstr "Alla stilar för utvalt innehåll"
+
+#~ msgid "Parent Featured Content Style"
+#~ msgstr "Förälder till stil för utvalt innehåll"
+
+#~ msgid "Parent Featured Content Style:"
+#~ msgstr "Förälder till stil för utvalt innehåll:"
+
+#~ msgid "Edit Featured Content Style"
+#~ msgstr "Ändra stil för utvalt innehåll"
+
+#~ msgid "Update Featured Content Style"
+#~ msgstr "Uppdatera stil för utvalt innehåll"
+
+#~ msgid "Add New Featured Content Style"
+#~ msgstr "Lägg till ny stil för utvalt innehåll"
+
+#~ msgid "New Featured Content Style Name"
+#~ msgstr "Nytt namn till stil för utvalt innehåll"
+
+#~ msgid "Featured Content"
+#~ msgstr "Utvalt Innehåll"
+
+#~ msgid "Featured Content Manager License Options"
+#~ msgstr "Hantering av Utvalt Innehåll"
+
+#, fuzzy
+#~ msgid "Add url-item"
+#~ msgstr "Lägg till"
+
+#~ msgid "Drag and drop to reorder the featured items."
+#~ msgstr "Drag och släpp för att ordna om utvalda objekt."
+
+#~ msgid "New Featured Area"
+#~ msgstr "Nytt område"
+
+#, fuzzy
+#~ msgid "Create Featured Area"
+#~ msgstr "Drag och släpp för att ordna om utvalda objekt."
+
+#~ msgid "Drop Here!"
+#~ msgstr "Släpp här"
+
+#~ msgid "Create"
+#~ msgstr "Skapa"
+
+#~ msgid "Remove featured area"
+#~ msgstr "Ta bort område"

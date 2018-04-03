@@ -80,7 +80,7 @@ class Customizer {
 				<div class="accordion-section-title">
 					<div class="search-icon" aria-hidden="true"></div>
 					<label class="screen-reader-text" for="featured-items-search"><?php echo esc_html( __( 'Search Featured Items', 'featured-content-manager' ) ); ?></label>
-					<input type="text" id="featured-items-search" placeholder="Search features items…" aria-describedby="featured-items-search-desc" />
+					<input type="text" id="featured-items-search" placeholder="<?php echo esc_html( __( 'Search Featured Items', 'featured-content-manager' ) ); ?>" aria-describedby="featured-items-search-desc" />
 					<p class="screen-reader-text" id="featured-items-search-desc"><?php echo esc_html( __( 'The search results will be updated as you type.', 'featured-content-manager' ) ); ?></p>
 					<span class="spinner"></span>
 					<div class="search-icon" aria-hidden="true"></div>

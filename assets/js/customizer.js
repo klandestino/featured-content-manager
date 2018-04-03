@@ -222,9 +222,10 @@
 					this.searchPanel = document.getElementById(
 						"available-featured-items"
 					);
+					this.search('');
 					document
 						.getElementById("featured-items-search")
-						.addEventListener("keyup", event => this.search(event));
+						.addEventListener("keyup", event => this.onInputChange(event));
 					document.addEventListener("click", event => {
 						if (
 							!event.target.classList.contains(
@@ -244,6 +245,7 @@
 					const body = document.querySelector("body");
 					body.classList.add("adding-featured-items");
 					this.active = true;
+					this.search('');
 				}
 
 				close() {
@@ -266,26 +268,26 @@
 				clear() {
 					this.active = false;
 					document.getElementById("featured-items-search").value = "";
-					document.querySelector(
-						"#available-featured-items-list"
-					).innerHTML =
-						"";
 				}
 
-				search(event) {
+				onInputChange(event) {
 					event.preventDefault();
+					const search = event.target.value;
+					this.search(search);
+				}
+
+				search(search) {
 					if (!this.active) return;
 
-					const search = event.target.value;
-
+					const body = document.querySelector("body");
 					clearTimeout(search_timer);
 					search_timer = setTimeout(() => {
+						body.classList.add("searching");
 						var search_item_tpl = document
 							.querySelectorAll(".search-item-tpl");
 						[].forEach.call(search_item_tpl, function(item) {
 							item.remove();
 						});
-							//.forEach(e => e.parentNode.removeChild(e));
 
 						window.fetch(
 							wpApiSettings.root +
@@ -295,6 +297,7 @@
 						)
 							.then(data => data.json())
 							.then(data => {
+								body.classList.remove("searching");
 								let featuredSearchItemTemplate = wp.template(
 									"search-item"
 								);
