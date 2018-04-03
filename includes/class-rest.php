@@ -76,7 +76,7 @@ class Rest {
 		$args = array(
 			'post_type' => 'post',
 			'posts_per_page' => 10,
-			'post_status' => 'publish',
+			'post_status' => array('publish','future'),
 			's' => $search_term,
 		);
 
@@ -136,6 +136,9 @@ class Rest {
 		$accepted_values = [
 			'post_title' => '',
 			'post_content' => '',
+			'post_excerpt' => '',
+			'post_date' => '',
+			'post_date_gmt' => '',
 			'featured_media' => '',
 		];
 

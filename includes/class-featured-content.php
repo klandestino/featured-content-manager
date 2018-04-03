@@ -25,6 +25,11 @@ class Featured_Content {
 						$fields['post_content']['display_name'] = 'Post Content';
 						$fields['post_content']['type'] = 'textarea';
 						break;
+					case 'post_excerpt':
+						$fields['post_excerpt']['name'] = 'post_excerpt';
+						$fields['post_excerpt']['display_name'] = 'Post excerpt';
+						$fields['post_excerpt']['type'] = 'textarea';
+						break;
 					case 'thumbnail':
 						$fields['thumbnail']['name'] = 'thumbnail';
 						$fields['thumbnail']['display_name'] = 'Thumbnail';
