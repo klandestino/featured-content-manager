@@ -206,6 +206,9 @@ class Customizer {
 	}
 
 	public static function customize_init_customizer() {
+		/**
+		 * TAR BORT PGA BUGGAR!
+		 *
 		global $wpdb;
 		$wpdb->update( $wpdb->posts,
 			array(
@@ -215,6 +218,7 @@ class Customizer {
 				'post_status' => 'draft',
 			)
 		);
+		*/
 	}
 
 	public static function customize_save_customizer( $wp_customize ) {
