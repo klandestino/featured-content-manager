@@ -285,8 +285,10 @@ class Customizer {
 		$taxonomies = get_object_taxonomies( 'featured-content' );
 		foreach ( $taxonomies as $taxonomy ) {
 			$terms = get_the_terms( $draft_id, $taxonomy );
-			foreach ( $terms as $term ) {
-				wp_set_post_terms( $post_id, $term->name, $taxonomy, false );
+			if ( is_array( $terms ) ) {
+				foreach ( $terms as $term ) {
+					wp_set_post_terms( $post_id, $term->name, $taxonomy, false );
+				}
 			}
 		}
 
