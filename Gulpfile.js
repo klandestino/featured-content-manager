@@ -1,24 +1,19 @@
-var gulp = require('gulp');
-var minify = require('gulp-minify');
-var sass  = require('gulp-sass');
-var watch = require('gulp-watch');
-var imagemin = require('gulp-imagemin');
-var babel = require('gulp-babel');
-
+let gulp = require('gulp');
+let sass  = require('gulp-sass');
+let uglify = require('gulp-uglify');
+let rename = require("gulp-rename");
+let watch = require('gulp-watch');
+let imagemin = require('gulp-imagemin');
+let babel = require('gulp-babel');
 
 gulp.task('script', function() {
-  gulp.src('assets/js/*.js')
+  return gulp.src('assets/js/*.js')
     .pipe(babel({
         presets: ['env']
     }))
-    .pipe(minify({
-        ext:{
-            src:'-debug.js',
-            min:'.min.js'
-        },
-        exclude: ['tasks'],
-        ignoreFiles: ['.combo.js', '-min.js']
-    }))
+    .pipe(gulp.dest('dist/js'))
+    .pipe(uglify())
+    .pipe(rename({ suffix: '.min' }))
     .pipe(gulp.dest('dist/js'));
     gulp.src('node_modules/nestedSortable/jquery.mjs.nestedSortable.js')
         .pipe(gulp.dest('dist/js'));
@@ -32,8 +27,8 @@ gulp.task('style', function() {
     .pipe(gulp.dest('dist/css'));
 });
 
-gulp.task('images', function(cb) {
-    gulp.src('assets/images/*')
+gulp.task('images', function() {
+    return gulp.src('assets/images/*')
         .pipe(imagemin())
         .pipe(gulp.dest('dist/images'));
 });
@@ -43,3 +38,5 @@ gulp.task('watch', function() {
     gulp.watch('assets/js/*.js', ['script']);
     gulp.watch('assets/images/*', ['images']);
 });
+
+gulp.task('default', gulp.series(['script','style','images']));
