@@ -8,8 +8,16 @@
 
 namespace Featured_Content_Manager;
 
+/**
+ * The customizer class handling all the customizer functionality.
+ */
 class Customizer {
 
+	/**
+	 * Register panels and settings.
+	 *
+	 * @param WP_Customize_Manager $wp_customize A customizer class.
+	 */
 	public static function customize_register( $wp_customize ) {
 		$featured_areas = Featured_Content::get_areas();
 
@@ -17,33 +25,42 @@ class Customizer {
 
 		if ( $featured_areas ) {
 
-			$wp_customize->add_panel( 'featured_content_panel', array(
-				'title' => __( 'Featured Content Manager', 'featured-content-manager' ),
-				'description' => 'This is a description of this panel',
-				'priority' => 10,
-			) );
+			$wp_customize->add_panel(
+				'featured_content_panel',
+				array(
+					'title'       => __( 'Featured Content Manager', 'featured-content-manager' ),
+					'description' => 'This is a description of this panel',
+					'priority'    => 10,
+				)
+			);
 
 			foreach ( $featured_areas as $featured_area ) {
 				$featured_area_slug = sanitize_title( $featured_area );
 
-				$wp_customize->add_setting( $featured_area_slug, array(
-					'default' => '[]',
-					'sanitize_callback' => 'sanitize_text_field',
-				) );
+				$wp_customize->add_setting(
+					$featured_area_slug,
+					array(
+						'default'           => '[]',
+						'sanitize_callback' => 'sanitize_text_field',
+					)
+				);
 
-				$wp_customize->add_section( $featured_area_slug, array(
-					'title' => esc_html( $featured_area ),
-					'priority' => 1,
-					'panel' => 'featured_content_panel',
-				) );
+				$wp_customize->add_section(
+					$featured_area_slug,
+					array(
+						'title'    => esc_html( $featured_area ),
+						'priority' => 1,
+						'panel'    => 'featured_content_panel',
+					)
+				);
 
-				// Registers example_background control
+				// Registers example_background control.
 				$wp_customize->add_control(
 					new Featured_Area_Control(
 						$wp_customize,
 						$featured_area_slug,
 						array(
-							'label' => esc_html__( 'Featured Area', 'customizer-background-control' ),
+							'label'   => esc_html__( 'Featured Area', 'customizer-background-control' ),
 							'section' => $featured_area_slug,
 						)
 					)
@@ -52,11 +69,14 @@ class Customizer {
 		}
 	}
 
+	/**
+	 * Enque customizer scripts for Featured Content.
+	 */
 	public static function enqueue_customize_control() {
 		$fields = Featured_Content::get_fields();
 		wp_enqueue_media();
 		wp_enqueue_style( 'featured-area-style', plugins_url( 'dist/css/customizer.css', dirname( __FILE__ ) ), array(), '1', 'screen' );
-		wp_enqueue_script( 'whatwg-fetch-script', plugins_url( 'dist/js/fetch.js', dirname( __FILE__ ) ), array() );
+		wp_enqueue_script( 'whatwg-fetch-script', plugins_url( 'dist/js/fetch.js', dirname( __FILE__ ) ), array(), 1 );
 		wp_enqueue_script( 'nested-sortable', plugins_url( 'dist/js/jquery.mjs.nestedSortable.js', dirname( __FILE__ ) ), array( 'jquery' ) );
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 			wp_register_script( 'featured-area-script', plugins_url( 'dist/js/customizer.js', dirname( __FILE__ ) ), array( 'jquery', 'customize-controls', 'nested-sortable' ) );
