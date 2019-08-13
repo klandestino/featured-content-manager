@@ -7,7 +7,7 @@ let imagemin = require('gulp-imagemin');
 let babel = require('gulp-babel');
 
 gulp.task('script', function() {
-  return gulp.src('assets/js/*.js')
+  gulp.src('assets/js/*.js')
     .pipe(babel({
         presets: ['env']
     }))
@@ -17,7 +17,7 @@ gulp.task('script', function() {
     .pipe(gulp.dest('dist/js'));
     gulp.src('node_modules/nestedSortable/jquery.mjs.nestedSortable.js')
         .pipe(gulp.dest('dist/js'));
-    gulp.src('node_modules/whatwg-fetch/fetch.js')
+    return gulp.src('node_modules/whatwg-fetch/fetch.js')
         .pipe(gulp.dest('dist/js'));
 });
 
