@@ -75,25 +75,28 @@ class Customizer {
 	public static function enqueue_customize_control() {
 		$fields = Featured_Content::get_fields();
 		wp_enqueue_media();
-		wp_enqueue_style( 'featured-area-style', plugins_url( 'dist/css/customizer.css', dirname( __FILE__ ) ), array(), '1', 'screen' );
-		wp_enqueue_script( 'whatwg-fetch-script', plugins_url( 'dist/js/fetch.js', dirname( __FILE__ ) ), array(), 1 );
-		wp_enqueue_script( 'nested-sortable', plugins_url( 'dist/js/jquery.mjs.nestedSortable.js', dirname( __FILE__ ) ), array( 'jquery' ) );
+		wp_enqueue_style( 'featured-area-style', plugins_url( 'dist/css/customizer.css', dirname( __FILE__ ) ), array(), filemtime( get_theme_file_path( 'dist/css/customizer.css' ) ), 'screen' );
+		wp_enqueue_script( 'whatwg-fetch-script', plugins_url( 'dist/js/fetch.js', dirname( __FILE__ ) ), array(), filemtime( get_theme_file_path( 'dist/css/customizer.css' ) ), true );
+		wp_enqueue_script( 'nested-sortable', plugins_url( 'dist/js/jquery.mjs.nestedSortable.js', dirname( __FILE__ ) ), array( 'jquery' ), filemtime( get_theme_file_path( 'dist/css/customizer.css' ) ), true );
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			wp_register_script( 'featured-area-script', plugins_url( 'dist/js/customizer.js', dirname( __FILE__ ) ), array( 'jquery', 'customize-controls', 'nested-sortable' ) );
+			wp_register_script( 'featured-area-script', plugins_url( 'dist/js/customizer.js', dirname( __FILE__ ) ), array( 'jquery', 'customize-controls', 'nested-sortable' ), filemtime( get_theme_file_path( 'dist/css/customizer.css' ) ), true );
 		} else {
-			wp_register_script( 'featured-area-script', plugins_url( 'dist/js/customizer.min.js', dirname( __FILE__ ) ), array( 'jquery', 'customize-controls', 'nested-sortable' ) );
+			wp_register_script( 'featured-area-script', plugins_url( 'dist/js/customizer.min.js', dirname( __FILE__ ) ), array( 'jquery', 'customize-controls', 'nested-sortable' ), filemtime( get_theme_file_path( 'dist/css/customizer.css' ) ), true );
 		}
-		wp_localize_script( 'featured-area-script', 'wpFeaturedContentApiSettings', array(
-			'base' => 'featured-content-manager/v1/',
-			'fields' => wp_json_encode( $fields ),
-		) );
+		wp_localize_script(
+			'featured-area-script',
+			'wpFeaturedContentApiSettings',
+			array(
+				'base'   => 'featured-content-manager/v1/',
+				'fields' => wp_json_encode( $fields ),
+			)
+		);
 		wp_enqueue_script( 'featured-area-script' );
 	}
 
-	public function enqueue_customize_preview() {
-	}
-
-
+	/**
+	 * Function that prints out the setting accordion markup.
+	 */
 	public static function customize_print_accordion() {
 		?>
 			<div id="available-featured-items" class="accordion-container">
@@ -112,9 +115,12 @@ class Customizer {
 		<?php
 	}
 
+	/**
+	 * Function that prints WP Template markup for an item.
+	 */
 	public static function customize_print_featured_item_template() {
 		$fields = Featured_Content::get_fields();
-	?>
+		?>
 		<script type="text/html" id="tmpl-featured-item">
 			<# if ( data.post_title ) { #>
 			<div class="handle">
@@ -141,11 +147,14 @@ class Customizer {
 			<ol></ol>
 			<# } #>
 		</script>
-	<?php
+		<?php
 	}
 
+	/**
+	 * Function that prints WP Template markup for an search result item.
+	 */
 	public static function customize_print_search_result_item_template() {
-	?>
+		?>
 		<script type="text/html" id="tmpl-search-item">
 				<div class="search-item-bar">
 					<div class="search-item-handle">
@@ -159,9 +168,15 @@ class Customizer {
 					</div>
 				</div>
 		</script>
-	<?php
+		<?php
 	}
 
+	/**
+	 * Function that prints markup for setting inputs.
+	 *
+	 * @param array  $field A field setting array.
+	 * @param string $sign A sign string.
+	 */
 	public static function render_input( $field, $sign ) {
 		switch ( $field['type'] ) {
 			case 'textarea':
@@ -225,22 +240,11 @@ class Customizer {
 		}
 	}
 
-	public static function customize_init_customizer() {
-		/**
-		 * TAR BORT PGA BUGGAR!
-		 *
-		global $wpdb;
-		$wpdb->update( $wpdb->posts,
-			array(
-				'post_status' => 'trash',
-			), array(
-				'post_type' => 'featured-content',
-				'post_status' => 'draft',
-			)
-		);
-		*/
-	}
-
+	/**
+	 * Functions for saving customizer settings.
+	 *
+	 * @param WP_Customize_Manager $wp_customize A customizer class.
+	 */
 	public static function customize_save_customizer( $wp_customize ) {
 		global $wpdb;
 
@@ -248,33 +252,36 @@ class Customizer {
 
 		if ( $featured_areas ) {
 
-			// Delete all published featured content
-			$wpdb->delete( $wpdb->posts,
+			// Delete all published featured content.
+			$wpdb->delete(
+				$wpdb->posts,
 				array(
-					'post_type' => 'featured-content',
+					'post_type'   => 'featured-content',
 					'post_status' => 'publish',
 				)
 			);
 
-			// Delete all featured content in trash
-			$wpdb->delete( $wpdb->posts,
+			// Delete all featured content in trash.
+			$wpdb->delete(
+				$wpdb->posts,
 				array(
-					'post_type' => 'featured-content',
+					'post_type'   => 'featured-content',
 					'post_status' => 'trash',
 				)
 			);
 
 			foreach ( $featured_areas as $featured_area ) {
 				$featured_area_slug = sanitize_title( $featured_area );
-				$theme_mod = get_theme_mod( $featured_area_slug, array() );
+				$theme_mod          = get_theme_mod( $featured_area_slug, array() );
+
 				if ( $theme_mod ) {
 					$featured_items = json_decode( $theme_mod );
-					$converts = array();
-					$last_item = null;
+					$converts       = array();
+					$last_item      = null;
 
-					// Update all featured content in settings
+					// Update all featured content in settings.
 					foreach ( $featured_items as $featured_item ) {
-						$post_parent = ( 0 === $featured_item->post_parent ? 0 : $converts[ $featured_item->post_parent ] );
+						$post_parent                    = ( 0 === $featured_item->post_parent ? 0 : $converts[ $featured_item->post_parent ] );
 						$converts[ $featured_item->ID ] = self::publish_featured_item( $featured_item, $post_parent );
 					}
 				}
@@ -282,12 +289,18 @@ class Customizer {
 		}
 	}
 
+	/**
+	 * Functions for publishing a featured item.
+	 *
+	 * @param WP_Post $post A post object.
+	 * @param int     $post_parent A post id for the parent post.
+	 */
 	private static function publish_featured_item( $post, $post_parent ) {
-		$draft_id = $post->ID;
+		$draft_id          = $post->ID;
 		$post->post_parent = $post_parent;
-		$post->ID = null;
+		$post->ID          = null;
 		$post->post_status = 'publish';
-		$post_id = wp_insert_post( $post );
+		$post_id           = wp_insert_post( $post );
 
 		wp_set_post_terms( $post_id, $post->featured_area, 'featured-area', false );
 
