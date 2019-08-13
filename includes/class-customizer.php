@@ -75,13 +75,13 @@ class Customizer {
 	public static function enqueue_customize_control() {
 		$fields = Featured_Content::get_fields();
 		wp_enqueue_media();
-		wp_enqueue_style( 'featured-area-style', plugins_url( 'dist/css/customizer.css', dirname( __FILE__ ) ), array(), filemtime( get_theme_file_path( 'dist/css/customizer.css' ) ), 'screen' );
-		wp_enqueue_script( 'whatwg-fetch-script', plugins_url( 'dist/js/fetch.js', dirname( __FILE__ ) ), array(), filemtime( get_theme_file_path( 'dist/css/customizer.css' ) ), true );
-		wp_enqueue_script( 'nested-sortable', plugins_url( 'dist/js/jquery.mjs.nestedSortable.js', dirname( __FILE__ ) ), array( 'jquery' ), filemtime( get_theme_file_path( 'dist/css/customizer.css' ) ), true );
+		wp_enqueue_style( 'featured-area-style', plugins_url( 'dist/css/customizer.css', dirname( __FILE__ ) ), array(), filemtime( dirname(__DIR__, 1) . '/dist/css/customizer.css' ), 'screen' );
+		wp_enqueue_script( 'whatwg-fetch-script', plugins_url( 'dist/js/fetch.js', dirname( __FILE__ ) ), array(), filemtime( dirname(__DIR__, 1) . '/dist/js/fetch.js' ), true );
+		wp_enqueue_script( 'nested-sortable', plugins_url( 'dist/js/jquery.mjs.nestedSortable.js', dirname( __FILE__ ) ), array( 'jquery' ), filemtime( dirname(__DIR__, 1) . '/dist/js/jquery.mjs.nestedSortable.js' ), true );
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			wp_register_script( 'featured-area-script', plugins_url( 'dist/js/customizer.js', dirname( __FILE__ ) ), array( 'jquery', 'customize-controls', 'nested-sortable' ), filemtime( get_theme_file_path( 'dist/css/customizer.css' ) ), true );
+			wp_register_script( 'featured-area-script', plugins_url( 'dist/js/customizer.js', dirname( __FILE__ ) ), array( 'jquery', 'customize-controls', 'nested-sortable' ), filemtime( dirname(__DIR__, 1) . '/dist/js/customizer.js' ), true );
 		} else {
-			wp_register_script( 'featured-area-script', plugins_url( 'dist/js/customizer.min.js', dirname( __FILE__ ) ), array( 'jquery', 'customize-controls', 'nested-sortable' ), filemtime( get_theme_file_path( 'dist/css/customizer.css' ) ), true );
+			wp_register_script( 'featured-area-script', plugins_url( 'dist/js/customizer.min.js', dirname( __FILE__ ) ), array( 'jquery', 'customize-controls', 'nested-sortable' ), filemtime( dirname(__DIR__, 1) . '/dist/js/customizer.min.js' ), true );
 		}
 		wp_localize_script(
 			'featured-area-script',
