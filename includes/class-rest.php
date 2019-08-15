@@ -76,7 +76,7 @@ class Rest {
 		$args = array(
 			'post_type' => 'post',
 			'posts_per_page' => 10,
-			'post_status' => array('publish','future'),
+			'post_status' => apply_filters( 'fcm_post_status', [ 'publish', 'future' ] ),
 			's' => $search_term,
 		);
 
