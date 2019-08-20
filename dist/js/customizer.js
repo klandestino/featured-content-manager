@@ -364,7 +364,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				_createClass(FeaturedArea, [{
 					key: "loadSettings",
 					value: function loadSettings() {
-						var settings = JSON.parse(control.setting.get());
+						var settings = control.setting.get();
+						try {
+							settings = JSON.parse(settings);
+						} catch (e) {
+							settings = settings;
+						}
 						settings.sort(function (a, b) {
 							return a.menu_order - b.menu_order;
 						});

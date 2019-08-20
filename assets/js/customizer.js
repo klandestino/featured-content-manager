@@ -363,7 +363,12 @@
 				}
 
 				loadSettings() {
-					let settings = JSON.parse(control.setting.get());
+					let settings = control.setting.get();
+					try {
+						settings = JSON.parse(settings); 
+					} catch (e) {
+						settings = settings;
+					}
 					settings.sort((a, b) => a.menu_order - b.menu_order);
 					window.fetch(
 						wpApiSettings.root +
