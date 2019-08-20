@@ -252,6 +252,33 @@ class Rest {
 
 		// If request contains more than one post loop through.
 		if ( isset( $data->settings ) && is_array( $data->settings ) ) {
+
+			// Delete all drafted featured content in this area that is not included in settings.
+			$query = new \WP_Query(
+				array(
+					'post_type'      => 'featured-content',
+					'post_status'    => 'draft',
+					'post__not_in'   => wp_list_pluck( $data->settings, 'ID' ),
+					'tax_query'      => array(
+						array(
+							'taxonomy' => 'featured-area',
+							'field'    => 'slug',
+							'terms'    => $data->settings[0]->featured_area,
+
+						),
+					),
+					'fields'         => 'ids',
+					'posts_per_page' => 100,
+				)
+			);
+			if ( $query->have_posts() ) {
+				while ( $query->have_posts() ) {
+					$query->the_post();
+					wp_delete_post( get_the_ID(), true );
+				}
+				wp_reset_postdata();
+			}
+
 			foreach ( $data->settings as $post_data ) {
 				$result[] = self::create_featured_content( $post_data );
 			}
