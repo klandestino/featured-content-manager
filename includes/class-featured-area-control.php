@@ -8,19 +8,26 @@
 
 namespace Featured_Content_Manager;
 
+/**
+ * Class extending WP_Customize_Control for Area Control in customizer.
+ */
 class Featured_Area_Control extends \WP_Customize_Control {
+	/**
+	 * Class public variables.
+	 *
+	 * @var string $type The taxonomy type.
+	 */
 	public $type = 'featured-area';
 
-	public function to_json() {
-		parent::to_json();
-	}
-
+	/**
+	 * Extending content_template function.
+	 */
 	public function content_template() {
 		parent::content_template();
-	?>
+		?>
 		<ol id={{data.section}} class="featured-area"></ol>
 		<button class="add-featured-item button">Lägg till</button>
 		<div class="search-panel"></div>
-	<?php
+		<?php
 	}
 }
