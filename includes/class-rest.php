@@ -250,8 +250,8 @@ class Rest {
 		// Populate result with featured content.
 		$result = array();
 
-		// If request contains more than one post loop through.
-		if ( isset( $data->settings ) && is_array( $data->settings ) ) {
+		// If request contains more than one post loop through ELSE there is a new item created.
+		if ( isset( $data->settings ) && is_array( $data->settings ) && ! empty( $data->settings ) ) {
 
 			// Delete all drafted featured content in this area that is not included in settings.
 			$query = new \WP_Query(
@@ -283,13 +283,13 @@ class Rest {
 				$result[] = self::create_featured_content( $post_data );
 			}
 			return new \WP_REST_Response( $result, 200 );
-		} else {
+		} elseif ( isset( $data->obj ) ) {
 			$result[] = self::create_featured_content( $data->obj );
 			return new \WP_REST_Response( $result, 200 );
 		}
 
 		// If something goes wrong return response error.
-		return new \WP_REST_Response( 'ERROR', 200 );
+		return new \WP_REST_Response( array(), 200 );
 	}
 
 	/**
