@@ -27,9 +27,7 @@ Dessa saker finns kvar att göra
 * ✓ Skapa rest end point som skapar featured item utifrån customizerns datamodel (och duplicerar posten)
 * ✓ Ser till att customizern skiljer på Create item och Add item (skapar featured item, lägger till den grafiskt)
 * ✓ Skapar Featured items vid sparning utifrån det som finns i customizerns setting
-* ☐ Skapa funktion för att ge tillbaka WP Query
-* ☐ Fixa thumbnail media
-* ☐ Lägg till tag/category (select) som variabel
-* ☐ RENSA I JS
+* ✓ Visa tio senaste under sök när en ska lägga till
+* ✓ Skapa funktion för att ge tillbaka WP Query
+* ☐ Refacturing av JavaScript
 * ☐ Refacturing av FCM (publika funktioner/privata/vilken klass/delade funktioner osv)
-* ☐ Visa tio senaste under sök när en ska lägga till
