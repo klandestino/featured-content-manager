@@ -31,3 +31,4 @@ Dessa saker finns kvar att göra
 * ✓ Skapa funktion för att ge tillbaka WP Query
 * ☐ Refacturing av JavaScript
 * ☐ Refacturing av FCM (publika funktioner/privata/vilken klass/delade funktioner osv)
+* ☐ Hindra tillägg av item i area där item redan finns, vore så nice. :)
