@@ -2,15 +2,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Featured Content Manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-04-04 00:11+0200\n"
-"PO-Revision-Date: 2018-04-04 00:11+0200\n"
+"POT-Creation-Date: 2019-08-22 14:12+0200\n"
+"PO-Revision-Date: 2019-08-22 14:14+0200\n"
 "Last-Translator: Jesper Nilsson <jesper@klandestino.se>\n"
 "Language-Team: Klandestino AB <kontakt@klandestino.se>\n"
 "Language: sv_SE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 2.2.3\n"
 "X-Poedit-Basepath: ..\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-KeywordsList: __;_e;_e\n"
@@ -20,62 +20,71 @@ msgstr ""
 "X-Poedit-SearchPath-3: includes/class-featured-content.php\n"
 "X-Poedit-SearchPath-4: includes/class-featured-query.php\n"
 "X-Poedit-SearchPath-5: includes/class-rest.php\n"
+"X-Poedit-SearchPath-6: assets/js/customizer.js\n"
 
-#: includes/class-customizer.php:21
+#: assets/js/customizer.js:329
+msgid "This post already exist in the selected featured area!"
+msgstr "Detta inlägg finns redan i det valda området!"
+
+#: includes/class-customizer.php:31
 msgid "Featured Content Manager"
 msgstr "Hantering av Utvalt Innehåll"
 
-#: includes/class-customizer.php:82 includes/class-featured-content.php:87
+#: includes/class-customizer.php:145 includes/class-customizer.php:146
+#: includes/class-featured-content.php:104
 msgid "Search Featured Items"
 msgstr "Sök utvalt innehåll"
 
-#: includes/class-customizer.php:83
+#: includes/class-customizer.php:147
 msgid "The search results will be updated as you type."
 msgstr "Sökresultatet kommer uppdateras när du börjar skriva."
 
-#: includes/class-customizer.php:88
+#: includes/class-customizer.php:152
 msgid "No results found."
 msgstr "Tyvärr hittades ingenting."
 
-#: includes/class-customizer.php:102
+#: includes/class-customizer.php:169
 msgid "Edit featured item"
 msgstr "Ändra"
 
-#: includes/class-customizer.php:115
+#: includes/class-customizer.php:182
 msgid "Remove"
 msgstr "Ta bort"
 
-#: includes/class-customizer.php:136
+#: includes/class-customizer.php:206
 msgid "Add to featured area"
 msgstr "Skapa nytt anpassat område"
 
-#: includes/class-featured-content.php:83
+#: includes/class-featured-content.php:100
 msgid "Add New Featured Item"
 msgstr "Lägg till"
 
-#: includes/class-featured-content.php:84
+#: includes/class-featured-content.php:101
 msgid "Edit Featured Item"
 msgstr "Ändra"
 
-#: includes/class-featured-content.php:85
+#: includes/class-featured-content.php:102
 msgid "New Featured Item"
 msgstr "Nytt område"
 
-#: includes/class-featured-content.php:86
+#: includes/class-featured-content.php:103
 msgid "View Featured Item"
 msgstr "Se utvalt innehåll"
 
-#: includes/class-featured-content.php:88
+#: includes/class-featured-content.php:105
 msgid "No Featured Items found"
 msgstr "Inget utvalt innehåll hittades"
 
-#: includes/class-featured-content.php:89
+#: includes/class-featured-content.php:106
 msgid "No Featured Items found in Trash"
 msgstr "Inget utvalt innehåll hittades i papperskorgen"
 
-#: includes/class-featured-content.php:97
+#: includes/class-featured-content.php:115
 msgid "Featured Area"
 msgstr "Utvalt område"
+
+#~ msgid "Error!"
+#~ msgstr "Felmeddelande!"
 
 #, fuzzy
 #~| msgid "Search Featured Items"

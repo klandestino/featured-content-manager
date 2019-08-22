@@ -5,6 +5,7 @@
 				container = this.container[0],
 				areaContainer = container.querySelector("ol.featured-area"),
 				addItemButton = container.querySelector(".add-featured-item");
+			const { __, _x, _n, _nx } = wp.i18n;
 			let featuredArea,
 				itemObjects = new Map(),
 				timer,
@@ -316,6 +317,23 @@
 										.appendChild(item)
 										.addEventListener("click", event => {
 											obj.featured_area = this.featured_area;
+
+											// Chech if post already exist in this featured area.
+											if ( featuredArea.doesExist(obj) ) {
+												wp.customize.notifications.add(
+													'error',
+													new wp.customize.Notification( 
+														'error',
+														{
+															dismissible: true,
+															message: __( 'This post already exist in the selected featured area!', 'featured-content-manager' ),
+															type: 'error'
+														}
+													)
+												);
+												return;
+											}
+
 											window.fetch(
 												wpApiSettings.root +
 													wpFeaturedContentApiSettings.base +
@@ -447,6 +465,16 @@
 							obj.parent_id ? obj.parent_id : 0
 						);
 					});
+				}
+
+				doesExist( obj ) {
+					let result = false;
+					itemObjects.forEach(item => {
+						if(parseInt(obj.ID) === parseInt(item.postData.original_post_id)) {
+							result = true;
+						}
+					});
+					return result;
 				}
 
 				toggleSearchPanel(event) {

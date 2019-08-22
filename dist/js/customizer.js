@@ -11,6 +11,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 			    container = this.container[0],
 			    areaContainer = container.querySelector("ol.featured-area"),
 			    addItemButton = container.querySelector(".add-featured-item");
+			var _wp$i18n = wp.i18n,
+			    __ = _wp$i18n.__,
+			    _x = _wp$i18n._x,
+			    _n = _wp$i18n._n,
+			    _nx = _wp$i18n._nx;
+
 			var featuredArea = void 0,
 			    itemObjects = new Map(),
 			    timer = void 0,
@@ -316,6 +322,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 									document.querySelector("#available-featured-items-list").appendChild(item).addEventListener("click", function (event) {
 										obj.featured_area = _this6.featured_area;
+
+										// Chech if post already exist in this featured area.
+										if (featuredArea.doesExist(obj)) {
+											wp.customize.notifications.add('error', new wp.customize.Notification('error', {
+												dismissible: true,
+												message: __('This post already exist in the selected featured area!', 'featured-content-manager'),
+												type: 'error'
+											}));
+											return;
+										}
+
 										window.fetch(wpApiSettings.root + wpFeaturedContentApiSettings.base + "items", {
 											method: "POST",
 											headers: {
@@ -439,6 +456,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 							item.setPostData("menu_order", index);
 							item.setPostData("post_parent", obj.parent_id ? obj.parent_id : 0);
 						});
+					}
+				}, {
+					key: "doesExist",
+					value: function doesExist(obj) {
+						var result = false;
+						itemObjects.forEach(function (item) {
+							if (parseInt(obj.ID) === parseInt(item.postData.original_post_id)) {
+								result = true;
+							}
+						});
+						return result;
 					}
 				}, {
 					key: "toggleSearchPanel",
