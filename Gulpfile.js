@@ -34,9 +34,9 @@ gulp.task('images', function() {
 });
 
 gulp.task('watch', function() {
-    gulp.watch('assets/scss/**/*.scss', ['style']);
-    gulp.watch('assets/js/*.js', ['script']);
-    gulp.watch('assets/images/*', ['images']);
+    gulp.watch('assets/scss/**/*.scss', gulp.series('style'));
+    gulp.watch('assets/js/*.js', gulp.series('script'));
+    gulp.watch('assets/images/*', gulp.series('images'));
 });
 
 gulp.task('default', gulp.series(['script','style','images']));
