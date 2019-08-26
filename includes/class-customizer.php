@@ -54,7 +54,6 @@ class Customizer {
 					)
 				);
 
-				// Registers example_background control.
 				$wp_customize->add_control(
 					new Featured_Area_Control(
 						$wp_customize,
@@ -286,8 +285,6 @@ class Customizer {
 	 * @param WP_Customize_Manager $wp_customize A customizer class.
 	 */
 	public static function customize_save_customizer( $wp_customize ) {
-		global $wpdb;
-
 		$featured_areas = Featured_Content::get_areas();
 
 		if ( $featured_areas ) {
@@ -317,13 +314,10 @@ class Customizer {
 
 				if ( $theme_mod ) {
 					$featured_items = json_decode( $theme_mod );
-					$converts       = array();
-					$last_item      = null;
 
 					// Update all featured content in settings.
 					foreach ( $featured_items as $featured_item ) {
-						$post_parent                    = ( 0 === $featured_item->post_parent ? 0 : $converts[ $featured_item->post_parent ] );
-						$converts[ $featured_item->ID ] = self::publish_featured_item( $featured_item, $post_parent );
+						self::publish_featured_item( $featured_item, $featured_item->post_parent );
 					}
 				}
 			}
@@ -344,11 +338,6 @@ class Customizer {
 		$post_id           = wp_insert_post( $post );
 
 		wp_set_post_terms( $post_id, $post->featured_area, 'featured-area', false );
-
-		if ( get_post_meta( $draft_id, '_thumbnail_id', true ) ) :
-			update_post_meta( $post_id, 'thumbnail_id', get_post_meta( $draft_id, '_thumbnail_id', true ) );
-		endif;
-
 		update_post_meta( $post_id, 'original_post_id', get_post_meta( $draft_id, 'original_post_id', true ) );
 
 		$org_post_thumbnail = get_post_thumbnail_id( $draft_id );
