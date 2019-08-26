@@ -309,7 +309,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 								item.remove();
 							});
 
-							window.fetch(wpApiSettings.root + wpFeaturedContentApiSettings.base + "posts?s=" + _search).then(function (data) {
+							window.fetch(wpApiSettings.root + wpFeaturedContentApiSettings.base + "posts?s=" + _search, {
+								method: "GET",
+								headers: {
+									Accept: "application/json",
+									"Content-Type": "application/json",
+									"X-WP-Nonce": wpApiSettings.nonce
+								},
+								credentials: "same-origin"
+							}).then(function (data) {
 								return data.json();
 							}).then(function (data) {
 								body.classList.remove("searching");

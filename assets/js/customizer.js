@@ -294,7 +294,19 @@
 							wpApiSettings.root +
 								wpFeaturedContentApiSettings.base +
 								"posts?s=" +
-								search
+								search,
+							{
+								method: "GET",
+								headers: {
+									Accept:
+										"application/json",
+									"Content-Type":
+										"application/json",
+									"X-WP-Nonce":
+										wpApiSettings.nonce
+								},
+								credentials: "same-origin",
+							}
 						)
 							.then(data => data.json())
 							.then(data => {
