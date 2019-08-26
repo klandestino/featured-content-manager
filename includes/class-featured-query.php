@@ -18,12 +18,12 @@ class Featured_Query extends WP_Query {
 	public function __construct( $args = array() ) {
 		$args = wp_parse_args(
 			array(
-				'numberposts' => -1,
-				'post_type'   => 'featured-content',
-				'post_parent' => 0,
-				'orderby'     => 'menu_order',
-				'order'       => 'ASC',
-				'post_status' => ( is_customize_preview() ? 'draft' : 'publish' ),
+				'posts_per_page' => -1,
+				'post_type'      => 'featured-content',
+				'post_parent'    => 0,
+				'orderby'        => 'menu_order',
+				'order'          => 'ASC',
+				'post_status'    => ( is_customize_preview() ? 'draft' : 'publish' ),
 			),
 			$args
 		);
