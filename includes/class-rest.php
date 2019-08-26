@@ -26,11 +26,12 @@ class Rest {
 			'/' . $posts,
 			array(
 				array(
-					'methods'  => \WP_REST_Server::READABLE,
-					'callback' => array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array(
 						'Featured_Content_Manager\Rest',
 						'search_posts',
 					),
+					'permission_callback' => array( 'Featured_Content_Manager\Rest', 'check_user_permission' ),
 				),
 			)
 		);
@@ -132,11 +133,7 @@ class Rest {
 		// If featured content already exist make sure its a draft and return it
 		// Else make a copy of the original post and return the copy.
 		if ( 'featured-content' === get_post_type( $post ) ) {
-			if ( false === get_post_status( $post->ID ) ) {
-				return self::create_featured_content_from_post( $post, $post->original_post_id, 'draft' );
-			} else {
-				return self::update_featured_content( $post );
-			}
+			return self::update_featured_content( $post );
 		} else {
 			return self::create_featured_content_from_post( $post, $post->ID, 'draft' );
 		}
@@ -221,10 +218,6 @@ class Rest {
 		$result   = wp_insert_post( $new_post );
 
 		add_post_meta( $result, 'original_post_id', $org_post_id );
-
-		if ( get_post_meta( $org_post_id, '_thumbnail_id', true ) ) {
-			add_post_meta( $result, '_thumbnail_id', get_post_meta( $org_post_id, '_thumbnail_id', true ) );
-		}
 		wp_set_post_terms( $result, $post->featured_area, 'featured-area', false );
 
 		// If orgininal post has thumbnail, set same thumbnail for featured item.
