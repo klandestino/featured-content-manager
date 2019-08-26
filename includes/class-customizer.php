@@ -292,23 +292,24 @@ class Customizer {
 
 		if ( $featured_areas ) {
 
-			// Delete all published featured content.
-			$wpdb->delete(
-				$wpdb->posts,
+			// Delete all published featured content posts.
+			$query = new \WP_Query(
 				array(
-					'post_type'   => 'featured-content',
-					'post_status' => 'publish',
+					'post_type'      => 'featured-content',
+					'post_status'    => [ 'publish', 'trash' ],
+					'fields'         => 'ids',
+					'posts_per_page' => 500,
 				)
 			);
-
-			// Delete all featured content in trash.
-			$wpdb->delete(
-				$wpdb->posts,
-				array(
-					'post_type'   => 'featured-content',
-					'post_status' => 'trash',
-				)
-			);
+			if ( $query->have_posts() ) {
+				wp_defer_term_counting( true );
+				while ( $query->have_posts() ) {
+					$query->the_post();
+					wp_delete_post( get_the_ID(), true );
+				}
+				wp_reset_postdata();
+				wp_defer_term_counting( false );
+			}
 
 			foreach ( $featured_areas as $featured_area ) {
 				$featured_area_slug = sanitize_title( $featured_area );
