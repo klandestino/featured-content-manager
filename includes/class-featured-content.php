@@ -70,7 +70,7 @@ class Featured_Content {
 	public static function get_areas() {
 		$areas = [];
 		$args  = get_theme_support( 'featured-content-manager' )[0];
-		if ( $args['featured_areas'] ) {
+		if ( isset( $args['featured_areas'] ) ) {
 			foreach ( $args['featured_areas'] as $area ) {
 				$areas[] = $area;
 			}
