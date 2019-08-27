@@ -314,10 +314,12 @@ class Customizer {
 
 				if ( $theme_mod ) {
 					$featured_items = json_decode( $theme_mod );
+					$converts       = array();
 
 					// Update all featured content in settings.
 					foreach ( $featured_items as $featured_item ) {
-						self::publish_featured_item( $featured_item, $featured_item->post_parent );
+						$post_parent                    = ( 0 === $featured_item->post_parent ? 0 : $converts[ $featured_item->post_parent ] );
+						$converts[ $featured_item->ID ] = self::publish_featured_item( $featured_item, $post_parent );
 					}
 				}
 			}

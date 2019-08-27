@@ -257,7 +257,6 @@ class Rest {
 							'taxonomy' => 'featured-area',
 							'field'    => 'slug',
 							'terms'    => $data->settings[0]->featured_area,
-
 						),
 					),
 					'fields'         => 'ids',
