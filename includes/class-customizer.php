@@ -314,12 +314,21 @@ class Customizer {
 
 				if ( $theme_mod ) {
 					$featured_items = json_decode( $theme_mod );
-					$converts       = array();
+					$old_to_new_id  = array();
 
-					// Update all featured content in settings.
+					/**
+					 * Update all featured content in settings.
+					 *
+					 * We storing the new ID as a value where the new published post id is
+					 * the key in $old_to_new_id. So we as fast as posible kan change the
+					 * old post_parent to the new one.
+					 */
 					foreach ( $featured_items as $featured_item ) {
-						$post_parent                    = ( 0 === $featured_item->post_parent ? 0 : $converts[ $featured_item->post_parent ] );
-						$converts[ $featured_item->ID ] = self::publish_featured_item( $featured_item, $post_parent );
+						// If the post has a parent we fetches the new one from $old_to_new_id.
+						$post_parent = ( 0 === $featured_item->post_parent ? 0 : $old_to_new_id[ $featured_item->post_parent ] );
+
+						// Publish the featured item and store the new ID in $old_to_new_id.
+						$old_to_new_id[ $featured_item->ID ] = self::publish_featured_item( $featured_item, $post_parent );
 					}
 				}
 			}
