@@ -42,6 +42,24 @@ ol.featured-area {
 		margin: 0;
 		padding: 0;
 
+		&.future {
+			.handle {
+				.featured-item-title {
+					padding-left: 20px;
+				}
+
+				&:before {
+					content: "\f469";
+					position: absolute;
+					left: 9px;
+					top: 11px;
+					display: block;
+					height: 20px;
+					font: 400 20px/1.05 dashicons;
+				}
+			}
+		}
+
 		.handle {
 			position: relative;
 			display: block;
@@ -81,6 +99,13 @@ ol.featured-area {
 				top: 0;
 				right: 0;
 				z-index: 1;
+			}
+
+			.featured-item-title {
+				display: block;
+				line-height: 20px;
+
+				font-weight: 600;
 			}
 
 			.featured-item-edit {
@@ -363,6 +388,14 @@ ol.featured-area {
 						}
 					}
 			    }
+
+			    &.future {
+			    	.search-item-handle {
+			    		.item-add:before {
+							content: "\f469" !important;
+						}
+					}
+				}
 			}
 	    }
 

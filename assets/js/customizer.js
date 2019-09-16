@@ -29,6 +29,7 @@
 						featuredTtemTemplate = wp.template("featured-item");
 					if (!item) {
 						item = document.createElement("li");
+						item.classList.add(this.postData.original_post_status);
 						item.id = "item_" + this.key;
 						item.innerHTML = featuredTtemTemplate(this.postData); // WP templating the markup
 						item
