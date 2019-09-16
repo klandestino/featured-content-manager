@@ -199,7 +199,7 @@ class Customizer {
 		<script type="text/html" id="tmpl-search-item">
 				<div class="search-item-bar {{data.post_status}}">
 					<div class="search-item-handle">
-						<span class="search-type" aria-hidden="true">{{data.post_type}}</span>
+						<span class="search-time" aria-hidden="true">{{data.post_human_time}}</span>
 						<span class="search-title" aria-hidden="true">
 							<span class="search-item-title">{{data.post_title}}</span>
 						</span>
@@ -392,7 +392,8 @@ class Customizer {
 		echo '<style>
 		ol.featured-area li.future .handle,
 		#available-featured-items .accordion-section-content .search-item-tpl .future .search-item-handle,
-		#available-featured-items .accordion-section-content .search-item-tpl .future .search-item-handle .item-add{
+		#available-featured-items .accordion-section-content .search-item-tpl .future .search-item-handle .search-time,
+		#available-featured-items .accordion-section-content .search-item-tpl .future .search-item-handle .item-add {
 			color: ' . esc_html( $text_color ) . ' !important;
 		} 
 		</style>';

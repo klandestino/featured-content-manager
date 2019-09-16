@@ -117,6 +117,7 @@ class Rest {
 		// Loop through search result to trim and copy post excerpt to the post content.
 		foreach ( $posts as $post ) {
 			$post->post_content = wp_strip_all_tags( wp_trim_words( get_the_excerpt( $post->ID ) ) );
+			$post               = self::populate_post_human_time( $post );
 		}
 
 		return new \WP_REST_Response( $posts, 200 );
@@ -393,6 +394,17 @@ class Rest {
 	private static function populate_original_post_status( $post ) {
 		$original_post_id           = get_post_meta( $post->ID, 'original_post_id', true );
 		$post->original_post_status = get_post_status( $original_post_id );
+		return $post;
+	}
+
+	/**
+	 * Populate post with human time formated time.
+	 *
+	 * @param WP_Post $post New post object.
+	 */
+	private static function populate_post_human_time( $post ) {
+		$post->post_human_time =  human_time_diff( get_the_time( 'U', $post ), current_time( 'timestamp' ) );
+		get_post_status( $original_post_id );
 		return $post;
 	}
 

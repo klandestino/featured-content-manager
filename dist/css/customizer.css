@@ -244,9 +244,9 @@ ol.featured-area {
             border-color: #999;
             z-index: 999;
             color: #0073aa; }
-            #available-featured-items .accordion-section-content .search-item-tpl .search-item-bar .search-item-handle:hover .search-type, #available-featured-items .accordion-section-content .search-item-tpl .search-item-bar .search-item-handle:hover .item-add {
+            #available-featured-items .accordion-section-content .search-item-tpl .search-item-bar .search-item-handle:hover .search-time, #available-featured-items .accordion-section-content .search-item-tpl .search-item-bar .search-item-handle:hover .item-add {
               color: #0073aa; }
-          #available-featured-items .accordion-section-content .search-item-tpl .search-item-bar .search-item-handle .search-type {
+          #available-featured-items .accordion-section-content .search-item-tpl .search-item-bar .search-item-handle .search-time {
             float: right;
             font-size: 12px;
             text-align: right;
