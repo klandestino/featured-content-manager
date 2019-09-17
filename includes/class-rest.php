@@ -114,13 +114,29 @@ class Rest {
 		$post_query = new \WP_Query( $args );
 		$posts      = $post_query->posts;
 
-		// Loop through search result to trim and copy post excerpt to the post content.
+		// Loop through search result to trim unneccesary post fields.
 		foreach ( $posts as $post ) {
-			$post->post_content = wp_strip_all_tags( wp_trim_words( get_the_excerpt( $post->ID ) ) );
-			$post               = self::populate_post_human_time( $post );
+			$post = self::prepare_post( $post );
+			$post = self::populate_post_human_time( $post );
 		}
 
 		return new \WP_REST_Response( $posts, 200 );
+	}
+
+	/**
+	 * Remove unneccesary fields from posts.
+	 * Makes for smaller rest responses and a more clean and fast theme_mods option.
+	 *
+	 * @param \WP_Post $post The post object to strip.
+	 */
+	private static function prepare_post( \WP_Post $post ): object {
+		$fields_to_unset = [ 'post_content', 'comment_status', 'ping_status', 'post_password', 'to_ping', 'pinged', 'post_modified', 'post_modified_gmt', 'post_content_filtered', 'guid', 'post_mime_type', 'comment_count', 'filter' ];
+		foreach ( $post as $key => $value ) {
+			if ( in_array( $key, $fields_to_unset, true ) ) {
+				unset( $post->$key );
+			}
+		}
+		return $post;
 	}
 
 	/**
@@ -237,7 +253,7 @@ class Rest {
 	/**
 	 * Create a featured item from saved settings.
 	 *
-	 * @param WP_REST_Request $request The post request.
+	 * @param \WP_REST_Request $request The post request.
 	 */
 	public static function create_featured_item( \WP_REST_Request $request ) {
 		// Get request body as JSON Object.
@@ -275,11 +291,11 @@ class Rest {
 			}
 
 			foreach ( $data->settings as $post_data ) {
-				$result[] = self::create_featured_content( $post_data );
+				$result[] = self::prepare_post( self::create_featured_content( $post_data ) );
 			}
 			return new \WP_REST_Response( $result, 200 );
 		} elseif ( isset( $data->obj ) ) {
-			$result[] = self::create_featured_content( $data->obj );
+			$result[] = self::prepare_post( self::create_featured_content( $data->obj ) );
 			return new \WP_REST_Response( $result, 200 );
 		}
 
@@ -320,6 +336,7 @@ class Rest {
 		$result = self::populate_original_post_status( $result );
 		$result = self::populate_taxonomies( $result );
 		$result = self::populate_thumbnail( $result );
+		$result = self::prepare_post( $result );
 
 		if ( $result ) {
 			return new \WP_REST_Response( $result, 200 );
@@ -337,7 +354,9 @@ class Rest {
 		$result  = wp_delete_post( $post_id, true );
 
 		if ( $result ) {
-			return new \WP_REST_Response( get_post( $result ), 200 );
+			$result = get_post( $result );
+			$result = self::prepare_post( $result );
+			return new \WP_REST_Response( $result, 200 );
 		}
 		return new \WP_REST_Response( 'ERROR', 500 );
 	}
