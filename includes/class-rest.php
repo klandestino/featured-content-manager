@@ -117,6 +117,7 @@ class Rest {
 		// Loop through search result to trim unneccesary post fields.
 		foreach ( $posts as $post ) {
 			$post = self::prepare_post( $post );
+			$post = self::populate_post_human_time( $post );
 		}
 
 		return new \WP_REST_Response( $posts, 200 );
@@ -170,6 +171,7 @@ class Rest {
 		if ( ! is_wp_error( $result ) ) {
 			$result = get_post( $result );
 			$result = self::populate_original_post_id( $result );
+			$result = self::populate_original_post_status( $result );
 			$result = self::populate_taxonomies( $result );
 			return self::populate_thumbnail( $result );
 		}
@@ -243,6 +245,7 @@ class Rest {
 		}
 		$result = get_post( $result );
 		$result = self::populate_original_post_id( $result );
+		$result = self::populate_original_post_status( $result );
 		$result = self::populate_taxonomies( $result );
 		return self::populate_thumbnail( $result );
 	}
@@ -330,6 +333,7 @@ class Rest {
 
 		$result = get_post( $result );
 		$result = self::populate_original_post_id( $result );
+		$result = self::populate_original_post_status( $result );
 		$result = self::populate_taxonomies( $result );
 		$result = self::populate_thumbnail( $result );
 		$result = self::prepare_post( $result );
@@ -399,6 +403,28 @@ class Rest {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Populate posts original post status.
+	 *
+	 * @param WP_Post $post New post object.
+	 */
+	private static function populate_original_post_status( $post ) {
+		$original_post_id           = get_post_meta( $post->ID, 'original_post_id', true );
+		$post->original_post_status = get_post_status( $original_post_id );
+		return $post;
+	}
+
+	/**
+	 * Populate post with human time formated time.
+	 *
+	 * @param WP_Post $post New post object.
+	 */
+	private static function populate_post_human_time( $post ) {
+		$post->post_human_time =  human_time_diff( get_the_time( 'U', $post ), current_time( 'timestamp' ) );
+		get_post_status( $original_post_id );
+		return $post;
 	}
 
 	/**

@@ -163,7 +163,9 @@ class Customizer {
 		<script type="text/html" id="tmpl-featured-item">
 			<# if ( data.post_title ) { #>
 			<div class="handle">
-				{{data.post_title}} 
+				<span class="featured-item-title">
+					{{data.post_title}}
+				</span>
 				<button type="button" class="button-link featured-item-edit" aria-expanded="false">
 					<span class="screen-reader-text"><?php echo esc_html( __( 'Edit featured item', 'featured-content-manager' ) ); ?>: {{data.post_title}}</span><span class="toggle-indicator" aria-hidden="true"></span>
 				</button>
@@ -195,9 +197,9 @@ class Customizer {
 	public static function customize_print_search_result_item_template() {
 		?>
 		<script type="text/html" id="tmpl-search-item">
-				<div class="search-item-bar">
+				<div class="search-item-bar {{data.post_status}}">
 					<div class="search-item-handle">
-						<span class="search-type" aria-hidden="true">{{data.post_type}}</span>
+						<span class="search-time" aria-hidden="true">{{data.post_human_time}}</span>
 						<span class="search-title" aria-hidden="true">
 							<span class="search-item-title">{{data.post_title}}</span>
 						</span>
@@ -289,25 +291,6 @@ class Customizer {
 
 		if ( $featured_areas ) {
 
-			// Delete all published featured content posts.
-			$query = new \WP_Query(
-				array(
-					'post_type'      => 'featured-content',
-					'post_status'    => [ 'publish', 'trash' ],
-					'fields'         => 'ids',
-					'posts_per_page' => 500,
-				)
-			);
-			if ( $query->have_posts() ) {
-				wp_defer_term_counting( true );
-				while ( $query->have_posts() ) {
-					$query->the_post();
-					wp_delete_post( get_the_ID(), true );
-				}
-				wp_reset_postdata();
-				wp_defer_term_counting( false );
-			}
-
 			foreach ( $featured_areas as $featured_area ) {
 				$featured_area_slug = sanitize_title( $featured_area );
 				$theme_mod          = get_theme_mod( $featured_area_slug, array() );
@@ -317,18 +300,71 @@ class Customizer {
 					$old_to_new_id  = array();
 
 					/**
+					 * Loop through all currently published featured items in this area
+					 * and add them to an array keyed by original post id.
+					 * This is so that we can update that post below
+					 * instead of trashing all posts and then creating new ones.
+					 */
+					$query = new \WP_Query(
+						array(
+							'post_type'      => 'featured-content',
+							'post_status'    => [ 'publish', 'future' ],
+							'fields'         => 'ids',
+							'posts_per_page' => 200,
+							'tax_query'      => [
+								[
+									'taxonomy' => 'featured-area',
+									'terms'    => $featured_area_slug,
+									'field'    => 'slug',
+								],
+							],
+						)
+					);
+
+					$published_ids = [];
+					if ( $query->have_posts() ) {
+						while ( $query->have_posts() ) {
+							$query->the_post();
+							$published_ids[ get_post_meta( get_the_id(), 'original_post_id', true ) ] = get_the_id();
+						}
+						wp_reset_postdata();
+					}
+
+					/**
 					 * Update all featured content in settings.
 					 *
-					 * We storing the new ID as a value where the new published post id is
-					 * the key in $old_to_new_id. So we as fast as posible kan change the
+					 * We store the new ID as a value where the new published post id is
+					 * the key in $old_to_new_id. So we as fast as posible can change the
 					 * old post_parent to the new one.
 					 */
 					foreach ( $featured_items as $featured_item ) {
 						// If the post has a parent we fetches the new one from $old_to_new_id.
 						$post_parent = ( 0 === $featured_item->post_parent ? 0 : $old_to_new_id[ $featured_item->post_parent ] );
 
+						/**
+						 * Match if there already exists a published featured item in this area
+						 * with the same original_post_id. If so let's update that instead
+						 * of creating a new one.
+						 */
+						$featured_item->draft_id = $featured_item->ID;
+						$draft_original_post_id  = get_post_meta( $featured_item->draft_id, 'original_post_id', true );
+						if ( isset( $published_ids[ $draft_original_post_id ] ) ) {
+							$featured_item->ID = $published_ids[ $draft_original_post_id ];
+							unset( $published_ids[ $draft_original_post_id ] );
+						} else {
+							$featured_item->ID = null;
+						}
+
 						// Publish the featured item and store the new ID in $old_to_new_id.
 						$old_to_new_id[ $featured_item->ID ] = self::publish_featured_item( $featured_item, $post_parent );
+					}
+
+					/**
+					 * Delete all existing items in this area that didn't match
+					 * any of the newly published ones.
+					 */
+					foreach ( $published_ids as $published_id ) {
+						wp_delete_post( $published_id, true );
 					}
 				}
 			}
@@ -342,14 +378,13 @@ class Customizer {
 	 * @param int     $post_parent A post id for the parent post.
 	 */
 	private static function publish_featured_item( $post, $post_parent ) {
-		$draft_id           = $post->ID;
+		$draft_id           = $post->draft_id;
 		$post->post_parent  = $post_parent;
-		$post->ID           = null;
 		$post->post_status  = 'publish';
 		$post->post_content = get_post( $draft_id )->post_content;
 		$post_id            = wp_insert_post( $post );
 
-		wp_set_post_terms( $post_id, $post->featured_area, 'featured-area', false );
+    wp_set_post_terms( $post_id, $post->featured_area, 'featured-area', false );
 		update_post_meta( $post_id, 'original_post_id', get_post_meta( $draft_id, 'original_post_id', true ) );
 
 		$org_post_thumbnail = get_post_thumbnail_id( $draft_id );
@@ -368,5 +403,33 @@ class Customizer {
 		}
 
 		return $post_id;
+	}
+
+	/**
+	 * A functions that prints the user color scheme as CSS in header.
+	 */
+	public static function customizer_colors() {
+		global $_wp_admin_css_colors;
+
+		$color_scheme = get_user_option( 'admin_color' );
+
+		// It's possible to have a color scheme set that is no longer registered.
+		if ( empty( $_wp_admin_css_colors[ $color_scheme ] ) ) {
+			$color_scheme = 'fresh';
+		}
+
+		if ( ! empty( $_wp_admin_css_colors[ $color_scheme ] ) ) {
+			$text_color = $_wp_admin_css_colors[ $color_scheme ]->colors[2];
+		} else {
+			$text_color = '#222';
+		}
+		echo '<style>
+		ol.featured-area li.future .handle,
+		#available-featured-items .accordion-section-content .search-item-tpl .future .search-item-handle,
+		#available-featured-items .accordion-section-content .search-item-tpl .future .search-item-handle .search-time,
+		#available-featured-items .accordion-section-content .search-item-tpl .future .search-item-handle .item-add {
+			color: ' . esc_html( $text_color ) . ' !important;
+		} 
+		</style>';
 	}
 }
