@@ -130,7 +130,7 @@ class Rest {
 	 * @param \WP_Post $post The post object to strip.
 	 */
 	private static function prepare_post( \WP_Post $post ): object {
-		$fields_to_unset = [ 'post_content', 'comment_status', 'ping_status', 'post_password', 'to_ping', 'pinged', 'post_modified', 'post_modified_gmt', 'post_content_filtered', 'guid', 'post_mime_type', 'comment_count', 'filter' ];
+		$fields_to_unset = [ 'post_content', 'comment_status', 'ping_status', 'post_password', 'to_ping', 'pinged', 'post_modified', 'post_modified_gmt', 'post_content_filtered', 'guid', 'post_mime_type', 'comment_count' ];
 		foreach ( $post as $key => $value ) {
 			if ( in_array( $key, $fields_to_unset, true ) ) {
 				unset( $post->$key );
@@ -422,8 +422,7 @@ class Rest {
 	 * @param WP_Post $post New post object.
 	 */
 	private static function populate_post_human_time( $post ) {
-		$post->post_human_time =  human_time_diff( get_the_time( 'U', $post ), current_time( 'timestamp' ) );
-		get_post_status( $original_post_id );
+		$post->post_human_time = human_time_diff( get_the_time( 'U', $post ), current_time( 'timestamp' ) );
 		return $post;
 	}
 

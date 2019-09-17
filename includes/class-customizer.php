@@ -356,7 +356,7 @@ class Customizer {
 						}
 
 						// Publish the featured item and store the new ID in $old_to_new_id.
-						$old_to_new_id[ $featured_item->ID ] = self::publish_featured_item( $featured_item, $post_parent );
+						$old_to_new_id[ $featured_item->draft_id ] = self::publish_featured_item( $featured_item, $post_parent );
 					}
 
 					/**
