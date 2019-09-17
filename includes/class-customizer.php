@@ -342,11 +342,12 @@ class Customizer {
 	 * @param int     $post_parent A post id for the parent post.
 	 */
 	private static function publish_featured_item( $post, $post_parent ) {
-		$draft_id          = $post->ID;
-		$post->post_parent = $post_parent;
-		$post->ID          = null;
-		$post->post_status = 'publish';
-		$post_id           = wp_insert_post( $post );
+		$draft_id           = $post->ID;
+		$post->post_parent  = $post_parent;
+		$post->ID           = null;
+		$post->post_status  = 'publish';
+		$post->post_content = get_post( $draft_id )->post_content;
+		$post_id            = wp_insert_post( $post );
 
 		wp_set_post_terms( $post_id, $post->featured_area, 'featured-area', false );
 		update_post_meta( $post_id, 'original_post_id', get_post_meta( $draft_id, 'original_post_id', true ) );
