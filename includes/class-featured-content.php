@@ -26,11 +26,6 @@ class Featured_Content {
 						$fields['post_title']['display_name'] = 'Post title';
 						$fields['post_title']['type']         = 'input';
 						break;
-					case 'post_content':
-						$fields['post_content']['name']         = 'post_content';
-						$fields['post_content']['display_name'] = 'Post Content';
-						$fields['post_content']['type']         = 'textarea';
-						break;
 					case 'post_excerpt':
 						$fields['post_excerpt']['name']         = 'post_excerpt';
 						$fields['post_excerpt']['display_name'] = 'Post excerpt';
