@@ -163,7 +163,9 @@ class Customizer {
 		<script type="text/html" id="tmpl-featured-item">
 			<# if ( data.post_title ) { #>
 			<div class="handle">
-				{{data.post_title}} 
+				<span class="featured-item-title">
+					{{data.post_title}}
+				</span>
 				<button type="button" class="button-link featured-item-edit" aria-expanded="false">
 					<span class="screen-reader-text"><?php echo esc_html( __( 'Edit featured item', 'featured-content-manager' ) ); ?>: {{data.post_title}}</span><span class="toggle-indicator" aria-hidden="true"></span>
 				</button>
@@ -195,9 +197,9 @@ class Customizer {
 	public static function customize_print_search_result_item_template() {
 		?>
 		<script type="text/html" id="tmpl-search-item">
-				<div class="search-item-bar">
+				<div class="search-item-bar {{data.post_status}}">
 					<div class="search-item-handle">
-						<span class="search-type" aria-hidden="true">{{data.post_type}}</span>
+						<span class="search-time" aria-hidden="true">{{data.post_human_time}}</span>
 						<span class="search-title" aria-hidden="true">
 							<span class="search-item-title">{{data.post_title}}</span>
 						</span>
@@ -400,5 +402,33 @@ class Customizer {
 		}
 
 		return $post_id;
+	}
+
+	/**
+	 * A functions that prints the user color scheme as CSS in header.
+	 */
+	public static function customizer_colors() {
+		global $_wp_admin_css_colors;
+
+		$color_scheme = get_user_option( 'admin_color' );
+
+		// It's possible to have a color scheme set that is no longer registered.
+		if ( empty( $_wp_admin_css_colors[ $color_scheme ] ) ) {
+			$color_scheme = 'fresh';
+		}
+
+		if ( ! empty( $_wp_admin_css_colors[ $color_scheme ] ) ) {
+			$text_color = $_wp_admin_css_colors[ $color_scheme ]->colors[2];
+		} else {
+			$text_color = '#222';
+		}
+		echo '<style>
+		ol.featured-area li.future .handle,
+		#available-featured-items .accordion-section-content .search-item-tpl .future .search-item-handle,
+		#available-featured-items .accordion-section-content .search-item-tpl .future .search-item-handle .search-time,
+		#available-featured-items .accordion-section-content .search-item-tpl .future .search-item-handle .item-add {
+			color: ' . esc_html( $text_color ) . ' !important;
+		} 
+		</style>';
 	}
 }
