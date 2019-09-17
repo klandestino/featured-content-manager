@@ -306,7 +306,7 @@ class Customizer {
 					$query = new \WP_Query(
 						array(
 							'post_type'      => 'featured-content',
-							'post_status'    => 'publish',
+							'post_status'    => [ 'publish', 'future' ],
 							'fields'         => 'ids',
 							'posts_per_page' => 200,
 							'tax_query'      => [
