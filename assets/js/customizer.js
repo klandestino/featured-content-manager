@@ -7,43 +7,48 @@
 				addItemButton = container.querySelector(".add-featured-item");
 			const { __, _x, _n, _nx } = wp.i18n;
 			let featuredArea,
-				itemObjects = new Map(),
-				timer,
+				settings_timer,
 				search_timer,
 				timer_ms = 500;
 
 			class ListItem {
-				constructor(post) {
-					this.key = post.ID;
+				constructor(post, parent) {
+					this.id = post.id;
 					this.postData = post;
-					this.featured_area = control.id;
-					this.element_id = "item_" + post.ID;
+					this.element_id = "item_" + post.id;
+					this.parent = parent;
+					this.element = null;
 
-					// Add item element to list
+					// Add item element to ol list.
 					this.addItem();
 				}
 
-				// Create featured item from the Set and the DOM
+				// Create featured item element.
 				addItem() {
-					let item = document.getElementById(this.element_id),
-						featuredTtemTemplate = wp.template("featured-item");
-					if (!item) {
-						item = document.createElement("li");
-						item.classList.add(this.postData.original_post_status);
-						item.id = "item_" + this.key;
-						item.innerHTML = featuredTtemTemplate(this.postData); // WP templating the markup
-						item
+					let featuredItemTemplate = wp.template("featured-item");
+					this.element = document.getElementById(this.element_id);
+					if (!this.element) {
+						this.element = document.createElement("li");
+						this.element.classList.add(this.postData.post_status);
+						this.element.id = "item_" + this.id;
+						for(var attribute in this.postData ) {
+							this.element.setAttribute('data-' + attribute, this.postData[attribute]);
+						}
+						this.element.innerHTML = featuredItemTemplate(this.postData); // WP templating the markup.
+
+						// Add elemtents for all the settings.
+						this.element
 							.querySelector(".item-delete")
 							.addEventListener("click", event =>
 								this.deleteItem(event)
 							);
-						item
+						this.element
 							.querySelector(".handle")
 							.addEventListener("click", event =>
 								this.toggleItemEdit(event)
 							);
-						if (item.querySelector("input")) {
-							var inputs = item
+						if (this.element.querySelector("input")) {
+							var inputs = this.element
 								.querySelectorAll("input");
 							for (var i = 0; i < inputs.length; i++) {
 								inputs[i].addEventListener("keyup", event =>
@@ -51,8 +56,8 @@
 								);
 							}
 						}
-						if (item.querySelector(".featured-item-image-field-upload")) {
-							var buttons = item
+						if (this.element.querySelector(".featured-item-image-field-upload")) {
+							var buttons = this.element
 								.querySelectorAll(".featured-item-image-field-upload");
 							for (var x = 0; x < buttons.length; x++) {
 								buttons[x].addEventListener("click", event =>
@@ -60,8 +65,8 @@
 								);
 							}
 						}
-						if (item.querySelector(".featured-item-image-field-remove")) {
-							var remove = item
+						if (this.element.querySelector(".featured-item-image-field-remove")) {
+							var remove = this.element
 								.querySelectorAll(".featured-item-image-field-remove");
 							for (var y = 0; y < remove.length; y++) {
 								remove[y].addEventListener("click", event =>
@@ -69,79 +74,46 @@
 								);
 							}
 						}
-						if (item.querySelector("textarea")) {
-							item
+						if (this.element.querySelector("textarea")) {
+							this.element
 								.querySelector("textarea")
 								.addEventListener("keyup", event =>
 									this.updateItem(event)
 								);
 						}
-						if (item.querySelector("select")) {
-							item
+						if (this.element.querySelector("select")) {
+							this.element
 								.querySelector("select")
 								.addEventListener("change", event =>
 									this.updateItem(event)
 								);
 						}
 
-						// If item has parent add it to parent else add it last
-						if (this.postData.post_parent !== 0) {
+						// If the item has a parent the add its element as a child to the parent.
+						if (
+							typeof this.parent !== 'undefined'
+						) {
 							const parentItemOl = areaContainer.querySelector(
-								"#item_" + this.postData.post_parent + " ol"
+								"#item_" + this.parent + " ol"
 							);
-							parentItemOl.appendChild(item);
+							parentItemOl.appendChild(this.element);
 						} else {
-							var menu_order = ( areaContainer.querySelectorAll("li") ? areaContainer.querySelectorAll("li").length : 0 );
-							this.postData['menu_order'] = menu_order;
-							areaContainer.appendChild(item);
+							areaContainer.appendChild(this.element);
 						}
-						itemObjects.set(this.key, this);
+
+						// If item has parent add it to parent else add it last
+						if (
+							typeof this.postData.children === 'object'
+						) {
+							this.postData.children.forEach( child => {
+								new ListItem(child, this.id);
+							});
+						}
+
 					}
 				}
 
-				getPostData() {
-					this.postData.featured_area = this.featured_area;
-					return this.postData;
-				}
-
-				setPostData(key, val) {
-					this.postData[key] = val;
-					this.setSettings();
-				}
-
-				selectMedia(e) {
-					e.preventDefault();
-					var selector = $(e.target).parent( '.featured-item-image-field-container' );
-					var fcm_uploader = wp.media({
-		                title: 'Select or upload image',
-		                button: {
-		                    text: 'Set image'
-		                },
-		                multiple: false
-					}).on('select', () => {
-						var attachment = fcm_uploader.state().get('selection').first().toJSON();
-						var input = selector.find( 'input' );
-						selector.find( 'img' ).attr( 'src', attachment.url).show();
-						input.val(attachment.id);
-						selector.find('.featured-item-image-field-remove').show();
-						selector.find('.featured-item-image-field-upload').hide();
-						this.setPostData( input.attr('name'), attachment.id);
-					}).open();
-				}
-
-				removeMedia(e) {
-					e.preventDefault();
-					var selector = $(e.target).parent( '.featured-item-image-field-container' );
-					var input = selector.find( 'input' );
-					input.val('');
-					selector.find( 'img' ).attr( 'src', '#').hide();
-
-					selector.find('.featured-item-image-field-remove').hide();
-					selector.find('.featured-item-image-field-upload').show();
-
-					this.setPostData( input.attr('name'), '');
-				}
-
+				// Toggle the edit item view.
 				toggleItemEdit(event) {
 					event.preventDefault();
 					const item = document.getElementById(this.element_id);
@@ -155,25 +127,59 @@
 					}
 				}
 
+				// Select media.
+				selectMedia(e) {
+					e.preventDefault();
+					var selector = $(e.target).parent( '.featured-item-image-field-container' );
+					var fcm_uploader = wp.media({
+		                title: 'Select or upload image',
+		                button: {
+		                    text: 'Set image'
+		                },
+		                multiple: false
+					}).on('select', () => {
+						var attachment = fcm_uploader.state().get('selection').first().toJSON();
+						var input = selector.find( 'input' );
+						selector.find('img').attr( 'src', attachment.url).show();
+						input.val(attachment.id);
+						selector.find('.featured-item-image-field-remove').show();
+						selector.find('.featured-item-image-field-upload').hide();
+						this.setPostData(input.attr('name'), attachment.id);
+						this.setPostData(input.attr('name') + '_src', attachment.url);
+					}).open();
+				}
+
+				// Remove selected media.
+				removeMedia(e) {
+					e.preventDefault();
+					var selector = $(e.target).parent('.featured-item-image-field-container');
+					var input = selector.find('input');
+					input.val('');
+					selector.find('img').attr('src', '#').hide();
+
+					selector.find('.featured-item-image-field-remove').hide();
+					selector.find('.featured-item-image-field-upload').show();
+
+					this.setPostData(input.attr('name'), '');
+					this.setPostData(input.attr('name') + '_src', '');
+				}
+
+				// Set post data with the updated values.
 				updateItem(event) {
 					const key = event.target.name;
 					const val = event.target.value;
-					this.setPostData(key, val);
+					this.setPostData(event.target.name, event.target.value);
 				}
 
+				// Update item element data attributes with the new value and set the settings.
+				setPostData(key, val) {
+					this.element.setAttribute('data-' + key, val);
+					this.setSettings();
+				}
+
+				// Set the settings in customizer.
 				setSettings() {
 					featuredArea.setSettings();
-				}
-
-				// Returns an array of keys for items children
-				getChildren() {
-					let children = [];
-					itemObjects.forEach(item => {
-						let postData = item.getPostData();
-						if (postData.post_parent == this.key)
-							children.push(postData.ID);
-					});
-					return children;
 				}
 
 				// Delete featured item from the Set and the DOM
@@ -181,39 +187,8 @@
 					let item = areaContainer.querySelector(
 						"#" + this.element_id
 					);
-					if (item) {
-						let children = this.getChildren();
-						if (children.length !== 0) {
-							children.forEach(childID => {
-								let child = itemObjects.get(parseInt(childID));
-								child.deleteItem();
-							});
-						}
-						item.remove();
-					}
-
-					window.fetch(
-						wpApiSettings.root +
-							wpFeaturedContentApiSettings.base +
-							"items/" + this.key,
-						{
-							method: "DELETE",
-							headers: {
-								Accept:
-									"application/json",
-								"Content-Type":
-									"application/json",
-								"X-WP-Nonce":
-									wpApiSettings.nonce
-							},
-							credentials: "same-origin"
-						}
-					)
-					.then(data => data.json())
-					.then(data => {
-						itemObjects.delete(parseInt(this.key));
-						featuredArea.setSettings();
-					});
+					item.remove();
+					this.setSettings();
 				}
 			}
 
@@ -243,6 +218,7 @@
 					});
 				}
 
+				// Open the search panel.
 				open() {
 					const body = document.querySelector("body");
 					body.classList.add("adding-featured-items");
@@ -250,6 +226,7 @@
 					this.search('');
 				}
 
+				// Close the search panel.
 				close() {
 					const body = document.querySelector("body");
 					body.classList.remove("adding-featured-items");
@@ -257,9 +234,9 @@
 					this.clear();
 				}
 
+				// Toggle the search panel.
 				toggle() {
 					const body = document.querySelector("body");
-
 					if (body.classList.contains("adding-featured-items")) {
 						this.close();
 					} else {
@@ -267,6 +244,7 @@
 					}
 				}
 
+				// Clear the search field input.
 				clear() {
 					this.active = false;
 					document.getElementById("featured-items-search").value = "";
@@ -346,34 +324,7 @@
 												);
 												return;
 											}
-
-											window.fetch(
-												wpApiSettings.root +
-													wpFeaturedContentApiSettings.base +
-													"items",
-												{
-													method: "POST",
-													headers: {
-														Accept:
-															"application/json",
-														"Content-Type":
-															"application/json",
-														"X-WP-Nonce":
-															wpApiSettings.nonce
-													},
-													credentials: "same-origin",
-													body: JSON.stringify({
-														obj
-													})
-												}
-											)
-												.then(data => data.json())
-												.then(data => {
-													data.forEach(item => {
-														new ListItem(item);
-													});
-													featuredArea.setSettings();
-												});
+											new ListItem(obj);
 										});
 								});
 							});
@@ -389,10 +340,14 @@
 						this.toggleSearchPanel(event)
 					);
 
+					// Load the featured area settings from customizer.
+					this.loadSettings();
+
 					// Initialize nestledSortable
 					this.initSortable();
 				}
 
+				// Load the featured area settings from customizer.
 				loadSettings() {
 					let settings = control.setting.get();
 					try {
@@ -400,98 +355,43 @@
 					} catch (e) {
 						settings = settings;
 					}
-					settings.sort((a, b) => a.menu_order - b.menu_order);
-					window.fetch(
-						wpApiSettings.root +
-							wpFeaturedContentApiSettings.base +
-							"items",
-						{
-							method: "POST",
-							headers: {
-								Accept: "application/json",
-								"Content-Type": "application/json",
-								"X-WP-Nonce": wpApiSettings.nonce
-							},
-							credentials: "same-origin",
-							body: JSON.stringify({
-								settings
-							})
-						}
-					)
-						.then(data => data.json())
-						.then(data => {
-							data.forEach(item => {
-								if ( item != null )
-									new ListItem(item);
-							});
-							if( !!window.MSInputMethodContext && !!document.documentMode ) {
-								wp.customize.previewer.refresh();
-							}
-						});
+					settings.forEach(item => {
+						if ( item != null )
+							new ListItem(item);
+					});
 				}
 
+				// At the end of the timer set the settings in the customizer.
 				setSettings() {
-
-					clearTimeout(timer);
-					timer = setTimeout(() => {
-
+					clearTimeout(settings_timer);
+					settings_timer = setTimeout(() => {
 						let oldSettings = control.setting.get(),
-							newSettings = [];
-						itemObjects.forEach(item => {
-							newSettings.push(item.getPostData());
-						});
-						newSettings.sort((a, b) => a.menu_order - b.menu_order);
-						if (newSettings != oldSettings) {
-							control.setting.set(JSON.stringify(newSettings));
-
-							window.fetch(
-								wpApiSettings.root +
-									wpFeaturedContentApiSettings.base +
-									"settings",
-								{
-									method: "POST",
-									headers: {
-										Accept: "application/json",
-										"Content-Type": "application/json",
-										"X-WP-Nonce": wpApiSettings.nonce
-									},
-									credentials: "same-origin",
-									body: control.setting.get()
-								}
-							)
-								.then(function(data) {
-									wp.customize.previewer.refresh();
-								})
-								.then(data => {});
-						}
-
+						newSettings = $(areaContainer).nestedSortable(
+							"toHierarchy",
+							{ attribute: "id" }
+						);
+						control.setting.set(JSON.stringify(newSettings));
+						wp.customize.previewer.refresh();
 					}, timer_ms);
 				}
 
+				// Update order of the featured area.
 				updateOrder(array) {
-					let newItems = new Map();
-					array.forEach((obj, index) => {
-						let key = parseInt(obj.id);
-						let item = itemObjects.get(key);
-
-						item.setPostData("menu_order", index);
-						item.setPostData(
-							"post_parent",
-							obj.parent_id ? obj.parent_id : 0
-						);
-					});
+					this.setSettings();
 				}
 
+				// Check if the object exist as an element in the featured area.
 				doesExist( obj ) {
 					let result = false;
-					itemObjects.forEach(item => {
-						if(parseInt(obj.ID) === parseInt(item.postData.original_post_id)) {
-							result = true;
-						}
-					});
+					if (
+						areaContainer.querySelector('#item_' + obj.ID) != null
+					) {
+						result = true;
+					}
 					return result;
 				}
 
+				// Toggle the search panel.
 				toggleSearchPanel(event) {
 					event.preventDefault();
 					if (this.searchPanel) {
@@ -500,20 +400,6 @@
 						this.searchPanel = new FeaturedItemSearch();
 						this.searchPanel.toggle();
 					}
-				}
-
-				// Saves a new sticky item on localStorage.
-				addItem() {
-					event.preventDefault();
-					window.fetch(
-						wpApiSettings.root +
-							wpFeaturedContentApiSettings.base +
-							"items"
-					)
-						.then(data => data.json())
-						.then(data => {
-							new ListItem(data[0]);
-						});
 				}
 
 				// Initialize jQuery nestedSortable
@@ -528,7 +414,7 @@
 						placeholder: "placeholder",
 						stop: e => {
 							let array = $(areaContainer).nestedSortable(
-								"toArray",
+								"toHierarchy",
 								{ attribute: "id" }
 							);
 							this.updateOrder(array);
@@ -537,14 +423,8 @@
 				}
 			}
 
-			function menuOrder(a, b) {
-				if (a.menu_order < b.menu_order) return -1;
-				if (a.menu_order > b.menu_order) return 1;
-				return 0;
-			}
-
+			// Initiate the featured area and loat its settings.
 			featuredArea = new FeaturedArea();
-			featuredArea.loadSettings();
 		}
 	});
 

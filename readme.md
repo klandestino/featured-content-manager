@@ -24,11 +24,5 @@ add_theme_support( 'featured-content-manager',
 
 Dessa saker finns kvar att göra
 
-* ✓ Skapa rest end point som skapar featured item utifrån customizerns datamodel (och duplicerar posten)
-* ✓ Ser till att customizern skiljer på Create item och Add item (skapar featured item, lägger till den grafiskt)
-* ✓ Skapar Featured items vid sparning utifrån det som finns i customizerns setting
-* ✓ Visa tio senaste under sök när en ska lägga till
-* ✓ Skapa funktion för att ge tillbaka WP Query
-* ☐ Refacturing av JavaScript
-* ☐ Refacturing av FCM (publika funktioner/privata/vilken klass/delade funktioner osv)
-* ☐ Hindra tillägg av item i area där item redan finns, vore så nice. :)
+* ☐ Lägg till nivåer som inställnig i theme_support
+* ☐ Lägg till antal tillåtna inlägg som inställnig i theme_support
