@@ -173,6 +173,11 @@
 
 				// Update item element data attributes with the new value and set the settings.
 				setPostData(key, val) {
+					// Due to jQuerys odd memory system. We have to change the data attribute
+					// with jQuery and vanilla js setAttribute. The first line changes the 
+					// value in the jQuery memory som that the nestleSortable will be updated
+					// and the second line will update the DOM.
+					$(this.element).data(key, val);
 					this.element.setAttribute('data-' + key, val);
 					this.setSettings();
 				}
@@ -365,11 +370,10 @@
 				setSettings() {
 					clearTimeout(settings_timer);
 					settings_timer = setTimeout(() => {
-						let oldSettings = control.setting.get(),
-						newSettings = $(areaContainer).nestedSortable(
-							"toHierarchy",
-							{ attribute: "id" }
+						let newSettings = $(areaContainer).nestedSortable(
+							"toHierarchy"
 						);
+						console.log(newSettings);
 						control.setting.set(JSON.stringify(newSettings));
 						wp.customize.previewer.refresh();
 					}, timer_ms);

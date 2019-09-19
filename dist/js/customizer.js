@@ -193,6 +193,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				}, {
 					key: "setPostData",
 					value: function setPostData(key, val) {
+						// Due to jQuerys odd memory system. We have to change the data attribute
+						// with jQuery and vanilla js setAttribute. The first line changes the 
+						// value in the jQuery memory som that the nestleSortable will be updated
+						// and the second line will update the DOM.
+						$(this.element).data(key, val);
 						this.element.setAttribute('data-' + key, val);
 						this.setSettings();
 					}
@@ -391,8 +396,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					value: function setSettings() {
 						clearTimeout(settings_timer);
 						settings_timer = setTimeout(function () {
-							var oldSettings = control.setting.get(),
-							    newSettings = $(areaContainer).nestedSortable("toHierarchy", { attribute: "id" });
+							var newSettings = $(areaContainer).nestedSortable("toHierarchy");
+							console.log(newSettings);
 							control.setting.set(JSON.stringify(newSettings));
 							wp.customize.previewer.refresh();
 						}, timer_ms);
