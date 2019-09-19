@@ -33,9 +33,9 @@ ol.featured-area {
     position: relative;
     margin: 0;
     padding: 0; }
-    ol.featured-area li.future .handle .featured-item-title {
+    ol.featured-area li.future > .handle .featured-item-title {
       padding-left: 20px; }
-    ol.featured-area li.future .handle:before {
+    ol.featured-area li.future > .handle:before {
       content: "\f469";
       position: absolute;
       left: 9px;

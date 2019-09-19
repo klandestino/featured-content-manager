@@ -301,7 +301,7 @@ class Customizer {
 			$text_color = '#222';
 		}
 		echo '<style>
-		ol.featured-area li.future .handle,
+		ol.featured-area li.future > .handle,
 		#available-featured-items .accordion-section-content .search-item-tpl .future .search-item-handle,
 		#available-featured-items .accordion-section-content .search-item-tpl .future .search-item-handle .search-time,
 		#available-featured-items .accordion-section-content .search-item-tpl .future .search-item-handle .item-add {
