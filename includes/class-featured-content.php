@@ -72,4 +72,21 @@ class Featured_Content {
 		}
 		return $areas;
 	}
+
+	/**
+	 * Returns a array of featured items for a specific area.
+	 *
+	 * @param string $featured_area The name or slug for the area.
+	 */
+	public static function get_featured_area_items( string $featured_area ): array {
+		$featured_area       = sanitize_title( $featured_area );
+		$featured_area_items = get_theme_mod( $featured_area );
+		if (
+			isset( $featured_area_items )
+		) {
+			return ( is_array( $featured_area_items ) ) ? $featured_area_items : json_decode( $featured_area_items );
+		}
+		return [];
+	}
+
 }
