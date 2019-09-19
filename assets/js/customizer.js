@@ -459,7 +459,9 @@
 									body: control.setting.get()
 								}
 							)
-								.then(data => data.json())
+								.then(function(data) {
+									wp.customize.previewer.refresh();
+								})
 								.then(data => {});
 						}
 

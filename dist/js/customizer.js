@@ -449,7 +449,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 									credentials: "same-origin",
 									body: control.setting.get()
 								}).then(function (data) {
-									return data.json();
+									wp.customize.previewer.refresh();
 								}).then(function (data) {});
 							}
 						}, timer_ms);

@@ -42,6 +42,7 @@ class Customizer {
 					array(
 						'default'           => '[]',
 						'sanitize_callback' => 'sanitize_text_field',
+						'transport'         => 'postMessage',
 					)
 				);
 
