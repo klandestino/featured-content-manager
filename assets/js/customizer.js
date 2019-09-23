@@ -26,11 +26,11 @@
 				// Create featured item element.
 				addItem() {
 					let featuredItemTemplate = wp.template("featured-item");
-					this.element = document.getElementById(this.element_id);
+					this.element = areaContainer.querySelector(this.element_id);
 					if (!this.element) {
 						this.element = document.createElement("li");
 						this.element.classList.add(this.postData.post_status);
-						this.element.id = "item_" + this.id;
+						this.element.id = "item_" + this.postData.id ;
 						for(var attribute in this.postData ) {
 							this.element.setAttribute('data-' + attribute, this.postData[attribute]);
 						}
@@ -109,7 +109,6 @@
 								new ListItem(child, this.id);
 							});
 						}
-
 					}
 				}
 
@@ -184,6 +183,7 @@
 
 				// Set the settings in customizer.
 				setSettings() {
+					console.log(featuredArea);
 					featuredArea.setSettings();
 				}
 
@@ -300,7 +300,7 @@
 								);
 								data.forEach((obj, index) => {
 									let item = document.createElement("li");
-									item.id = obj.ID;
+									item.id = obj.id;
 									item.classList.add("search-item-tpl");
 									item.innerHTML = featuredSearchItemTemplate(
 										obj
@@ -313,7 +313,6 @@
 										.appendChild(item)
 										.addEventListener("click", event => {
 											obj.featured_area = this.featured_area;
-
 											// Chech if post already exist in this featured area.
 											if ( featuredArea.doesExist(obj) ) {
 												wp.customize.notifications.add(
@@ -330,6 +329,7 @@
 												return;
 											}
 											new ListItem(obj);
+											featuredArea.setSettings();
 										});
 								});
 							});
@@ -373,7 +373,6 @@
 						let newSettings = $(areaContainer).nestedSortable(
 							"toHierarchy"
 						);
-						console.log(newSettings);
 						control.setting.set(JSON.stringify(newSettings));
 						wp.customize.previewer.refresh();
 					}, timer_ms);
@@ -388,7 +387,7 @@
 				doesExist( obj ) {
 					let result = false;
 					if (
-						areaContainer.querySelector('#item_' + obj.ID) != null
+						areaContainer.querySelector('#item_' + obj.id) != null
 					) {
 						result = true;
 					}

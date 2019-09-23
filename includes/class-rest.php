@@ -47,7 +47,7 @@ class Rest {
 	/**
 	 * Search posts function.
 	 *
-	 * @param WP_REST_Request $request The request as an array.
+	 * @param \WP_REST_Request $request The request as an array.
 	 */
 	public static function search_posts( \WP_REST_Request $request ) {
 		$search_term = ( isset( $request['s'] ) ? $request['s'] : '' );
@@ -84,6 +84,10 @@ class Rest {
 				unset( $post->$key );
 			}
 		}
+
+		// Set the post id key to lower case.
+		$post->id = $post->ID;
+		unset( $post->ID );
 		return $post;
 	}
 
