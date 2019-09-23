@@ -27,3 +27,4 @@ Dessa saker finns kvar att göra
 * ☐ Lägg till nivåer som inställnig i theme_support
 * ☐ Lägg till antal tillåtna inlägg som inställnig i theme_support
 * ☐ Lägg till inställnig för om future skall tillåtas i theme_support
+* ☐ Featured Area bör bestå av nyckel och värde.
