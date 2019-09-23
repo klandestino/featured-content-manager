@@ -183,7 +183,6 @@
 
 				// Set the settings in customizer.
 				setSettings() {
-					console.log(featuredArea);
 					featuredArea.setSettings();
 				}
 
