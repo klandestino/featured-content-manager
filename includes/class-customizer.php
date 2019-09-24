@@ -34,8 +34,7 @@ class Customizer {
 				)
 			);
 
-			foreach ( $featured_areas as $featured_area ) {
-				$featured_area_slug = sanitize_title( $featured_area );
+			foreach ( $featured_areas as $featured_area_slug => $featured_area ) {
 
 				$wp_customize->add_setting(
 					$featured_area_slug,

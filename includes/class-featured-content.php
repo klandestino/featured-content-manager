@@ -56,8 +56,12 @@ class Featured_Content {
 		$areas = [];
 		$args  = get_theme_support( 'featured-content-manager' )[0];
 		if ( isset( $args['featured_areas'] ) ) {
-			foreach ( $args['featured_areas'] as $area ) {
-				$areas[] = $area;
+			foreach ( $args['featured_areas'] as $slug => $area ) {
+				// Back compat, allow unkeyed arrays when registering featured areas.
+				if ( is_int( $slug ) ) {
+					$slug = sanitize_title( $area );
+				}
+				$areas[ $slug ] = $area;
 			}
 		}
 		return $areas;

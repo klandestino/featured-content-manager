@@ -23,8 +23,8 @@ add_theme_support( 'featured-content-manager',
 			],
 		],
 		'featured_areas' => [
-			'Första',
-			'Andra',
+			'slug'   => 'Titel',
+			'slug-2' => 'Annan titel',
 		],
 	)
 );
@@ -37,6 +37,5 @@ Dessa saker finns kvar att göra
 * ☐ Lägg till nivåer som inställnig i theme_support
 * ☐ Lägg till antal tillåtna inlägg som inställnig i theme_support
 * ☐ Lägg till inställnig för om future skall tillåtas i theme_support
-* ☐ Featured Area bör bestå av nyckel och värde.
 * ☐ Lyft över fields till att ligga i enskilda areas
 * ☐ Gör ett white list lager i JS där fields läses för varje area
