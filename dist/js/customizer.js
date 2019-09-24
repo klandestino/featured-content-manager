@@ -207,7 +207,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				}, {
 					key: "setSettings",
 					value: function setSettings() {
-						console.log(featuredArea);
 						featuredArea.setSettings();
 					}
 
