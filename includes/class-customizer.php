@@ -238,14 +238,14 @@ class Customizer {
 						<?php echo esc_html( $field['display_name'] ); ?><br/>
 						<div class="featured-item-image-field-wrapper">
 							<div class="featured-item-image-field-container">
-							<# if ( <?php echo esc_html( $sign ); ?>.<?php echo esc_html( $field['name'] ); ?> ) { #>
-								<img src="{{<?php echo esc_html( $sign ); ?>.<?php echo esc_html( $field['name'] . '_src' ); ?>}}" alt="" />
-								<input type="hidden" name="<?php echo esc_html( $field['name'] ); ?>" class="featured-item-edit-hidden" value="{{<?php echo esc_html( $sign ); ?>.<?php echo esc_html( $field['name'] ); ?>}}">
+							<# if ( <?php echo esc_attr( $sign ); ?>.<?php echo esc_attr( $field['name'] ); ?> ) { #>
+								<img src="{{<?php echo esc_attr( $sign ); ?>.<?php echo esc_attr( $field['name'] . '_src' ); ?>}}" alt="" />
+								<input type="hidden" name="<?php echo esc_attr( $field['name'] ); ?>" class="featured-item-edit-hidden" value="{{<?php echo esc_attr( $sign ); ?>.<?php echo esc_attr( $field['name'] ); ?>}}">
 								<a class="featured-item-image-field-upload" style="display: none;" href="#">Välj bild</a>
 								<a class="featured-item-image-field-remove" href="#">Ta bort</a>
 							<# } else { #>
 								<img src="#" style="display: none;" />
-								<input type="hidden" name="<?php echo esc_html( $field['name'] ); ?>" class="featured-item-edit-hidden" value="">
+								<input type="hidden" name="<?php echo esc_attr( $field['name'] ); ?>" class="featured-item-edit-hidden" value="">
 								<a class="featured-item-image-field-upload" href="#">Välj bild</a>
 								<a class="featured-item-image-field-remove" href="#" style="display: none;" >Ta bort</a>
 							<# } #>
@@ -255,14 +255,14 @@ class Customizer {
 				</p>
 				<?php
 				break;
-			case 'taxonomy':
+			case 'select':
 				?>
 				<p>
 					<label>
 						<?php echo esc_html( $field['display_name'] ); ?><br/>
-						<select name="taxonomy_<?php echo esc_html( $field['name'] ); ?>">
-						<?php foreach ( $field['terms'] as $term ) { ?>
-							<option name="<?php echo esc_html( $term->name ); ?>" value="<?php echo esc_html( $term->name ); ?>" <# if (<?php echo esc_html( $sign ); ?>.taxonomy_<?php echo esc_html( $field['name'] ); ?>=='<?php echo esc_html( $term->name ); ?>' ) { #>selected<# } #>><?php echo esc_html( $term->name ); ?></option>
+						<select name="fcm_select_<?php echo esc_attr( $field['name'] ); ?>">
+						<?php foreach ( $field['values'] as $name => $value ) { ?>
+							<option name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $name ); ?>" <# if ( <?php echo esc_attr( $sign ); ?>.fcm_select_<?php echo esc_html( $field['name'] ); ?>=='<?php echo esc_attr( $name ); ?>' ) { #>selected<# } #>><?php echo esc_html( $value ); ?></option>
 						<?php } ?>
 						</select>
 					</label>
@@ -274,7 +274,7 @@ class Customizer {
 				<p>
 					<label>
 						<?php echo esc_html( $field['display_name'] ); ?><br/>
-						<input type="text" name="<?php echo esc_html( $field['name'] ); ?>" class="featured-item-edit-input" value="{{<?php echo esc_html( $sign ); ?>.<?php echo esc_html( $field['name'] ); ?>}}"/>
+						<input type="text" name="<?php echo esc_attr( $field['name'] ); ?>" class="featured-item-edit-input" value="{{<?php echo esc_attr( $sign ); ?>.<?php echo esc_attr( $field['name'] ); ?>}}"/>
 					</label>
 				</p>
 				<?php

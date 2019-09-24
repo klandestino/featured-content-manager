@@ -37,22 +37,12 @@ class Featured_Content {
 						$fields['thumbnail']['type']         = 'media';
 						break;
 				}
-				if ( 'taxonomy' === $key ) {
-					$taxonomy = get_taxonomy( $field );
-					if ( $taxonomy ) {
-						$terms                                     = get_terms(
-							$taxonomy->name,
-							array(
-								'hide_empty' => false,
-								'orderby'    => 'term_id',
-								'order'      => 'ASC',
-							)
-						);
-						$fields[ $taxonomy->name ]['name']         = $taxonomy->name;
-						$fields[ $taxonomy->name ]['display_name'] = $taxonomy->label;
-						$fields[ $taxonomy->name ]['type']         = 'taxonomy';
-						$fields[ $taxonomy->name ]['terms']        = $terms;
-					}
+				if ( 'select' === $key ) {
+					$field_name                            = $field['name'];
+					$fields[ $field_name ]['name']         = $field['name'];
+					$fields[ $field_name ]['display_name'] = $field['display_name'];
+					$fields[ $field_name ]['type']         = 'select';
+					$fields[ $field_name ]['values']       = $field['values'];
 				}
 			}
 		}

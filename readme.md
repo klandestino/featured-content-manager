@@ -10,7 +10,17 @@ För att komma igång med Featured Content Manager behöver du lägga till stöd
 add_theme_support( 'featured-content-manager',
 	array(
 		'fields' => [
-			'post_title', // Namnet på en attribut i WP_Post.
+			'post_title',
+			'post_excerpt',
+			'thumbnail',
+			'select' => [
+				'name'         => 'style',
+				'display_name' => 'Utseende',
+				'values'       => [
+					'standard' => 'Standard',
+					'large'    => 'Stor',
+				],
+			],
 		],
 		'featured_areas' => [
 			'Första',
@@ -29,6 +39,5 @@ Dessa saker finns kvar att göra
 * ☐ Lägg till inställnig för om future skall tillåtas i theme_support
 * ☐ Featured Area bör bestå av nyckel och värde.
 * ☐ Gör en white list i REST funktionen som rensar mer post data och baserat på theme_support
-* ☐ Gör om input type istället för taxonomy i fields för theme_support
 * ☐ Lyft över fields till att ligga i enskilda areas
 * ☐ Gör ett white list lager i JS där fields läses för varje area
