@@ -59,14 +59,13 @@ class Rest {
 		);
 
 		$post_query = new \WP_Query( $args );
-		$posts      = $post_query->posts;
+		$posts      = [];
 
 		// Loop through search result to trim unneccesary post fields.
-		foreach ( $posts as $post ) {
-			$post = self::prepare_post( $post );
-			$post = self::populate_thumbnail( $post );
-			$post = self::populate_post_human_time( $post );
+		foreach ( $post_query->posts as $post ) {
+			$posts[] = self::prepare_post( $post );
 		}
+		wp_reset_postdata();
 
 		return new \WP_REST_Response( $posts, 200 );
 	}
@@ -77,52 +76,20 @@ class Rest {
 	 *
 	 * @param \WP_Post $post The post object to strip.
 	 */
-	private static function prepare_post( \WP_Post $post ): object {
-		$fields_to_unset = [ 'post_content', 'comment_status', 'ping_status', 'post_password', 'to_ping', 'pinged', 'post_modified', 'post_modified_gmt', 'post_content_filtered', 'guid', 'post_mime_type', 'comment_count' ];
-		foreach ( $post as $key => $value ) {
-			if ( in_array( $key, $fields_to_unset, true ) ) {
-				unset( $post->$key );
-			}
+	private static function prepare_post( \WP_Post $post ): array {
+		$prepared_post                    = [];
+		$prepared_post['id']              = $post->ID;
+		$prepared_post['post_title']      = $post->post_title;
+		$prepared_post['post_status']     = $post->post_status;
+		$prepared_post['human_time_diff'] = human_time_diff( get_the_time( 'U', $post ), current_time( 'timestamp' ) );
+		$fields_to_keep                   = array_keys( Featured_Content::get_fields() );
+		if ( in_array( 'post_excerpt', $fields_to_keep, true ) ) {
+			$prepared_post['post_excerpt'] = get_the_excerpt( $post );
 		}
-
-		// Set the post id key to lower case.
-		$post->id = $post->ID;
-		unset( $post->ID );
-		return $post;
-	}
-
-	/**
-	 * Populate post with human time formated time.
-	 *
-	 * @param WP_Post $post New post object.
-	 */
-	private static function populate_post_human_time( $post ) {
-		$post->post_human_time = human_time_diff( get_the_time( 'U', $post ), current_time( 'timestamp' ) );
-		return $post;
-	}
-
-	/**
-	 * Populate posts populate_thumbnail.
-	 *
-	 * @param array $args New thumbnail.
-	 */
-	private static function populate_thumbnail( $args ) {
-		$result = array();
-		if ( is_array( $args ) ) {
-			foreach ( $args as $post ) {
-				$thumbnail_id        = get_post_thumbnail_id( $post->ID );
-				$thumbnail_src       = wp_get_attachment_image_src( $thumbnail_id, 'small' );
-				$post->thumbnail     = $thumbnail_id;
-				$post->thumbnail_src = $thumbnail_src[0];
-				$result[]            = $post;
-			}
-		} else {
-				$thumbnail_id        = get_post_thumbnail_id( $args->ID );
-				$thumbnail_src       = wp_get_attachment_image_src( $thumbnail_id, 'small' );
-				$args->thumbnail     = $thumbnail_id;
-				$args->thumbnail_src = $thumbnail_src[0];
-				$result              = $args;
+		if ( in_array( 'thumbnail', $fields_to_keep, true ) ) {
+			$prepared_post['thumbnail']     = get_post_thumbnail_id( $post->ID );
+			$prepared_post['thumbnail_src'] = get_the_post_thumbnail_url( $post->ID, 'medium' );
 		}
-		return $result;
+		return $prepared_post;
 	}
 }
