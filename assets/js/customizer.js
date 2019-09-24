@@ -15,9 +15,9 @@
 				constructor(post, parent) {
 					this.id = post.id;
 					this.postData = post;
-					this.element_id = "item_" + post.id;
 					this.parent = parent;
 					this.element = null;
+					this.element_id = control.id + "_item_" + post.id;
 
 					// Add item element to ol list.
 					this.addItem();
@@ -26,11 +26,11 @@
 				// Create featured item element.
 				addItem() {
 					let featuredItemTemplate = wp.template("featured-item");
-					this.element = areaContainer.querySelector(this.element_id);
+					this.element = areaContainer.querySelector('[data-id="' + this.id + '"]');
 					if (!this.element) {
 						this.element = document.createElement("li");
+						this.element.id = this.element_id;
 						this.element.classList.add(this.postData.post_status);
-						this.element.id = "item_" + this.postData.id ;
 						for(var attribute in this.postData ) {
 							this.element.setAttribute('data-' + attribute, this.postData[attribute]);
 						}
@@ -93,9 +93,7 @@
 						if (
 							typeof this.parent !== 'undefined'
 						) {
-							const parentItemOl = areaContainer.querySelector(
-								"#item_" + this.parent + " ol"
-							);
+							const parentItemOl = areaContainer.querySelector('[data-id="' + this.id + '"] ol');
 							parentItemOl.appendChild(this.element);
 						} else {
 							areaContainer.appendChild(this.element);
@@ -115,8 +113,8 @@
 				// Toggle the edit item view.
 				toggleItemEdit(event) {
 					event.preventDefault();
-					const item = document.getElementById(this.element_id);
-					const open = container.querySelector("li.open");
+					const item = areaContainer.querySelector('[data-id="' + this.id + '"]');
+					const open = areaContainer.querySelector("li.open");
 
 					if (open !== null) open.classList.remove("open");
 					if (open == item) {
@@ -188,9 +186,7 @@
 
 				// Delete featured item from the Set and the DOM
 				deleteItem() {
-					let item = areaContainer.querySelector(
-						"#" + this.element_id
-					);
+					let item = areaContainer.querySelector('[data-id="' + this.id + '"]');
 					item.remove();
 					this.setSettings();
 				}
@@ -386,7 +382,7 @@
 				doesExist( obj ) {
 					let result = false;
 					if (
-						areaContainer.querySelector('#item_' + obj.id) != null
+						areaContainer.querySelector('[data-id="' + obj.id + '"]') != null
 					) {
 						result = true;
 					}

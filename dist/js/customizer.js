@@ -30,9 +30,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 					this.id = post.id;
 					this.postData = post;
-					this.element_id = "item_" + post.id;
 					this.parent = parent;
 					this.element = null;
+					this.element_id = control.id + "_item_" + post.id;
 
 					// Add item element to ol list.
 					this.addItem();
@@ -47,11 +47,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 						var _this = this;
 
 						var featuredItemTemplate = wp.template("featured-item");
-						this.element = areaContainer.querySelector(this.element_id);
+						this.element = areaContainer.querySelector('[data-id="' + this.id + '"]');
 						if (!this.element) {
 							this.element = document.createElement("li");
+							this.element.id = this.element_id;
 							this.element.classList.add(this.postData.post_status);
-							this.element.id = "item_" + this.postData.id;
 							for (var attribute in this.postData) {
 								this.element.setAttribute('data-' + attribute, this.postData[attribute]);
 							}
@@ -101,7 +101,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 							// If the item has a parent the add its element as a child to the parent.
 							if (typeof this.parent !== 'undefined') {
-								var parentItemOl = areaContainer.querySelector("#item_" + this.parent + " ol");
+								var parentItemOl = areaContainer.querySelector('[data-id="' + this.id + '"] ol');
 								parentItemOl.appendChild(this.element);
 							} else {
 								areaContainer.appendChild(this.element);
@@ -122,8 +122,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					key: "toggleItemEdit",
 					value: function toggleItemEdit(event) {
 						event.preventDefault();
-						var item = document.getElementById(this.element_id);
-						var open = container.querySelector("li.open");
+						var item = areaContainer.querySelector('[data-id="' + this.id + '"]');
+						var open = areaContainer.querySelector("li.open");
 
 						if (open !== null) open.classList.remove("open");
 						if (open == item) {
@@ -215,7 +215,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				}, {
 					key: "deleteItem",
 					value: function deleteItem() {
-						var item = areaContainer.querySelector("#" + this.element_id);
+						var item = areaContainer.querySelector('[data-id="' + this.id + '"]');
 						item.remove();
 						this.setSettings();
 					}
@@ -416,7 +416,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					key: "doesExist",
 					value: function doesExist(obj) {
 						var result = false;
-						if (areaContainer.querySelector('#item_' + obj.id) != null) {
+						if (areaContainer.querySelector('[data-id="' + obj.id + '"]') != null) {
 							result = true;
 						}
 						return result;
