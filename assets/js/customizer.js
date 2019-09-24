@@ -93,7 +93,7 @@
 						if (
 							typeof this.parent !== 'undefined'
 						) {
-							const parentItemOl = areaContainer.querySelector('[data-id="' + this.id + '"] ol');
+							const parentItemOl = areaContainer.querySelector('[data-id="' + this.parent + '"] ol');
 							parentItemOl.appendChild(this.element);
 						} else {
 							areaContainer.appendChild(this.element);

@@ -200,7 +200,7 @@ class Customizer {
 		<script type="text/html" id="tmpl-search-item">
 				<div class="search-item-bar {{data.post_status}}">
 					<div class="search-item-handle">
-						<span class="search-time" aria-hidden="true">{{data.post_human_time}}</span>
+						<span class="search-time" aria-hidden="true">{{data.human_time_diff}}</span>
 						<span class="search-title" aria-hidden="true">
 							<span class="search-item-title">{{data.post_title}}</span>
 						</span>

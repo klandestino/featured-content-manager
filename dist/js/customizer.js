@@ -101,7 +101,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 							// If the item has a parent the add its element as a child to the parent.
 							if (typeof this.parent !== 'undefined') {
-								var parentItemOl = areaContainer.querySelector('[data-id="' + this.id + '"] ol');
+								var parentItemOl = areaContainer.querySelector('[data-id="' + this.parent + '"] ol');
 								parentItemOl.appendChild(this.element);
 							} else {
 								areaContainer.appendChild(this.element);
