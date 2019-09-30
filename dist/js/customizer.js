@@ -28,11 +28,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				function ListItem(post, parent) {
 					_classCallCheck(this, ListItem);
 
-					this.id = post.id;
+					// Back compat, set post id to original post id if it exists.
+					if (post.hasOwnProperty('original_post_id')) {
+						this.id = post.original_post_id;
+						post.id = this.id;
+					} else if (post.hasOwnProperty('id')) {
+						this.id = post.id;
+					} else {
+						this.id = null;
+					}
 					this.postData = post;
 					this.parent = parent;
 					this.element = null;
-					this.element_id = control.id + "_item_" + post.id;
+					this.element_id = control.id + "_item_" + this.id;
 
 					// Add item element to ol list.
 					this.addItem();
@@ -53,7 +61,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 							this.element.id = this.element_id;
 							this.element.classList.add(this.postData.post_status);
 							for (var attribute in this.postData) {
-								this.element.setAttribute('data-' + attribute, this.postData[attribute]);
+								// Back-compat, don't set post_content as data attribute,
+								// makes the dom super slow.
+								if ('post_content' !== attribute) {
+									this.element.setAttribute('data-' + attribute, this.postData[attribute]);
+								}
 							}
 							this.element.innerHTML = featuredItemTemplate(this.postData); // WP templating the markup.
 
