@@ -15,7 +15,7 @@ class Featured_Area_Control extends \WP_Customize_Control {
 	/**
 	 * Class public variables.
 	 *
-	 * @var string $type The taxonomy type.
+	 * @var string $type The type.
 	 */
 	public $type = 'featured-area';
 

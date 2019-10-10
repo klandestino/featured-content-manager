@@ -19,7 +19,7 @@ class Customizer {
 	 * @param WP_Customize_Manager $wp_customize A customizer class.
 	 */
 	public static function customize_register( $wp_customize ) {
-		$featured_areas = Featured_Content::get_areas();
+		$featured_areas = Featured_Content::get_featured_areas();
 
 		$wp_customize->register_control_type( 'Featured_Content_Manager\Featured_Area_Control' );
 
@@ -34,8 +34,7 @@ class Customizer {
 				)
 			);
 
-			foreach ( $featured_areas as $featured_area ) {
-				$featured_area_slug = sanitize_title( $featured_area );
+			foreach ( $featured_areas as $featured_area_slug => $featured_area ) {
 
 				$wp_customize->add_setting(
 					$featured_area_slug,
@@ -200,7 +199,7 @@ class Customizer {
 		<script type="text/html" id="tmpl-search-item">
 				<div class="search-item-bar {{data.post_status}}">
 					<div class="search-item-handle">
-						<span class="search-time" aria-hidden="true">{{data.post_human_time}}</span>
+						<span class="search-time" aria-hidden="true">{{data.human_time_diff}}</span>
 						<span class="search-title" aria-hidden="true">
 							<span class="search-item-title">{{data.post_title}}</span>
 						</span>
@@ -238,16 +237,16 @@ class Customizer {
 						<?php echo esc_html( $field['display_name'] ); ?><br/>
 						<div class="featured-item-image-field-wrapper">
 							<div class="featured-item-image-field-container">
-							<# if ( <?php echo esc_html( $sign ); ?>.<?php echo esc_html( $field['name'] ); ?> ) { #>
-								<img src="{{<?php echo esc_html( $sign ); ?>.<?php echo esc_html( $field['name'] . '_src' ); ?>}}" alt="" />
-								<input type="hidden" name="<?php echo esc_html( $field['name'] ); ?>" class="featured-item-edit-hidden" value="{{<?php echo esc_html( $sign ); ?>.<?php echo esc_html( $field['name'] ); ?>}}">
+							<# if ( <?php echo esc_attr( $sign ); ?>.<?php echo esc_attr( $field['name'] ); ?> ) { #>
+								<img src="{{<?php echo esc_attr( $sign ); ?>.<?php echo esc_attr( $field['name'] . '_src' ); ?>}}" alt="" />
+								<input type="hidden" name="<?php echo esc_attr( $field['name'] ); ?>" class="featured-item-edit-hidden" value="{{<?php echo esc_attr( $sign ); ?>.<?php echo esc_attr( $field['name'] ); ?>}}">
 								<a class="featured-item-image-field-upload" style="display: none;" href="#">Välj bild</a>
 								<a class="featured-item-image-field-remove" href="#">Ta bort</a>
 							<# } else { #>
 								<img src="#" style="display: none;" />
-								<input type="hidden" name="<?php echo esc_html( $field['name'] ); ?>" class="featured-item-edit-hidden" value="">
+								<input type="hidden" name="<?php echo esc_attr( $field['name'] ); ?>" class="featured-item-edit-hidden" value="">
 								<a class="featured-item-image-field-upload" href="#">Välj bild</a>
-								<a class="featured-item-image-field-remove" href="#">Ta bort</a>
+								<a class="featured-item-image-field-remove" href="#" style="display: none;" >Ta bort</a>
 							<# } #>
 							</div>
 						</div>
@@ -255,14 +254,14 @@ class Customizer {
 				</p>
 				<?php
 				break;
-			case 'taxonomy':
+			case 'select':
 				?>
 				<p>
 					<label>
 						<?php echo esc_html( $field['display_name'] ); ?><br/>
-						<select name="taxonomy_<?php echo esc_html( $field['name'] ); ?>">
-						<?php foreach ( $field['terms'] as $term ) { ?>
-							<option name="<?php echo esc_html( $term->name ); ?>" value="<?php echo esc_html( $term->name ); ?>" <# if (<?php echo esc_html( $sign ); ?>.taxonomy_<?php echo esc_html( $field['name'] ); ?>=='<?php echo esc_html( $term->name ); ?>' ) { #>selected<# } #>><?php echo esc_html( $term->name ); ?></option>
+						<select name="fcm_select_<?php echo esc_attr( $field['name'] ); ?>">
+						<?php foreach ( $field['values'] as $name => $value ) { ?>
+							<option name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $name ); ?>" <# if ( <?php echo esc_attr( $sign ); ?>.fcm_select_<?php echo esc_html( $field['name'] ); ?>=='<?php echo esc_attr( $name ); ?>' ) { #>selected<# } #>><?php echo esc_html( $value ); ?></option>
 						<?php } ?>
 						</select>
 					</label>
@@ -274,136 +273,12 @@ class Customizer {
 				<p>
 					<label>
 						<?php echo esc_html( $field['display_name'] ); ?><br/>
-						<input type="text" name="<?php echo esc_html( $field['name'] ); ?>" class="featured-item-edit-input" value="{{<?php echo esc_html( $sign ); ?>.<?php echo esc_html( $field['name'] ); ?>}}"/>
+						<input type="text" name="<?php echo esc_attr( $field['name'] ); ?>" class="featured-item-edit-input" value="{{<?php echo esc_attr( $sign ); ?>.<?php echo esc_attr( $field['name'] ); ?>}}"/>
 					</label>
 				</p>
 				<?php
 				break;
 		}
-	}
-
-	/**
-	 * Functions for saving customizer settings.
-	 *
-	 * @param WP_Customize_Manager $wp_customize A customizer class.
-	 */
-	public static function customize_save_customizer( $wp_customize ) {
-		$featured_areas = Featured_Content::get_areas();
-
-		if ( $featured_areas ) {
-
-			foreach ( $featured_areas as $featured_area ) {
-				$featured_area_slug = sanitize_title( $featured_area );
-				$theme_mod          = get_theme_mod( $featured_area_slug, array() );
-
-				if ( $theme_mod ) {
-					$featured_items = json_decode( $theme_mod );
-					$old_to_new_id  = array();
-
-					/**
-					 * Loop through all currently published featured items in this area
-					 * and add them to an array keyed by original post id.
-					 * This is so that we can update that post below
-					 * instead of trashing all posts and then creating new ones.
-					 */
-					$query = new \WP_Query(
-						array(
-							'post_type'      => 'featured-content',
-							'post_status'    => [ 'publish', 'future' ],
-							'fields'         => 'ids',
-							'posts_per_page' => 200,
-							'tax_query'      => [
-								[
-									'taxonomy' => 'featured-area',
-									'terms'    => $featured_area_slug,
-									'field'    => 'slug',
-								],
-							],
-						)
-					);
-
-					$published_ids = [];
-					if ( $query->have_posts() ) {
-						while ( $query->have_posts() ) {
-							$query->the_post();
-							$published_ids[ get_post_meta( get_the_id(), 'original_post_id', true ) ] = get_the_id();
-						}
-						wp_reset_postdata();
-					}
-
-					/**
-					 * Update all featured content in settings.
-					 *
-					 * We store the new ID as a value where the new published post id is
-					 * the key in $old_to_new_id. So we as fast as posible can change the
-					 * old post_parent to the new one.
-					 */
-					foreach ( $featured_items as $featured_item ) {
-						// If the post has a parent we fetches the new one from $old_to_new_id.
-						$post_parent = ( 0 === $featured_item->post_parent ? 0 : $old_to_new_id[ $featured_item->post_parent ] );
-
-						/**
-						 * Match if there already exists a published featured item in this area
-						 * with the same original_post_id. If so let's update that instead
-						 * of creating a new one.
-						 */
-						$featured_item->draft_id = $featured_item->ID;
-						$draft_original_post_id  = get_post_meta( $featured_item->draft_id, 'original_post_id', true );
-						if ( isset( $published_ids[ $draft_original_post_id ] ) ) {
-							$featured_item->ID = $published_ids[ $draft_original_post_id ];
-							unset( $published_ids[ $draft_original_post_id ] );
-						} else {
-							$featured_item->ID = null;
-						}
-
-						// Publish the featured item and store the new ID in $old_to_new_id.
-						$old_to_new_id[ $featured_item->draft_id ] = self::publish_featured_item( $featured_item, $post_parent );
-					}
-
-					/**
-					 * Delete all existing items in this area that didn't match
-					 * any of the newly published ones.
-					 */
-					foreach ( $published_ids as $published_id ) {
-						wp_delete_post( $published_id, true );
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * Functions for publishing a featured item.
-	 *
-	 * @param WP_Post $post A post object.
-	 * @param int     $post_parent A post id for the parent post.
-	 */
-	private static function publish_featured_item( $post, $post_parent ) {
-		$draft_id           = $post->draft_id;
-		$post->post_parent  = $post_parent;
-		$post->post_status  = 'publish';
-		$post->post_content = get_post( $draft_id )->post_content;
-		$post_id            = wp_insert_post( $post );
-
-    wp_set_post_terms( $post_id, $post->featured_area, 'featured-area', false );
-		update_post_meta( $post_id, 'original_post_id', get_post_meta( $draft_id, 'original_post_id', true ) );
-
-		$org_post_thumbnail = get_post_thumbnail_id( $draft_id );
-		if ( $org_post_thumbnail ) {
-			set_post_thumbnail( $post_id, $org_post_thumbnail );
-		}
-
-		$taxonomies = get_object_taxonomies( 'featured-content' );
-		foreach ( $taxonomies as $taxonomy ) {
-			$terms = get_the_terms( $draft_id, $taxonomy );
-			if ( is_array( $terms ) ) {
-				foreach ( $terms as $term ) {
-					wp_set_post_terms( $post_id, $term->name, $taxonomy, false );
-				}
-			}
-		}
-
-		return $post_id;
 	}
 
 	/**
@@ -425,7 +300,7 @@ class Customizer {
 			$text_color = '#222';
 		}
 		echo '<style>
-		ol.featured-area li.future .handle,
+		ol.featured-area li.future > .handle,
 		#available-featured-items .accordion-section-content .search-item-tpl .future .search-item-handle,
 		#available-featured-items .accordion-section-content .search-item-tpl .future .search-item-handle .search-time,
 		#available-featured-items .accordion-section-content .search-item-tpl .future .search-item-handle .item-add {

@@ -10,11 +10,21 @@ För att komma igång med Featured Content Manager behöver du lägga till stöd
 add_theme_support( 'featured-content-manager',
 	array(
 		'fields' => [
-			'post_title', // Namnet på en variabel i post-objectet
+			'post_title',
+			'post_excerpt',
+			'thumbnail',
+			'select' => [
+				'name'         => 'style',
+				'display_name' => 'Utseende',
+				'values'       => [
+					'standard' => 'Standard',
+					'large'    => 'Stor',
+				],
+			],
 		],
 		'featured_areas' => [
-			'Första',
-			'Andra',
+			'slug'   => 'Titel',
+			'slug-2' => 'Annan titel',
 		],
 	)
 );
@@ -24,11 +34,8 @@ add_theme_support( 'featured-content-manager',
 
 Dessa saker finns kvar att göra
 
-* ✓ Skapa rest end point som skapar featured item utifrån customizerns datamodel (och duplicerar posten)
-* ✓ Ser till att customizern skiljer på Create item och Add item (skapar featured item, lägger till den grafiskt)
-* ✓ Skapar Featured items vid sparning utifrån det som finns i customizerns setting
-* ✓ Visa tio senaste under sök när en ska lägga till
-* ✓ Skapa funktion för att ge tillbaka WP Query
-* ☐ Refacturing av JavaScript
-* ☐ Refacturing av FCM (publika funktioner/privata/vilken klass/delade funktioner osv)
-* ☐ Hindra tillägg av item i area där item redan finns, vore så nice. :)
+* ☐ Lägg till nivåer som inställnig i theme_support
+* ☐ Lägg till antal tillåtna inlägg som inställnig i theme_support
+* ☐ Lägg till inställnig för om future skall tillåtas i theme_support
+* ☐ Lyft över fields till att ligga i enskilda areas
+* ☐ Gör ett white list lager i JS där fields läses för varje area
