@@ -52,7 +52,7 @@ class Rest {
 	public static function search_posts( \WP_REST_Request $request ) {
 		$search_term = ( isset( $request['s'] ) ? $request['s'] : '' );
 		$args        = array(
-			'post_type'      => 'post',
+			'post_type'      => apply_filters( 'fcm_post_type', [ 'post' ] ),
 			'posts_per_page' => 10,
 			'post_status'    => apply_filters( 'fcm_post_status', [ 'publish', 'future' ] ),
 			's'              => $search_term,
