@@ -1,12 +1,10 @@
 "use strict";
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-(function (wp, $) {
+(function (wp) {
 	wp.customize.FeaturedAreaControl = wp.customize.Control.extend({
 		ready: function ready() {
 			var control = this,
@@ -22,6 +20,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 			var featuredArea = void 0,
 			    settings_timer = void 0,
 			    search_timer = void 0,
+			    max = void 0,
 			    timer_ms = 500;
 
 			var ListItem = function () {
@@ -111,20 +110,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 								});
 							}
 
-							// If the item has a parent the add its element as a child to the parent.
-							if (typeof this.parent !== 'undefined') {
-								var parentItemOl = areaContainer.querySelector('[data-id="' + this.parent + '"] ol');
-								parentItemOl.appendChild(this.element);
-							} else {
-								areaContainer.appendChild(this.element);
-							}
-
-							// If item has parent add it to parent else add it last
-							if (_typeof(this.postData.children) === 'object') {
-								this.postData.children.forEach(function (child) {
-									new ListItem(child, _this.id);
-								});
-							}
+							areaContainer.appendChild(this.element);
 						}
 					}
 
@@ -153,7 +139,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 						var _this2 = this;
 
 						e.preventDefault();
-						var selector = $(e.target).parent('.featured-item-image-field-container');
+						var selector = e.target.parentNode;
 						var fcm_uploader = wp.media({
 							title: 'Select or upload image',
 							button: {
@@ -162,13 +148,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 							multiple: false
 						}).on('select', function () {
 							var attachment = fcm_uploader.state().get('selection').first().toJSON();
-							var input = selector.find('input');
-							selector.find('img').attr('src', attachment.url).show();
-							input.val(attachment.id);
-							selector.find('.featured-item-image-field-remove').show();
-							selector.find('.featured-item-image-field-upload').hide();
-							_this2.setPostData(input.attr('name'), attachment.id);
-							_this2.setPostData(input.attr('name') + '_src', attachment.url);
+							var name = selector.querySelector('input').getAttribute('name');
+
+							selector.querySelector('img').setAttribute('src', attachment.url);
+							selector.querySelector('img').style.display = 'inline';
+							selector.querySelector('input').value = attachment.id;
+							selector.querySelector('.featured-item-image-field-remove').style.display = 'inline';
+							selector.querySelector('.featured-item-image-field-upload').style.display = 'none';
+
+							_this2.setPostData(name, attachment.id);
+							_this2.setPostData(name + '_src', attachment.url);
 						}).open();
 					}
 
@@ -178,16 +167,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					key: "removeMedia",
 					value: function removeMedia(e) {
 						e.preventDefault();
-						var selector = $(e.target).parent('.featured-item-image-field-container');
-						var input = selector.find('input');
-						input.val('');
-						selector.find('img').attr('src', '#').hide();
+						var selector = e.target.parentNode;
+						var name = selector.querySelector('input').getAttribute('name');
 
-						selector.find('.featured-item-image-field-remove').hide();
-						selector.find('.featured-item-image-field-upload').show();
+						selector.querySelector('input').value = '';
+						selector.querySelector('img').setAttribute('src', '#');
+						selector.querySelector('img').style.display = 'none';
+						selector.querySelector('.featured-item-image-field-remove').style.display = 'none';
+						selector.querySelector('.featured-item-image-field-upload').style.display = 'inline';
 
-						this.setPostData(input.attr('name'), '');
-						this.setPostData(input.attr('name') + '_src', '');
+						this.setPostData(name, '');
+						this.setPostData(name + '_src', '');
 					}
 
 					// Set post data with the updated values.
@@ -209,7 +199,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 						// with jQuery and vanilla js setAttribute. The first line changes the 
 						// value in the jQuery memory som that the nestleSortable will be updated
 						// and the second line will update the DOM.
-						$(this.element).data(key, val);
 						this.element.setAttribute('data-' + key, val);
 						this.setSettings();
 					}
@@ -353,6 +342,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 											}));
 											return;
 										}
+										// Check if featured area is full.
+										if (featuredArea.isFull()) {
+											wp.customize.notifications.add('error', new wp.customize.Notification('error', {
+												dismissible: true,
+												message: __('This featured area allready contains maximum number of items!', 'featured-content-manager'),
+												type: 'error'
+											}));
+											return;
+										}
 										new ListItem(obj);
 										featuredArea.setSettings();
 									});
@@ -371,7 +369,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 					_classCallCheck(this, FeaturedArea);
 
+					this.sortable = null;
 					this.searchPanel = null;
+					this.max = areaContainer.dataset.max;
+
 					// Add item on button click.
 					addItemButton.addEventListener("click", function (event) {
 						return _this5.toggleSearchPanel(event);
@@ -396,9 +397,23 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 						} catch (e) {
 							settings = settings;
 						}
+						settings = settings.slice(0, this.max);
 						settings.forEach(function (item) {
-							if (item != null) new ListItem(item);
+							if (item != null) {
+								new ListItem(item);
+							}
 						});
+					}
+
+					// Returns object with data attributes from element.
+
+				}, {
+					key: "getDataAttributes",
+					value: function getDataAttributes(dataset) {
+						return Object.keys(dataset).reduce(function (object, key) {
+							object[key] = dataset[key];
+							return object;
+						}, {});
 					}
 
 					// At the end of the timer set the settings in the customizer.
@@ -406,10 +421,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				}, {
 					key: "setSettings",
 					value: function setSettings() {
+						var _this6 = this;
+
 						clearTimeout(settings_timer);
 						settings_timer = setTimeout(function () {
-							var newSettings = $(areaContainer).nestedSortable("toHierarchy");
-							control.setting.set(JSON.stringify(newSettings));
+							var order = _this6.sortable.toArray();
+							var settings = [];
+							order.forEach(function (id) {
+								var post = document.querySelector('[data-id="' + id + '"]');
+								var data = _this6.getDataAttributes(post.dataset);
+								settings.push(data);
+							});
+							control.setting.set(JSON.stringify(settings));
 							wp.customize.previewer.refresh();
 						}, timer_ms);
 					}
@@ -418,7 +441,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 				}, {
 					key: "updateOrder",
-					value: function updateOrder(array) {
+					value: function updateOrder() {
 						this.setSettings();
 					}
 
@@ -432,6 +455,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 							result = true;
 						}
 						return result;
+					}
+				}, {
+					key: "isFull",
+					value: function isFull() {
+						return featuredArea.max <= areaContainer.children.length;
+						/*
+      this.sortable.toArray()
+      areaContainer.dataset.max
+      */
 					}
 
 					// Toggle the search panel.
@@ -453,19 +485,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				}, {
 					key: "initSortable",
 					value: function initSortable() {
-						var _this6 = this;
+						var _this7 = this;
 
-						$(areaContainer).nestedSortable({
-							handle: ".handle",
-							items: "li",
-							toleranceElement: "> div",
-							maxLevels: 2,
-							excludeRoot: true,
-							forcePlaceholderSize: true,
-							placeholder: "placeholder",
-							stop: function stop(e) {
-								var array = $(areaContainer).nestedSortable("toHierarchy", { attribute: "id" });
-								_this6.updateOrder(array);
+						this.sortable = Sortable.create(areaContainer, {
+							onSort: function onSort(evt) {
+								_this7.updateOrder();
 							}
 						});
 					}
@@ -481,7 +505,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		}
 	});
 
-	$.extend(wp.customize.controlConstructor, {
+	_.extend(wp.customize.controlConstructor, {
 		"featured-area": wp.customize.FeaturedAreaControl
 	});
 

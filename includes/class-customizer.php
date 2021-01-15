@@ -48,7 +48,7 @@ class Customizer {
 				$wp_customize->add_section(
 					$featured_area_slug,
 					array(
-						'title'    => esc_html( $featured_area ),
+						'title'    => esc_html( $featured_area['title'] ),
 						'priority' => 1,
 						'panel'    => 'featured_content_panel',
 					)
@@ -61,6 +61,7 @@ class Customizer {
 						array(
 							'label'   => esc_html__( 'Featured Area', 'customizer-background-control' ),
 							'section' => $featured_area_slug,
+							'max'     => $featured_area['max'] ?? null,
 						)
 					)
 				);
@@ -89,18 +90,18 @@ class Customizer {
 			true
 		);
 		wp_enqueue_script(
-			'nested-sortable',
-			plugins_url( 'dist/js/jquery.mjs.nestedSortable.js', dirname( __FILE__ ) ),
-			array( 'jquery' ),
-			filemtime( dirname( __DIR__, 1 ) . '/dist/js/jquery.mjs.nestedSortable.js' ),
+			'sortable-js',
+			plugins_url( 'dist/js/Sortable.min.js', dirname( __FILE__ ) ),
+			array(),
+			filemtime( dirname( __DIR__, 1 ) . '/dist/js/Sortable.min.js' ),
 			true
 		);
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 			wp_register_script(
 				'featured-area-script',
-				plugins_url( 'dist/js/customizer.js', dirname( __FILE__ ) ),
-				array( 'jquery', 'customize-controls', 'nested-sortable', 'wp-i18n' ),
-				filemtime( dirname( __DIR__, 1 ) . '/dist/js/customizer.js' ),
+				plugins_url( 'assets/js/customizer.js', dirname( __FILE__ ) ),
+				array( 'customize-controls', 'sortable-js', 'wp-i18n' ),
+				filemtime( dirname( __DIR__, 1 ) . '/assets/js/customizer.js' ),
 				true
 			);
 			wp_set_script_translations(
@@ -112,7 +113,7 @@ class Customizer {
 			wp_register_script(
 				'featured-area-script',
 				plugins_url( 'dist/js/customizer.min.js', dirname( __FILE__ ) ),
-				array( 'jquery', 'customize-controls', 'nested-sortable', 'wp-i18n' ),
+				array( 'customize-controls', 'sortable-js', 'wp-i18n' ),
 				filemtime( dirname( __DIR__, 1 ) . '/dist/js/customizer.min.js' ),
 				true
 			);
@@ -185,7 +186,6 @@ class Customizer {
 					</div>
 				</form>
 			</div>
-			<ol></ol>
 			<# } #>
 		</script>
 		<?php

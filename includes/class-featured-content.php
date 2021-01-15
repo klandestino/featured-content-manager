@@ -16,7 +16,7 @@ class Featured_Content {
 	 * Getting fields for this theme setup.
 	 */
 	public static function get_fields() {
-		$fields = [];
+		$fields = array();
 		$args   = get_theme_support( 'featured-content-manager' )[0];
 		if ( isset( $args['fields'] ) ) {
 			foreach ( $args['fields'] as $key => $field ) {
@@ -53,14 +53,12 @@ class Featured_Content {
 	 * Get all the registred areas.
 	 */
 	public static function get_featured_areas() {
-		$areas = [];
+		$areas = array();
 		$args  = get_theme_support( 'featured-content-manager' )[0];
 		if ( isset( $args['featured_areas'] ) ) {
-			foreach ( $args['featured_areas'] as $slug => $area ) {
+			foreach ( $args['featured_areas'] as $area ) {
 				// Back compat, allow unkeyed arrays when registering featured areas.
-				if ( is_int( $slug ) ) {
-					$slug = sanitize_title( $area );
-				}
+				$slug           = sanitize_title( $area['title'] );
 				$areas[ $slug ] = $area;
 			}
 		}
@@ -80,7 +78,7 @@ class Featured_Content {
 		) {
 			return ( is_array( $featured_area_items ) ) ? $featured_area_items : json_decode( $featured_area_items );
 		}
-		return [];
+		return array();
 	}
 
 }

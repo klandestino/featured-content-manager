@@ -1,4 +1,4 @@
-(function(wp, $) {
+(function(wp) {
 	wp.customize.FeaturedAreaControl = wp.customize.Control.extend({
 		ready: function() {
 			const control = this,
@@ -9,6 +9,7 @@
 			let featuredArea,
 				settings_timer,
 				search_timer,
+				max,
 				timer_ms = 500;
 
 			class ListItem {
@@ -101,24 +102,7 @@
 								);
 						}
 
-						// If the item has a parent the add its element as a child to the parent.
-						if (
-							typeof this.parent !== 'undefined'
-						) {
-							const parentItemOl = areaContainer.querySelector('[data-id="' + this.parent + '"] ol');
-							parentItemOl.appendChild(this.element);
-						} else {
-							areaContainer.appendChild(this.element);
-						}
-
-						// If item has parent add it to parent else add it last
-						if (
-							typeof this.postData.children === 'object'
-						) {
-							this.postData.children.forEach( child => {
-								new ListItem(child, this.id);
-							});
-						}
+						areaContainer.appendChild(this.element);
 					}
 				}
 
@@ -139,7 +123,7 @@
 				// Select media.
 				selectMedia(e) {
 					e.preventDefault();
-					var selector = $(e.target).parent( '.featured-item-image-field-container' );
+					let selector = e.target.parentNode;
 					var fcm_uploader = wp.media({
 		                title: 'Select or upload image',
 		                button: {
@@ -148,29 +132,33 @@
 		                multiple: false
 					}).on('select', () => {
 						var attachment = fcm_uploader.state().get('selection').first().toJSON();
-						var input = selector.find( 'input' );
-						selector.find('img').attr( 'src', attachment.url).show();
-						input.val(attachment.id);
-						selector.find('.featured-item-image-field-remove').show();
-						selector.find('.featured-item-image-field-upload').hide();
-						this.setPostData(input.attr('name'), attachment.id);
-						this.setPostData(input.attr('name') + '_src', attachment.url);
+						let name = selector.querySelector('input').getAttribute('name');
+
+						selector.querySelector('img').setAttribute( 'src', attachment.url);
+						selector.querySelector('img').style.display = 'inline';
+						selector.querySelector('input').value = attachment.id;
+						selector.querySelector('.featured-item-image-field-remove').style.display = 'inline';
+						selector.querySelector('.featured-item-image-field-upload').style.display = 'none';
+
+						this.setPostData(name, attachment.id);
+						this.setPostData(name + '_src', attachment.url);
 					}).open();
 				}
 
 				// Remove selected media.
 				removeMedia(e) {
 					e.preventDefault();
-					var selector = $(e.target).parent('.featured-item-image-field-container');
-					var input = selector.find('input');
-					input.val('');
-					selector.find('img').attr('src', '#').hide();
+					let selector = e.target.parentNode;
+					let name = selector.querySelector('input').getAttribute('name');
 
-					selector.find('.featured-item-image-field-remove').hide();
-					selector.find('.featured-item-image-field-upload').show();
+					selector.querySelector('input').value = '';
+					selector.querySelector('img').setAttribute('src', '#');
+					selector.querySelector('img').style.display = 'none';
+					selector.querySelector('.featured-item-image-field-remove').style.display = 'none';
+					selector.querySelector('.featured-item-image-field-upload').style.display = 'inline';
 
-					this.setPostData(input.attr('name'), '');
-					this.setPostData(input.attr('name') + '_src', '');
+					this.setPostData(name, '');
+					this.setPostData(name + '_src', '');
 				}
 
 				// Set post data with the updated values.
@@ -186,7 +174,6 @@
 					// with jQuery and vanilla js setAttribute. The first line changes the 
 					// value in the jQuery memory som that the nestleSortable will be updated
 					// and the second line will update the DOM.
-					$(this.element).data(key, val);
 					this.element.setAttribute('data-' + key, val);
 					this.setSettings();
 				}
@@ -335,6 +322,21 @@
 												);
 												return;
 											}
+											// Check if featured area is full.
+											if( featuredArea.isFull() ){
+												wp.customize.notifications.add(
+													'error',
+													new wp.customize.Notification( 
+														'error',
+														{
+															dismissible: true,
+															message: __( 'This featured area allready contains maximum number of items!', 'featured-content-manager' ),
+															type: 'error'
+														}
+													)
+												);
+												return;
+											}
 											new ListItem(obj);
 											featuredArea.setSettings();
 										});
@@ -346,7 +348,10 @@
 
 			class FeaturedArea {
 				constructor() {
+					this.sortable = null;
 					this.searchPanel = null;
+					this.max = areaContainer.dataset.max;
+
 					// Add item on button click.
 					addItemButton.addEventListener("click", event =>
 						this.toggleSearchPanel(event)
@@ -367,26 +372,40 @@
 					} catch (e) {
 						settings = settings;
 					}
+					settings = settings.slice(0, this.max);
 					settings.forEach(item => {
-						if ( item != null )
+						if ( item != null ) {
 							new ListItem(item);
+						}
 					});
+				}
+
+				// Returns object with data attributes from element.
+				getDataAttributes( dataset ) {
+					return Object.keys( dataset ).reduce( function( object, key ) {
+				        object[ key ] = dataset[ key ]; 
+				        return object;
+				    }, {});
 				}
 
 				// At the end of the timer set the settings in the customizer.
 				setSettings() {
 					clearTimeout(settings_timer);
 					settings_timer = setTimeout(() => {
-						let newSettings = $(areaContainer).nestedSortable(
-							"toHierarchy"
-						);
-						control.setting.set(JSON.stringify(newSettings));
+						let order = this.sortable.toArray();
+						let settings = [];
+						order.forEach( ( id ) => {
+							let post = document.querySelector('[data-id="'+id+'"]');
+							let data = this.getDataAttributes( post.dataset );
+							settings.push( data )
+						} );
+						control.setting.set(JSON.stringify(settings));
 						wp.customize.previewer.refresh();
 					}, timer_ms);
 				}
 
 				// Update order of the featured area.
-				updateOrder(array) {
+				updateOrder() {
 					this.setSettings();
 				}
 
@@ -399,6 +418,14 @@
 						result = true;
 					}
 					return result;
+				}
+
+				isFull() {
+					return featuredArea.max <= areaContainer.children.length;
+					/*
+					this.sortable.toArray()
+					areaContainer.dataset.max
+					*/
 				}
 
 				// Toggle the search panel.
@@ -414,21 +441,10 @@
 
 				// Initialize jQuery nestedSortable
 				initSortable() {
-					$(areaContainer).nestedSortable({
-						handle: ".handle",
-						items: "li",
-						toleranceElement: "> div",
-						maxLevels: 2,
-						excludeRoot: true,
-						forcePlaceholderSize: true,
-						placeholder: "placeholder",
-						stop: e => {
-							let array = $(areaContainer).nestedSortable(
-								"toHierarchy",
-								{ attribute: "id" }
-							);
-							this.updateOrder(array);
-						}
+					this.sortable = Sortable.create(areaContainer, {
+						onSort: (evt) => {
+							this.updateOrder();
+						},
 					});
 				}
 			}
@@ -438,7 +454,7 @@
 		}
 	});
 
-	$.extend(wp.customize.controlConstructor, {
+	_.extend(wp.customize.controlConstructor, {
 		"featured-area": wp.customize.FeaturedAreaControl
 	});
 

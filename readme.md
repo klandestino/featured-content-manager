@@ -23,8 +23,14 @@ add_theme_support( 'featured-content-manager',
 			],
 		],
 		'featured_areas' => [
-			'slug'   => 'Titel',
-			'slug-2' => 'Annan titel',
+			[
+				'title' => 'Första Titel',
+				'max'   => 10,
+			]
+			[
+				'title' => 'Andra Titel',
+				'max'   => 5,
+			]
 		],
 	)
 );
@@ -39,4 +45,3 @@ Dessa saker finns kvar att göra
 * ☐ Lägg till inställnig för om future skall tillåtas i theme_support
 * ☐ Lyft över fields till att ligga i enskilda areas
 * ☐ Gör ett white list lager i JS där fields läses för varje area
-* ☐ Lägg till stöd för att sortera på touch-screen. Inspiration från hur WP gör med menyer i customizern. Se [_setupSortable](https://github.com/WordPress/wordpress-develop/search?q=_setupSortable&unscoped_q=_setupSortable)

@@ -19,13 +19,24 @@ class Featured_Area_Control extends \WP_Customize_Control {
 	 */
 	public $type = 'featured-area';
 
+	public $max = 0;
+
+	public function __construct( $manager, $id, $args = array() ) {
+		parent::__construct( $manager, $id, $args );
+		$this->max = $args['max'] ?? 0;
+	}
+
+	public function to_json() {
+		parent::to_json();
+		$this->json['max'] = $this->max;
+	}
+
 	/**
 	 * Extending content_template function.
 	 */
 	public function content_template() {
-		parent::content_template();
 		?>
-		<ol id={{data.section}} class="featured-area"></ol>
+		<ol id={{data.section}} class="featured-area" data-max="{{data.max}}"></ol>
 		<button class="add-featured-item button">Lägg till</button>
 		<div class="search-panel"></div>
 		<?php
