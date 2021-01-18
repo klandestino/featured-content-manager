@@ -52,14 +52,14 @@ class Rest {
 	public static function search_posts( \WP_REST_Request $request ) {
 		$search_term = ( isset( $request['s'] ) ? $request['s'] : '' );
 		$args        = array(
-			'post_type'      => apply_filters( 'fcm_post_type', [ 'post' ] ),
+			'post_type'      => apply_filters( 'fcm_post_type', array( 'post' ) ),
 			'posts_per_page' => 10,
-			'post_status'    => apply_filters( 'fcm_post_status', [ 'publish', 'future' ] ),
+			'post_status'    => apply_filters( 'fcm_post_status', array( 'publish', 'future' ) ),
 			's'              => $search_term,
 		);
 
 		$post_query = new \WP_Query( $args );
-		$posts      = [];
+		$posts      = array();
 
 		// Loop through search result to trim unneccesary post fields.
 		foreach ( $post_query->posts as $post ) {
@@ -77,11 +77,11 @@ class Rest {
 	 * @param \WP_Post $post The post object to strip.
 	 */
 	private static function prepare_post( \WP_Post $post ): array {
-		$prepared_post                    = [];
+		$prepared_post                    = array();
 		$prepared_post['id']              = $post->ID;
 		$prepared_post['post_title']      = $post->post_title;
 		$prepared_post['post_status']     = $post->post_status;
-		$prepared_post['human_time_diff'] = human_time_diff( get_the_time( 'U', $post ), current_time( 'timestamp' ) );
+		$prepared_post['human_time_diff'] = human_time_diff( get_the_time( 'U', $post ), strtotime( wp_date( 'Y-m-d H:i:s' ) );
 		$fields_to_keep                   = array_keys( Featured_Content::get_fields() );
 		if ( in_array( 'post_excerpt', $fields_to_keep, true ) ) {
 			$prepared_post['post_excerpt'] = get_the_excerpt( $post );
