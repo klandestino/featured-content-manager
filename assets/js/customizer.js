@@ -3,7 +3,7 @@
 		ready: function() {
 			const control = this,
 				container = this.container[0],
-				areaContainer = container.querySelector("ol.featured-area"),
+				areaContainer = container.querySelector("ol.nested-sortable"),
 				addItemButton = container.querySelector(".add-featured-item");
 			const { __, _x, _n, _nx } = wp.i18n;
 			let featuredArea,
@@ -102,7 +102,24 @@
 								);
 						}
 
-						areaContainer.appendChild(this.element);
+						// If the item has a parent the add its element as a child to the parent.
+						if (
+							typeof this.parent !== 'undefined'
+						) {
+							const parentItemOl = areaContainer.querySelector('[data-id="' + this.parent + '"] ol');
+							parentItemOl.appendChild(this.element);
+						} else {
+							areaContainer.appendChild(this.element);
+						}
+
+						// If item has parent add it to parent else add it last
+						if (
+							typeof this.postData.children === 'object'
+						) {
+							this.postData.children.forEach( child => {
+								new ListItem(child, this.id);
+							});
+						}
 					}
 				}
 
@@ -349,6 +366,7 @@
 			class FeaturedArea {
 				constructor() {
 					this.sortable = null;
+					this.nestedSortables = [];
 					this.searchPanel = null;
 					this.max = areaContainer.dataset.max;
 
@@ -392,16 +410,24 @@
 				setSettings() {
 					clearTimeout(settings_timer);
 					settings_timer = setTimeout(() => {
-						let order = this.sortable.toArray();
-						let settings = [];
-						order.forEach( ( id ) => {
-							let post = document.querySelector('[data-id="'+id+'"]');
-							let data = this.getDataAttributes( post.dataset );
-							settings.push( data )
-						} );
+						let settings = this.serialize( areaContainer );
 						control.setting.set(JSON.stringify(settings));
 						wp.customize.previewer.refresh();
 					}, timer_ms);
+				}
+
+				serialize(sortable) {
+					var serialized = [];
+					var children = [].slice.call(sortable.children);
+					for (var i in children) {
+						var nested = children[i].querySelector('.nested-sortable');
+						let attributes = this.getDataAttributes( children[i].dataset );
+						serialized.push({
+							...attributes,
+							children: nested ? this.serialize(nested) : []
+						});
+					}
+					return serialized;
 				}
 
 				// Update order of the featured area.
@@ -422,10 +448,6 @@
 
 				isFull() {
 					return featuredArea.max <= areaContainer.children.length;
-					/*
-					this.sortable.toArray()
-					areaContainer.dataset.max
-					*/
 				}
 
 				// Toggle the search panel.
@@ -441,11 +463,26 @@
 
 				// Initialize jQuery nestedSortable
 				initSortable() {
+					/*
 					this.sortable = Sortable.create(areaContainer, {
 						onSort: (evt) => {
 							this.updateOrder();
 						},
 					});
+					*/
+					let sortables = [].slice.call(document.querySelectorAll('.nested-sortable'));
+
+					// Loop through each nested sortable element
+					for (var i = 0; i < sortables.length; i++) {
+						this.nestedSortables[i] = new Sortable(sortables[i], {
+							group: 'nested',
+							swapThreshold: 0.65,
+							emptyInsertThreshold: 42,
+							onSort: (evt) => {
+								this.updateOrder();
+							},
+						});
+					}
 				}
 			}
 

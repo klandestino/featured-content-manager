@@ -1,5 +1,9 @@
 "use strict";
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -9,7 +13,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		ready: function ready() {
 			var control = this,
 			    container = this.container[0],
-			    areaContainer = container.querySelector("ol.featured-area"),
+			    areaContainer = container.querySelector("ol.nested-sortable"),
 			    addItemButton = container.querySelector(".add-featured-item");
 			var _wp$i18n = wp.i18n,
 			    __ = _wp$i18n.__,
@@ -110,7 +114,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 								});
 							}
 
-							areaContainer.appendChild(this.element);
+							// If the item has a parent the add its element as a child to the parent.
+							if (typeof this.parent !== 'undefined') {
+								var parentItemOl = areaContainer.querySelector('[data-id="' + this.parent + '"] ol');
+								parentItemOl.appendChild(this.element);
+							} else {
+								areaContainer.appendChild(this.element);
+							}
+
+							// If item has parent add it to parent else add it last
+							if (_typeof(this.postData.children) === 'object') {
+								this.postData.children.forEach(function (child) {
+									new ListItem(child, _this.id);
+								});
+							}
 						}
 					}
 
@@ -370,6 +387,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					_classCallCheck(this, FeaturedArea);
 
 					this.sortable = null;
+					this.nestedSortables = [];
 					this.searchPanel = null;
 					this.max = areaContainer.dataset.max;
 
@@ -425,16 +443,24 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 						clearTimeout(settings_timer);
 						settings_timer = setTimeout(function () {
-							var order = _this6.sortable.toArray();
-							var settings = [];
-							order.forEach(function (id) {
-								var post = document.querySelector('[data-id="' + id + '"]');
-								var data = _this6.getDataAttributes(post.dataset);
-								settings.push(data);
-							});
+							var settings = _this6.serialize(areaContainer);
 							control.setting.set(JSON.stringify(settings));
 							wp.customize.previewer.refresh();
 						}, timer_ms);
+					}
+				}, {
+					key: "serialize",
+					value: function serialize(sortable) {
+						var serialized = [];
+						var children = [].slice.call(sortable.children);
+						for (var i in children) {
+							var nested = children[i].querySelector('.nested-sortable');
+							var attributes = this.getDataAttributes(children[i].dataset);
+							serialized.push(_extends({}, attributes, {
+								children: nested ? this.serialize(nested) : []
+							}));
+						}
+						return serialized;
 					}
 
 					// Update order of the featured area.
@@ -460,10 +486,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					key: "isFull",
 					value: function isFull() {
 						return featuredArea.max <= areaContainer.children.length;
-						/*
-      this.sortable.toArray()
-      areaContainer.dataset.max
-      */
 					}
 
 					// Toggle the search panel.
@@ -487,11 +509,26 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					value: function initSortable() {
 						var _this7 = this;
 
-						this.sortable = Sortable.create(areaContainer, {
-							onSort: function onSort(evt) {
-								_this7.updateOrder();
-							}
-						});
+						/*
+      this.sortable = Sortable.create(areaContainer, {
+      	onSort: (evt) => {
+      		this.updateOrder();
+      	},
+      });
+      */
+						var sortables = [].slice.call(document.querySelectorAll('.nested-sortable'));
+
+						// Loop through each nested sortable element
+						for (var i = 0; i < sortables.length; i++) {
+							this.nestedSortables[i] = new Sortable(sortables[i], {
+								group: 'nested',
+								swapThreshold: 0.65,
+								emptyInsertThreshold: 42,
+								onSort: function onSort(evt) {
+									_this7.updateOrder();
+								}
+							});
+						}
 					}
 				}]);
 

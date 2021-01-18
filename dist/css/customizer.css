@@ -145,9 +145,7 @@ ol.featured-area {
     ol.featured-area li ol {
       position: relative;
       list-style: none;
-      margin-left: 0px; }
-      ol.featured-area li ol li {
-        margin-left: 20px; }
+      margin-left: 20px; }
     ol.featured-area li.open {
       margin-left: 0 !important; }
       ol.featured-area li.open > .featured-item-settings {

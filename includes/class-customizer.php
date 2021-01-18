@@ -186,6 +186,7 @@ class Customizer {
 					</div>
 				</form>
 			</div>
+			<ol class="nested-sortable"></ol>
 			<# } #>
 		</script>
 		<?php

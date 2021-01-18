@@ -8,8 +8,14 @@
     "type": "git",
     "url": "https://github.com/klandestino/featured-content-manager.git"
   },
+  "babel": {
+    "plugins": [
+      "transform-object-rest-spread"
+    ]
+  },
   "devDependencies": {
     "babel-cli": "^6.26.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "es6-promise": "^4.2.2",
     "gulp": "^4.0.2",
