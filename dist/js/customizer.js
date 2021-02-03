@@ -130,6 +130,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 							_this2.close();
 						}
 					});
+
+					// Event when mobile section back button is clicked.
+					document.querySelector("#featured-items-search-panel .customize-section-back").addEventListener("click", function (event) {
+						return _this2.close();
+					});
 				}
 
 				// Show the search panel.

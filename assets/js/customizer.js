@@ -117,6 +117,10 @@
 							}
 						}
 					);
+
+					// Event when mobile section back button is clicked.
+					document.querySelector("#featured-items-search-panel .customize-section-back")
+						.addEventListener("click", event => this.close());
 				}
 
 				// Show the search panel.

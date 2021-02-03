@@ -224,6 +224,42 @@ ol.accordion-section-content {
 	transition: left .18s;
 	border-right: 1px solid #ddd;
 
+	@media screen and (max-width: 600px){
+		left: -100%;
+		top: 46px;
+		z-index: 999;
+		width: 100%;
+	}
+
+	.customize-section-title {
+		display: none;
+	    margin: 0;
+    	border-bottom: 1px solid #ddd;
+    	background: #fff;
+
+		@media screen and (max-width: 600px){
+			display: block;
+		}
+
+    	h3 {
+    		font-size: 20px;
+		    font-weight: 200;
+		    line-height: 26px;
+		    display: block;
+		    overflow: hidden;
+		    white-space: nowrap;
+		    text-overflow: ellipsis;
+
+		    span.customize-action {
+			    font-size: 13px;
+	    		display: block;
+	    		font-weight: 400;
+		    }
+
+
+    	}
+	}
+
 	body.adding-featured-items & {
 		left: 0;
 		visibility: visible;
@@ -239,13 +275,17 @@ ol.accordion-section-content {
 		.search-icon {
 			display: block;
 			position: absolute;
-			top: 15px;
-			left: 16px;
+			top: 10px;
+			left: 15px;
 			width: 30px;
 			height: 30px;
-			padding: 9px 1px;
+			padding: 9px 0;
 			text-align: center;
 			color: #72777c;
+
+			@media screen and (max-width: 600px){
+				top: 90px;
+			}
 
 			&::after {
 				content: "\f179";
@@ -269,6 +309,10 @@ ol.accordion-section-content {
 			right: 21px;
 			margin: 0!important;
 
+			@media screen and (max-width: 600px){
+				top: 100px;
+			}
+
 			body.searching & {
 				visibility: visible !important;
 			}
@@ -283,7 +327,7 @@ ol.accordion-section-content {
 			position: absolute;
 			display: block;
 			left: 0;
-			top: 68px;
+			top: 60px;
 			bottom: 0;
 			margin: 0;
 			max-height: none;
@@ -291,6 +335,10 @@ ol.accordion-section-content {
 			padding: 1px 15px 15px;
 			box-sizing: border-box;
 			background: transparent;
+
+			@media screen and (max-width: 600px){
+				top: 143px;
+			}
 
 			.featured-item-tpl {
 				 margin: 0;
@@ -366,5 +414,9 @@ body.adding-featured-items {
 	.wp-full-overlay-main {
 		left: 300px;
 		opacity: .4;
+
+		@media screen and (max-width: 600px){
+			left: auto;
+		}
 	}
 }
