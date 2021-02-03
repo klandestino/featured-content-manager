@@ -13,8 +13,7 @@ button.add-featured-item {
     content: "\f132";
     display: inline-block;
     position: relative;
-    left: -2px;
-    top: -1px;
+    left: -4px;
     font: 400 20px/1 dashicons;
     vertical-align: middle;
     -webkit-transition: all .2s;
@@ -22,28 +21,22 @@ button.add-featured-item {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale; }
 
-ol.featured-area {
+ol.featured-area,
+ol.accordion-section-content {
   position: relative;
   margin: 0 0 12px 0;
   padding: 0;
   list-style: none; }
-  ol.featured-area .placeholder {
+  ol.featured-area .placeholder,
+  ol.accordion-section-content .placeholder {
     border: 1px dashed #999; }
-  ol.featured-area li {
+  ol.featured-area li,
+  ol.accordion-section-content li {
     position: relative;
     margin: 0;
     padding: 0; }
-    ol.featured-area li.future > .handle .featured-item-title {
-      padding-left: 20px; }
-    ol.featured-area li.future > .handle:before {
-      content: "\f469";
-      position: absolute;
-      left: 9px;
-      top: 11px;
-      display: block;
-      height: 20px;
-      font: 400 20px/1.05 dashicons; }
-    ol.featured-area li .handle {
+    ol.featured-area li .handle,
+    ol.accordion-section-content li .handle {
       position: relative;
       display: block;
       overflow-y: hidden;
@@ -61,10 +54,12 @@ ol.featured-area {
       -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
       box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
       cursor: move; }
-      ol.featured-area li .handle:hover {
+      ol.featured-area li .handle:hover,
+      ol.accordion-section-content li .handle:hover {
         border-color: #999;
         z-index: 1 !important; }
-      ol.featured-area li .handle:after {
+      ol.featured-area li .handle:after,
+      ol.accordion-section-content li .handle:after {
         content: "";
         position: absolute;
         background: linear-gradient(to left, white 55%, rgba(255, 255, 255, 0) 100%);
@@ -73,11 +68,13 @@ ol.featured-area {
         top: 0;
         right: 0;
         z-index: 1; }
-      ol.featured-area li .handle .featured-item-title {
+      ol.featured-area li .handle .featured-item-title,
+      ol.accordion-section-content li .handle .featured-item-title {
         display: block;
         line-height: 20px;
         font-weight: 600; }
-      ol.featured-area li .handle .featured-item-edit {
+      ol.featured-area li .handle .featured-item-edit,
+      ol.accordion-section-content li .handle .featured-item-edit {
         position: absolute;
         right: 2px;
         top: 2px;
@@ -92,11 +89,13 @@ ol.featured-area {
         cursor: pointer;
         text-align: center;
         z-index: 2; }
-        ol.featured-area li .handle .featured-item-edit .toggle-indicator {
+        ol.featured-area li .handle .featured-item-edit .toggle-indicator,
+        ol.accordion-section-content li .handle .featured-item-edit .toggle-indicator {
           display: inline-block;
           font-size: 20px;
           line-height: 1; }
-          ol.featured-area li .handle .featured-item-edit .toggle-indicator:before {
+          ol.featured-area li .handle .featured-item-edit .toggle-indicator:before,
+          ol.accordion-section-content li .handle .featured-item-edit .toggle-indicator:before {
             content: "\f140";
             display: block;
             padding: 1px 2px 1px 0;
@@ -108,7 +107,8 @@ ol.featured-area {
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             text-decoration: none !important; }
-    ol.featured-area li .featured-item-settings {
+    ol.featured-area li .featured-item-settings,
+    ol.accordion-section-content li .featured-item-settings {
       display: none;
       position: relative;
       padding: 10px 15px;
@@ -117,47 +117,59 @@ ol.featured-area {
       z-index: 1 !important;
       -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
       box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04); }
-      ol.featured-area li .featured-item-settings p {
+      ol.featured-area li .featured-item-settings p,
+      ol.accordion-section-content li .featured-item-settings p {
         width: 100%;
         height: auto;
         margin: 0 0 8px;
         font-size: 13px; }
-        ol.featured-area li .featured-item-settings p label input[type=text] {
+        ol.featured-area li .featured-item-settings p label input[type=text],
+        ol.accordion-section-content li .featured-item-settings p label input[type=text] {
           width: 100%; }
-        ol.featured-area li .featured-item-settings p label textarea {
+        ol.featured-area li .featured-item-settings p label textarea,
+        ol.accordion-section-content li .featured-item-settings p label textarea {
           width: 100%;
           resize: none; }
-      ol.featured-area li .featured-item-settings .featured-item-actions {
+      ol.featured-area li .featured-item-settings .featured-item-actions,
+      ol.accordion-section-content li .featured-item-settings .featured-item-actions {
         width: 100%;
         height: auto; }
-        ol.featured-area li .featured-item-settings .featured-item-actions .button-link-delete {
+        ol.featured-area li .featured-item-settings .featured-item-actions .button-link-delete,
+        ol.accordion-section-content li .featured-item-settings .featured-item-actions .button-link-delete {
           margin: 0;
           padding: 0;
           cursor: pointer;
           color: #a00; }
-        ol.featured-area li .featured-item-settings .featured-item-actions .spinner {
+        ol.featured-area li .featured-item-settings .featured-item-actions .spinner,
+        ol.accordion-section-content li .featured-item-settings .featured-item-actions .spinner {
           position: absolute;
           top: 20px;
           right: 21px;
           margin: 0 !important; }
-        ol.featured-area li .featured-item-settings .featured-item-actions:after {
+        ol.featured-area li .featured-item-settings .featured-item-actions:after,
+        ol.accordion-section-content li .featured-item-settings .featured-item-actions:after {
           display: none; }
-    ol.featured-area li ol {
+    ol.featured-area li ol,
+    ol.accordion-section-content li ol {
       position: relative;
       list-style: none;
       margin-left: 20px; }
-    ol.featured-area li.open {
+    ol.featured-area li.open,
+    ol.accordion-section-content li.open {
       margin-left: 0 !important; }
-      ol.featured-area li.open > .featured-item-settings {
+      ol.featured-area li.open > .featured-item-settings,
+      ol.accordion-section-content li.open > .featured-item-settings {
         display: block; }
-      ol.featured-area li.open > .handle {
+      ol.featured-area li.open > .handle,
+      ol.accordion-section-content li.open > .handle {
         border: 1px solid #999;
         border-bottom: none;
         z-index: 1 !important; }
-        ol.featured-area li.open > .handle .toggle-indicator:before {
+        ol.featured-area li.open > .handle .toggle-indicator:before,
+        ol.accordion-section-content li.open > .handle .toggle-indicator:before {
           content: "\f142"; }
 
-#available-featured-items {
+#featured-items-search-panel {
   position: absolute;
   top: 0;
   bottom: 0;
@@ -170,49 +182,50 @@ ol.featured-area {
   background: #eee;
   transition: left .18s;
   border-right: 1px solid #ddd; }
-  body.adding-featured-items #available-featured-items {
+  body.adding-featured-items #featured-items-search-panel {
     left: 0;
     visibility: visible; }
-  #available-featured-items .accordion-section-title {
+  #featured-items-search-panel #featured-items-search-title {
+    padding: 13px 15px;
     border-left: none;
     border-right: none;
     transition: background-color .15s;
     user-select: auto; }
-    #available-featured-items .accordion-section-title .search-icon {
+    #featured-items-search-panel #featured-items-search-title .search-icon {
       display: block;
       position: absolute;
       top: 15px;
       left: 16px;
       width: 30px;
       height: 30px;
-      line-height: 28px;
+      padding: 9px 1px;
       text-align: center;
       color: #72777c; }
-      #available-featured-items .accordion-section-title .search-icon::after {
+      #featured-items-search-panel #featured-items-search-title .search-icon::after {
         content: "\f179";
         font: 400 20px/1 dashicons;
         vertical-align: middle;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale; }
-    #available-featured-items .accordion-section-title input {
+    #featured-items-search-panel #featured-items-search-title #featured-items-search-input {
       width: 100%;
       height: 32px;
       margin: 1px 0;
       padding: 6px 30px; }
-    #available-featured-items .accordion-section-title .spinner {
+    #featured-items-search-panel #featured-items-search-title .spinner {
       position: absolute;
       top: 20px;
       right: 21px;
       margin: 0 !important; }
-      body.searching #available-featured-items .accordion-section-title .spinner {
+      body.searching #featured-items-search-panel #featured-items-search-title .spinner {
         visibility: visible !important; }
-    #available-featured-items .accordion-section-title:after {
+    #featured-items-search-panel #featured-items-search-title:after {
       display: none; }
-  #available-featured-items .accordion-section-content {
+  #featured-items-search-panel #featured-items-search-list {
     position: absolute;
     display: block;
     left: 0;
-    top: 60px;
+    top: 68px;
     bottom: 0;
     margin: 0;
     max-height: none;
@@ -220,68 +233,40 @@ ol.featured-area {
     padding: 1px 15px 15px;
     box-sizing: border-box;
     background: transparent; }
-    #available-featured-items .accordion-section-content .search-item-tpl {
+    #featured-items-search-panel #featured-items-search-list .featured-item-tpl {
       margin: 0; }
-      #available-featured-items .accordion-section-content .search-item-tpl .search-item-bar {
-        clear: both;
-        line-height: 1.5em;
-        position: relative; }
-        #available-featured-items .accordion-section-content .search-item-tpl .search-item-bar .search-item-handle {
-          position: relative;
-          background: #fff;
-          padding: 10px 15px;
-          height: auto;
-          min-height: 20px;
-          margin-top: -1px;
-          overflow: hidden;
-          word-wrap: break-word;
-          border: 1px solid #ddd;
-          box-shadow: none;
-          cursor: pointer; }
-          #available-featured-items .accordion-section-content .search-item-tpl .search-item-bar .search-item-handle:hover {
-            border-color: #999;
-            z-index: 999;
+      #featured-items-search-panel #featured-items-search-list .featured-item-tpl .handle {
+        position: relative;
+        background: #fff;
+        padding: 10px 15px;
+        height: auto;
+        min-height: 20px;
+        margin-top: -1px;
+        overflow: hidden;
+        word-wrap: break-word;
+        border: 1px solid #ddd;
+        box-shadow: none;
+        cursor: move; }
+        #featured-items-search-panel #featured-items-search-list .featured-item-tpl .handle:hover {
+          border-color: #999;
+          z-index: 999; }
+          #featured-items-search-panel #featured-items-search-list .featured-item-tpl .handle:hover .search-type, #featured-items-search-panel #featured-items-search-list .featured-item-tpl .handle:hover .item-add {
             color: #0073aa; }
-            #available-featured-items .accordion-section-content .search-item-tpl .search-item-bar .search-item-handle:hover .search-time, #available-featured-items .accordion-section-content .search-item-tpl .search-item-bar .search-item-handle:hover .item-add {
-              color: #0073aa; }
-          #available-featured-items .accordion-section-content .search-item-tpl .search-item-bar .search-item-handle .search-time {
-            float: right;
-            font-size: 12px;
-            text-align: right;
-            color: #666;
-            text-transform: capitalize; }
-          #available-featured-items .accordion-section-content .search-item-tpl .search-item-bar .search-item-handle .search-title {
-            display: block;
-            padding-left: 20px;
-            line-height: 20px;
-            font-weight: 600; }
-          #available-featured-items .accordion-section-content .search-item-tpl .search-item-bar .search-item-handle .item-add {
-            position: absolute;
-            top: 1px;
-            left: 1px;
-            color: #82878c;
-            width: 30px;
-            height: 38px;
-            box-shadow: none;
-            box-shadow: none;
-            outline: 0;
-            cursor: pointer;
-            text-align: center; }
-            #available-featured-items .accordion-section-content .search-item-tpl .search-item-bar .search-item-handle .item-add:before {
-              content: "\f543";
-              position: relative;
-              left: 2px;
-              top: 2px;
-              display: inline-block;
-              height: 20px;
-              -webkit-border-radius: 50%;
-              border-radius: 50%;
-              font: 400 20px/1.05 dashicons; }
-        #available-featured-items .accordion-section-content .search-item-tpl .search-item-bar.future .search-item-handle .item-add:before {
-          content: "\f469" !important; }
-    #available-featured-items .accordion-section-content .nothing-found {
+        #featured-items-search-panel #featured-items-search-list .featured-item-tpl .handle .featured-item-edit {
+          display: none; }
+        #featured-items-search-panel #featured-items-search-list .featured-item-tpl .handle .featured-item-type {
+          float: right;
+          font-size: 12px;
+          text-align: right;
+          color: #666;
+          text-transform: capitalize; }
+        #featured-items-search-panel #featured-items-search-list .featured-item-tpl .handle .featured-item-title {
+          display: block;
+          line-height: 20px;
+          font-weight: 600; }
+    #featured-items-search-panel #featured-items-search-list .nothing-found {
       display: none; }
-      #available-featured-items .accordion-section-content .nothing-found:last-child {
+      #featured-items-search-panel #featured-items-search-list .nothing-found:last-child {
         display: inherit; }
 
 body.adding-featured-items .add-featured-item {

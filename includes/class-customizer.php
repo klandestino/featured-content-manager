@@ -59,9 +59,10 @@ class Customizer {
 						$wp_customize,
 						$featured_area_slug,
 						array(
-							'label'   => esc_html__( 'Featured Area', 'customizer-background-control' ),
-							'section' => $featured_area_slug,
-							'max'     => $featured_area['max'] ?? null,
+							'label'       => esc_html__( 'Featured Area', 'customizer-background-control' ),
+							'section'     => $featured_area_slug,
+							'max'         => $featured_area['max'] ?? null,
+							'object_type' => $featured_area['object_type'] ?? 'post',
 						)
 					)
 				);
@@ -139,18 +140,18 @@ class Customizer {
 	 */
 	public static function customize_print_accordion() {
 		?>
-			<div id="available-featured-items" class="accordion-container">
-				<div class="accordion-section-title">
+			<div id="featured-items-search-panel" class="featured-item-container">
+				<div id="featured-items-search-title">
 					<div class="search-icon" aria-hidden="true"></div>
 					<label class="screen-reader-text" for="featured-items-search"><?php echo esc_html( __( 'Search Featured Items', 'featured-content-manager' ) ); ?></label>
-					<input type="text" id="featured-items-search" placeholder="<?php echo esc_html( __( 'Search Featured Items', 'featured-content-manager' ) ); ?>" aria-describedby="featured-items-search-desc" />
+					<input type="text" id="featured-items-search-input" placeholder="<?php echo esc_html( __( 'Search Featured Items', 'featured-content-manager' ) ); ?>" aria-describedby="featured-items-search-desc" />
 					<p class="screen-reader-text" id="featured-items-search-desc"><?php echo esc_html( __( 'The search results will be updated as you type.', 'featured-content-manager' ) ); ?></p>
 					<span class="spinner"></span>
 					<div class="search-icon" aria-hidden="true"></div>
 				</div>
-				<ul id="available-featured-items-list" class="accordion-section-content">
+				<ol id="featured-items-search-list" class="accordion-section-content">
 					<li class="nothing-found"><?php echo esc_html( __( 'No results found.', 'featured-content-manager' ) ); ?></li>
-				</ul>
+				</ol>
 			</div>
 		<?php
 	}
@@ -162,151 +163,26 @@ class Customizer {
 		$fields = Featured_Content::get_fields();
 		?>
 		<script type="text/html" id="tmpl-featured-item">
-			<# if ( data.post_title ) { #>
-			<div class="handle">
-				<span class="featured-item-title">
-					{{data.post_title}}
-				</span>
-				<button type="button" class="button-link featured-item-edit" aria-expanded="false">
-					<span class="screen-reader-text"><?php echo esc_html( __( 'Edit featured item', 'featured-content-manager' ) ); ?>: {{data.post_title}}</span><span class="toggle-indicator" aria-hidden="true"></span>
-				</button>
-			</div>
-			<div class="featured-item-settings">
-				<form>
-					<?php
-					if ( $fields ) :
-						foreach ( $fields as $field ) :
-							self::render_input( $field, 'data' );
-						endforeach;
-					endif;
-					?>
+			<li data-id="{{data.id}}" data-title="{{data.title}}" data-type="{{data.type}}" class="featured-item-tpl">
+				<# if ( data.title ) { #>
+				<div class="handle">
+					<span class="featured-item-title">
+						{{data.title}}
+					</span>
+					<button type="button" class="button-link featured-item-edit" aria-expanded="false">
+						<span class="screen-reader-text"><?php echo esc_html( __( 'Edit featured item', 'featured-content-manager' ) ); ?>: {{data.title}}</span><span class="toggle-indicator" aria-hidden="true"></span>
+					</button>
+				</div>
+				<div class="featured-item-settings">
 					<div class="featured-item-actions">
 						<button type="button" class="button-link button-link-delete item-delete"><?php echo esc_html( __( 'Remove', 'featured-content-manager' ) ); ?></button>
 						<span class="spinner"></span>
 					</div>
-				</form>
-			</div>
-			<ol class="nested-sortable"></ol>
+				</div>
+				<ol class="nested-sortable"></ol>
+			</li>
 			<# } #>
 		</script>
 		<?php
-	}
-
-	/**
-	 * Function that prints WP Template markup for an search result item.
-	 */
-	public static function customize_print_search_result_item_template() {
-		?>
-		<script type="text/html" id="tmpl-search-item">
-				<div class="search-item-bar {{data.post_status}}">
-					<div class="search-item-handle">
-						<span class="search-time" aria-hidden="true">{{data.human_time_diff}}</span>
-						<span class="search-title" aria-hidden="true">
-							<span class="search-item-title">{{data.post_title}}</span>
-						</span>
-						<button type="button" class="button-link item-add">
-							<span class="screen-reader-text"><?php echo esc_html( __( 'Add to featured area', 'featured-content-manager' ) ); ?>: {{data.post_title}} ({{data.post_type}})</span>
-						</button>
-					</div>
-				</div>
-		</script>
-		<?php
-	}
-
-	/**
-	 * Function that prints markup for setting inputs.
-	 *
-	 * @param array  $field A field setting array.
-	 * @param string $sign A sign string.
-	 */
-	public static function render_input( $field, $sign ) {
-		switch ( $field['type'] ) {
-			case 'textarea':
-				?>
-				<p>
-					<label>
-						<?php echo esc_html( $field['display_name'] ); ?><br/>
-						<textarea rows="4" name="<?php echo esc_html( $field['name'] ); ?>" class="featured-item-edit-input">{{<?php echo esc_html( $sign ); ?>.<?php echo esc_html( $field['name'] ); ?>}}</textarea>
-					</label>
-				</p>
-				<?php
-				break;
-			case 'media':
-				?>
-				<p>
-					<label>
-						<?php echo esc_html( $field['display_name'] ); ?><br/>
-						<div class="featured-item-image-field-wrapper">
-							<div class="featured-item-image-field-container">
-							<# if ( <?php echo esc_attr( $sign ); ?>.<?php echo esc_attr( $field['name'] ); ?> ) { #>
-								<img src="{{<?php echo esc_attr( $sign ); ?>.<?php echo esc_attr( $field['name'] . '_src' ); ?>}}" alt="" />
-								<input type="hidden" name="<?php echo esc_attr( $field['name'] ); ?>" class="featured-item-edit-hidden" value="{{<?php echo esc_attr( $sign ); ?>.<?php echo esc_attr( $field['name'] ); ?>}}">
-								<a class="featured-item-image-field-upload" style="display: none;" href="#">Välj bild</a>
-								<a class="featured-item-image-field-remove" href="#">Ta bort</a>
-							<# } else { #>
-								<img src="#" style="display: none;" />
-								<input type="hidden" name="<?php echo esc_attr( $field['name'] ); ?>" class="featured-item-edit-hidden" value="">
-								<a class="featured-item-image-field-upload" href="#">Välj bild</a>
-								<a class="featured-item-image-field-remove" href="#" style="display: none;" >Ta bort</a>
-							<# } #>
-							</div>
-						</div>
-					</label>
-				</p>
-				<?php
-				break;
-			case 'select':
-				?>
-				<p>
-					<label>
-						<?php echo esc_html( $field['display_name'] ); ?><br/>
-						<select name="fcm_select_<?php echo esc_attr( $field['name'] ); ?>">
-						<?php foreach ( $field['values'] as $name => $value ) { ?>
-							<option name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $name ); ?>" <# if ( <?php echo esc_attr( $sign ); ?>.fcm_select_<?php echo esc_html( $field['name'] ); ?>=='<?php echo esc_attr( $name ); ?>' ) { #>selected<# } #>><?php echo esc_html( $value ); ?></option>
-						<?php } ?>
-						</select>
-					</label>
-				</p>
-				<?php
-				break;
-			default:
-				?>
-				<p>
-					<label>
-						<?php echo esc_html( $field['display_name'] ); ?><br/>
-						<input type="text" name="<?php echo esc_attr( $field['name'] ); ?>" class="featured-item-edit-input" value="{{<?php echo esc_attr( $sign ); ?>.<?php echo esc_attr( $field['name'] ); ?>}}"/>
-					</label>
-				</p>
-				<?php
-				break;
-		}
-	}
-
-	/**
-	 * A functions that prints the user color scheme as CSS in header.
-	 */
-	public static function customizer_colors() {
-		global $_wp_admin_css_colors;
-
-		$color_scheme = get_user_option( 'admin_color' );
-
-		// It's possible to have a color scheme set that is no longer registered.
-		if ( empty( $_wp_admin_css_colors[ $color_scheme ] ) ) {
-			$color_scheme = 'fresh';
-		}
-
-		if ( ! empty( $_wp_admin_css_colors[ $color_scheme ] ) ) {
-			$text_color = $_wp_admin_css_colors[ $color_scheme ]->colors[2];
-		} else {
-			$text_color = '#222';
-		}
-		echo '<style>
-		ol.featured-area li.future > .handle,
-		#available-featured-items .accordion-section-content .search-item-tpl .future .search-item-handle,
-		#available-featured-items .accordion-section-content .search-item-tpl .future .search-item-handle .search-time,
-		#available-featured-items .accordion-section-content .search-item-tpl .future .search-item-handle .item-add {
-			color: ' . esc_html( $text_color ) . ' !important;
-		} 
-		</style>';
 	}
 }

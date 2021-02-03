@@ -23,12 +23,14 @@ class Featured_Area_Control extends \WP_Customize_Control {
 
 	public function __construct( $manager, $id, $args = array() ) {
 		parent::__construct( $manager, $id, $args );
-		$this->max = $args['max'] ?? 0;
+		$this->max         = $args['max'] ?? 0;
+		$this->object_type = $args['object_type'] ?? 'post';
 	}
 
 	public function to_json() {
 		parent::to_json();
-		$this->json['max'] = $this->max;
+		$this->json['max']         = $this->max;
+		$this->json['object_type'] = $this->object_type;
 	}
 
 	/**
@@ -36,7 +38,7 @@ class Featured_Area_Control extends \WP_Customize_Control {
 	 */
 	public function content_template() {
 		?>
-		<ol id={{data.section}} class="nested-sortable featured-area" data-max="{{data.max}}"></ol>
+		<ol id={{data.section}} class="nested-sortable featured-area" data-max="{{data.max}}" data-type="{{data.object_type}}"></ol>
 		<button class="add-featured-item button">Lägg till</button>
 		<div class="search-panel"></div>
 		<?php

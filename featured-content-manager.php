@@ -35,13 +35,16 @@ add_action(
 	'init',
 	function() {
 		if ( current_theme_supports( 'featured-content-manager' ) ) {
-			add_action( 'admin_print_styles', array( 'Featured_Content_Manager\Customizer', 'customizer_colors' ) );
 			add_action( 'customize_register', array( 'Featured_Content_Manager\Customizer', 'customize_register' ) );
 			add_action( 'customize_controls_enqueue_scripts', array( 'Featured_Content_Manager\Customizer', 'enqueue_customize_control' ) );
 			add_action( 'customize_controls_print_footer_scripts', array( 'Featured_Content_Manager\Customizer', 'customize_print_featured_item_template' ) );
-			add_action( 'customize_controls_print_footer_scripts', array( 'Featured_Content_Manager\Customizer', 'customize_print_search_result_item_template' ) );
 			add_action( 'customize_controls_print_footer_scripts', array( 'Featured_Content_Manager\Customizer', 'customize_print_accordion' ) );
 			add_action( 'rest_api_init', array( 'Featured_Content_Manager\Rest', 'register_routes' ) );
+
+			foreach ( array( 'post', 'term' ) as $object_type ) {
+				add_filter( "fcm_{$object_type}_search", array( 'Featured_Content_Manager\Rest', "fcm_{$object_type}_search" ), 10, 1 );
+				add_filter( "fcm_{$object_type}_filter_result", array( 'Featured_Content_Manager\Rest', "fcm_{$object_type}_filter_result" ), 10, 1 );
+			}
 		}
 	},
 	1

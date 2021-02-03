@@ -9,27 +9,18 @@ För att komma igång med Featured Content Manager behöver du lägga till stöd
 ```php
 add_theme_support( 'featured-content-manager',
 	array(
-		'fields' => [
-			'post_title',
-			'post_excerpt',
-			'thumbnail',
-			'select' => [
-				'name'         => 'style',
-				'display_name' => 'Utseende',
-				'values'       => [
-					'standard' => 'Standard',
-					'large'    => 'Stor',
-				],
-			],
-		],
 		'featured_areas' => [
-			[
-				'title' => 'Första Titel',
+			'forsta' => [
+				'title' => 'Första Area',
 				'max'   => 10,
-			]
-			[
-				'title' => 'Andra Titel',
+				'object_type'  => 'post',
+				'object_subtype' => 'post'
+			],
+			'andra' => [
+				'title' => 'Andra Area',
 				'max'   => 5,
+				'type'  => 'post',
+				'object_subtype' => 'page',
 			]
 		],
 	)
