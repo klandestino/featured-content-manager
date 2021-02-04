@@ -35,6 +35,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					this.data = data;
 					this.list = list;
 					this.parent = parent;
+					this.element = null;
 
 					// Add item.
 					this.addItem();
@@ -51,23 +52,23 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 						// Create item html element
 						var featuredItemTemplate = wp.template("featured-item");
 						var innerHTML = featuredItemTemplate(this.data);
-						var element = htmlToElement(innerHTML);
+						this.element = htmlToElement(innerHTML);
 
 						// Add event listeners for item.
-						element.querySelector(".button-link-delete").addEventListener("click", function (event) {
+						this.element.querySelector(".button-link-delete").addEventListener("click", function (event) {
 							return _this.deleteItem(event);
 						});
-						element.querySelector(".featured-item-edit").addEventListener("click", function (event) {
-							return _this.toggleItemEdit(event);
+						this.element.querySelector(".featured-item-add").addEventListener("click", function (event) {
+							return _this.cloneItem(event);
 						});
 
 						// If the item has a parent the add its element as a child to the parent.
 						// In other case place it in the list sent to the constructor.
 						if (typeof this.parent !== 'undefined') {
 							var parentItemOl = this.list.querySelector('[data-id="' + this.parent + '"] ol');
-							parentItemOl.appendChild(element);
+							parentItemOl.appendChild(this.element);
 						} else {
-							this.list.appendChild(element);
+							this.list.appendChild(this.element);
 						}
 
 						// If item has children then create items for them to.
@@ -78,21 +79,30 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 						}
 					}
 
-					// Toggle the edit item view.
+					// Removes the element.
 
 				}, {
-					key: "toggleItemEdit",
-					value: function toggleItemEdit(event) {
-						event.preventDefault();
-						var item = featuredAreaList.querySelector('[data-id="' + this.data.id + '"]');
-						var open = featuredAreaList.querySelector("li.open");
+					key: "removeItem",
+					value: function removeItem() {
+						this.element.remove();
+					}
 
-						if (open !== null) open.classList.remove("open");
-						if (open == item) {
-							item.classList.remove("open");
-						} else {
-							item.classList.add("open");
+					// Add featured item to featured area.
+
+				}, {
+					key: "cloneItem",
+					value: function cloneItem(event) {
+						var item = new FeaturedItem(this.data, featuredAreaList);
+						featuredArea.toggleSearchPanel(event);
+						if (featuredArea.isDuplicate(this.data)) {
+							featuredArea.addErrorNotification('This item already exist in the selected featured area.');
+							item.removeItem();
+						} else if (featuredArea.isFull()) {
+							featuredArea.addErrorNotification('The selected featured area is full.');
+							item.removeItem();
+							return;
 						}
+						featuredArea.setSettings();
 					}
 
 					// Delete item from the DOM and then update Settings.
@@ -383,16 +393,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 							this.nestedSortables[i] = new Sortable(sortables[i], {
 								group: 'nested',
 								swapThreshold: 0.65,
-								emptyInsertThreshold: 42,
-								onSort: function onSort(evt) {
+								emptyInsertThreshold: 5,
+								animation: 150,
+								onSort: function onSort(event) {
 									_this6.setSettings();
 								},
-								onAdd: function onAdd(evt) {
-									if (_this6.isDuplicate(evt.clone.dataset)) {
-										evt.item.remove();
+								onAdd: function onAdd(event) {
+									if (_this6.isDuplicate(event.clone.dataset)) {
+										event.item.remove();
 										_this6.addErrorNotification('This item already exist in the selected featured area.');
 									} else if (_this6.isFull()) {
-										evt.item.remove();
+										event.item.remove();
 										_this6.addErrorNotification('The selected featured area is full.');
 									}
 								}
@@ -408,6 +419,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 								pull: 'clone',
 								put: false // Do not allow items to be put into this list
 							},
+							animation: 150,
 							sort: false // To disable sorting: set sort to false
 						});
 					}

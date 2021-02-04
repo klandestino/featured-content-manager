@@ -44,8 +44,9 @@ ol.accordion-section-content {
 
 		.handle {
 			position: relative;
-			display: block;
-			overflow-y: hidden;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
 
 			margin-top: -1px;
 			padding: 10px 15px;
@@ -58,7 +59,6 @@ ol.accordion-section-content {
 			border: 1px solid #ddd;
 
 			font-size: 13px;
-			font-weight: 600;
 			color: #23282d;
 			white-space: nowrap;
 
@@ -72,58 +72,66 @@ ol.accordion-section-content {
 				z-index: 1 !important;
 			}
 
-			&:after {
-				content: "";
-				position: absolute;
-				background: linear-gradient(to left, white 55%, rgba(255, 255, 255, 0) 100%);
-				height: 100%;
-				width: 65px;
-				top: 0;
-				right: 0;
-				z-index: 1;
-			}
-
 			.featured-item-title {
-				display: block;
-				line-height: 20px;
-
+				display: inline-block;
+				flex-grow: 1;
+				position: relative;
+				overflow-y: hidden;
 				font-weight: 600;
+				line-height: 20px;
+				font-weight: 600;
+
+				&:after {
+					content: "";
+					position: absolute;
+					background: linear-gradient(to left, white 55%, rgba(255, 255, 255, 0) 100%);
+					height: 100%;
+					width: 65px;
+					top: 0;
+					right: 0;
+					z-index: 1;
+				}
 			}
 
-			.featured-item-edit {
-				position: absolute;
-				right: 2px;
-				top: 2px;
-				display: block;
-				width: 30px;
-				height: 38px;
-				margin-right: 0!important;
-				-webkit-box-shadow: none;
-				box-shadow: none;
-				outline: 0;
-				overflow: hidden;
-				cursor: pointer;
-				text-align: center;
+			.featured-item-type {
+				color: #666;
+			    line-height: 1.5;
+			}
 
-				z-index: 2;
+			.featured-item-controls {
+				display: flex;
+				align-items: center;
 
-				.toggle-indicator {
-					display: inline-block;
-					font-size: 20px;
-					line-height: 1;
-
-					&:before {
-						content: "\f140";
+				.featured-item-delete {
+				    display: inline-block;
+					text-decoration: unset;
+					margin-left: 10px;
+				    
+				    &:before {
+						content: "\f335";
 						display: block;
-						padding: 1px 2px 1px 0;
-						speak: none;
-						-webkit-border-radius: 50%;
-						border-radius: 50%;
-						color: #72777c;
-						font: 400 20px/1 dashicons;
+						font: normal 20px/1 dashicons;
 						-webkit-font-smoothing: antialiased;
 						-moz-osx-font-smoothing: grayscale;
-						text-decoration: none!important;
+					}
+				}
+
+				.featured-item-add {
+					display: none;
+					text-decoration: unset;
+					
+					height: 20px;
+					width: 20px;
+					margin-right: -5px;
+					margin-left: 10px;
+				    
+				    &:before {
+						content: "\f132";
+						height: 15px;
+						display: block;
+						font: normal 16px/1 dashicons;
+						-webkit-font-smoothing: antialiased;
+						-moz-osx-font-smoothing: grayscale;
 					}
 				}
 			}
@@ -367,23 +375,17 @@ ol.accordion-section-content {
 						}
 					}
 
-					.featured-item-edit {
+					.featured-item-delete {
 						display: none;
 					}
 
-					.featured-item-type {
-						float: right;
-						font-size: 12px;
-						text-align: right;
-						color: #666;
-						text-transform: capitalize;
-					}
+					.featured-item-add {
+						display: none;
 
-					.featured-item-title {
-						display: block;
-						line-height: 20px;
-						font-weight: 600;
-					}
+						@media screen and (max-width: 600px){
+							display: inline-block;
+						}
+				    }
 				}
 			}
 

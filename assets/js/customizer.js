@@ -18,6 +18,7 @@
 					this.data = data;
 					this.list = list;
 					this.parent = parent;
+					this.element = null;
 
 					// Add item.
 					this.addItem();
@@ -30,18 +31,18 @@
 					let innerHTML = featuredItemTemplate(
 						this.data
 					);
-					let element = htmlToElement(innerHTML);
+					this.element = htmlToElement(innerHTML);
 
 					// Add event listeners for item.
-					element
+					this.element
 						.querySelector(".button-link-delete")
 						.addEventListener("click", event =>
 							this.deleteItem(event)
 						);
-					element
-						.querySelector(".featured-item-edit")
+					this.element
+						.querySelector(".featured-item-add")
 						.addEventListener("click", event =>
-							this.toggleItemEdit(event)
+							this.cloneItem(event)
 						);
 
 					// If the item has a parent the add its element as a child to the parent.
@@ -50,9 +51,9 @@
 						typeof this.parent !== 'undefined'
 					) {
 						const parentItemOl = this.list.querySelector('[data-id="' + this.parent + '"] ol');
-						parentItemOl.appendChild(element);
+						parentItemOl.appendChild(this.element);
 					} else {
-						this.list.appendChild(element);
+						this.list.appendChild(this.element);
 					}
 
 					// If item has children then create items for them to.
@@ -65,18 +66,24 @@
 					}
 				}
 
-				// Toggle the edit item view.
-				toggleItemEdit(event) {
-					event.preventDefault();
-					const item = featuredAreaList.querySelector('[data-id="' + this.data.id + '"]');
-					const open = featuredAreaList.querySelector("li.open");
+				// Removes the element.
+				removeItem() {
+					this.element.remove();
+				}
 
-					if (open !== null) open.classList.remove("open");
-					if (open == item) {
-						item.classList.remove("open");
-					} else {
-						item.classList.add("open");
+				// Add featured item to featured area.
+				cloneItem(event) {
+					let item = new FeaturedItem(this.data, featuredAreaList);
+					featuredArea.toggleSearchPanel(event);
+					if ( featuredArea.isDuplicate( this.data ) ) {
+						featuredArea.addErrorNotification('This item already exist in the selected featured area.');
+						item.removeItem();
+					} else if ( featuredArea.isFull() ) {
+						featuredArea.addErrorNotification('The selected featured area is full.');
+						item.removeItem();
+						return;
 					}
+					featuredArea.setSettings();
 				}
 
 				// Delete item from the DOM and then update Settings.
@@ -327,16 +334,17 @@
 						this.nestedSortables[i] = new Sortable(sortables[i], {
 							group: 'nested',
 							swapThreshold: 0.65,
-							emptyInsertThreshold: 42,
-							onSort: (evt) => {
+							emptyInsertThreshold: 5,
+							animation: 150,
+							onSort: (event) => {
 								this.setSettings();
 							},
-							onAdd: (evt) => {
-								if ( this.isDuplicate( evt.clone.dataset ) ) {
-									evt.item.remove();
+							onAdd: (event) => {
+								if ( this.isDuplicate( event.clone.dataset ) ) {
+									event.item.remove();
 									this.addErrorNotification('This item already exist in the selected featured area.');
 								} else if ( this.isFull() ) {
-									evt.item.remove();
+									event.item.remove();
 									this.addErrorNotification('The selected featured area is full.');
 								}
 							}
@@ -352,6 +360,7 @@
 					        pull: 'clone',
 					        put: false // Do not allow items to be put into this list
 					    },
+					    animation: 150,
 					    sort: false // To disable sorting: set sort to false
 					});
 				}

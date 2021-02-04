@@ -177,15 +177,19 @@ class Customizer {
 					<span class="featured-item-title">
 						{{data.title}}
 					</span>
-					<button type="button" class="button-link featured-item-edit" aria-expanded="false">
-						<span class="screen-reader-text"><?php echo esc_html( __( 'Edit featured item', 'featured-content-manager' ) ); ?>: {{data.title}}</span><span class="toggle-indicator" aria-hidden="true"></span>
-					</button>
-				</div>
-				<div class="featured-item-settings">
-					<div class="featured-item-actions">
-						<button type="button" class="button-link button-link-delete item-delete"><?php echo esc_html( __( 'Remove', 'featured-content-manager' ) ); ?></button>
-						<span class="spinner"></span>
-					</div>
+					<span class="featured-item-controls">
+						<span class="featured-item-type" aria-hidden="true">{{data.type}}</span>
+						<button type="button" class="button-link button-link-delete featured-item-delete">
+							<span class="screen-reader-text">
+								Remove Featured Item: {{data.title}} ({{data.type}})
+							</span>
+						</button>
+						<button type="button" class="button-link button-link-add featured-item-add">
+							<span class="screen-reader-text">
+								Add Featured Item: {{data.title}} ({{data.type}})
+							</span>
+						</button>
+					</span>
 				</div>
 				<ol class="nested-sortable"></ol>
 			</li>
