@@ -20,8 +20,19 @@
 					this.parent = parent;
 					this.element = null;
 
-					// Add item.
-					this.addItem();
+					if(this.isFeaturedItemObject(this.data)) {
+
+						// Add item.
+						this.addItem();
+					}
+				}
+
+				isFeaturedItemObject(obj) {
+					return (
+						obj.hasOwnProperty('id')
+						&& obj.hasOwnProperty('title')
+						&& obj.hasOwnProperty('id')
+					);
 				}
 
 				// Create featured item element and add to list.
@@ -44,6 +55,10 @@
 						.addEventListener("click", event =>
 							this.cloneItem(event)
 						);
+
+					// Initiate nested sortable in new featured item.
+					let nestedSortable = this.element.querySelector('.nested-sortable');
+					featuredArea.initSortable(nestedSortable);
 
 					// If the item has a parent the add its element as a child to the parent.
 					// In other case place it in the list sent to the constructor.
@@ -234,10 +249,10 @@
 					);
 
 					// Load the featured area settings from customizer.
-					this.loadSettings();
+					//this.loadSettings();
 
 					// Initialize nestledSortable
-					this.initSortables();
+					//this.initSortables();
 				}
 
 				// Load the featured area settings from customizer.
@@ -258,6 +273,8 @@
 							new FeaturedItem(item, featuredAreaList);
 						}
 					});
+
+					this.initSortables();
 				}
 
 				// Returns object with data attributes from element.
@@ -326,35 +343,16 @@
 
 				// Initialize sortablejs elemtens.
 				initSortables() {
-					let sortables = [].slice.call(container.querySelectorAll('.nested-sortable'));
 
-					// Loop through each nested sortable element.
-					// These lists can recive cloned items from search result list.
-					for (var i = 0; i < sortables.length; i++) {
-						this.nestedSortables[i] = new Sortable(sortables[i], {
-							group: 'nested',
-							swapThreshold: 0.65,
-							emptyInsertThreshold: 5,
-							animation: 150,
-							onSort: (event) => {
-								this.setSettings();
-							},
-							onAdd: (event) => {
-								if ( this.isDuplicate( event.clone.dataset ) ) {
-									event.item.remove();
-									this.addErrorNotification('This item already exist in the selected featured area.');
-								} else if ( this.isFull() ) {
-									event.item.remove();
-									this.addErrorNotification('The selected featured area is full.');
-								}
-							}
-						});
-					}
+					// Create featured area list.
+					// This lists can recive cloned items from search result list.
+					let featuredAreaList = container.querySelector('.featured-area');
+					this.initSortable(featuredAreaList);
 
 					// Create search result list.
 					// This list can clone each items to featured area lists.
 					let searchList = document.querySelector('#featured-items-search-list');
-					new Sortable(searchList, {
+					this.initSortable(searchList, {
 					    group: {
 					        name: 'nested',
 					        pull: 'clone',
@@ -363,6 +361,31 @@
 					    animation: 150,
 					    sort: false // To disable sorting: set sort to false
 					});
+				}
+
+				// Initiate sortable witht default values for nest-sortables.
+				initSortable(
+					sortable,
+					args = {
+						group: 'nested',
+						swapThreshold: 0.65,
+						emptyInsertThreshold: 5,
+						animation: 150,
+						onSort: (event) => {
+							this.setSettings();
+						},
+						onAdd: (event) => {
+							if ( this.isDuplicate( event.clone.dataset ) ) {
+								event.item.remove();
+								this.addErrorNotification('This item already exist in the selected featured area.');
+							} else if ( this.isFull() ) {
+								event.item.remove();
+								this.addErrorNotification('The selected featured area is full.');
+							}
+						}
+					}
+				) {
+					new Sortable(sortable, args);
 				}
 
 				addErrorNotification(message) {
@@ -382,6 +405,7 @@
 
 			// Initiate the featured area and loat its settings.
 			featuredArea = new FeaturedArea();
+			featuredArea.loadSettings();
 		}
 	});
 

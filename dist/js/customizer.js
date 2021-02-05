@@ -37,14 +37,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					this.parent = parent;
 					this.element = null;
 
-					// Add item.
-					this.addItem();
+					if (this.isFeaturedItemObject(this.data)) {
+
+						// Add item.
+						this.addItem();
+					}
 				}
 
-				// Create featured item element and add to list.
-
-
 				_createClass(FeaturedItem, [{
+					key: "isFeaturedItemObject",
+					value: function isFeaturedItemObject(obj) {
+						return obj.hasOwnProperty('id') && obj.hasOwnProperty('title') && obj.hasOwnProperty('id');
+					}
+
+					// Create featured item element and add to list.
+
+				}, {
 					key: "addItem",
 					value: function addItem() {
 						var _this = this;
@@ -61,6 +69,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 						this.element.querySelector(".featured-item-add").addEventListener("click", function (event) {
 							return _this.cloneItem(event);
 						});
+
+						// Initiate nested sortable in new featured item.
+						var nestedSortable = this.element.querySelector('.nested-sortable');
+						featuredArea.initSortable(nestedSortable);
 
 						// If the item has a parent the add its element as a child to the parent.
 						// In other case place it in the list sent to the constructor.
@@ -267,10 +279,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					});
 
 					// Load the featured area settings from customizer.
-					this.loadSettings();
+					//this.loadSettings();
 
 					// Initialize nestledSortable
-					this.initSortables();
+					//this.initSortables();
 				}
 
 				// Load the featured area settings from customizer.
@@ -295,6 +307,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 								new FeaturedItem(item, featuredAreaList);
 							}
 						});
+
+						this.initSortables();
 					}
 
 					// Returns object with data attributes from element.
@@ -383,37 +397,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				}, {
 					key: "initSortables",
 					value: function initSortables() {
-						var _this6 = this;
 
-						var sortables = [].slice.call(container.querySelectorAll('.nested-sortable'));
-
-						// Loop through each nested sortable element.
-						// These lists can recive cloned items from search result list.
-						for (var i = 0; i < sortables.length; i++) {
-							this.nestedSortables[i] = new Sortable(sortables[i], {
-								group: 'nested',
-								swapThreshold: 0.65,
-								emptyInsertThreshold: 5,
-								animation: 150,
-								onSort: function onSort(event) {
-									_this6.setSettings();
-								},
-								onAdd: function onAdd(event) {
-									if (_this6.isDuplicate(event.clone.dataset)) {
-										event.item.remove();
-										_this6.addErrorNotification('This item already exist in the selected featured area.');
-									} else if (_this6.isFull()) {
-										event.item.remove();
-										_this6.addErrorNotification('The selected featured area is full.');
-									}
-								}
-							});
-						}
+						// Create featured area list.
+						// This lists can recive cloned items from search result list.
+						var featuredAreaList = container.querySelector('.featured-area');
+						this.initSortable(featuredAreaList);
 
 						// Create search result list.
 						// This list can clone each items to featured area lists.
 						var searchList = document.querySelector('#featured-items-search-list');
-						new Sortable(searchList, {
+						this.initSortable(searchList, {
 							group: {
 								name: 'nested',
 								pull: 'clone',
@@ -422,6 +415,35 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 							animation: 150,
 							sort: false // To disable sorting: set sort to false
 						});
+					}
+
+					// Initiate sortable witht default values for nest-sortables.
+
+				}, {
+					key: "initSortable",
+					value: function initSortable(sortable) {
+						var _this6 = this;
+
+						var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {
+							group: 'nested',
+							swapThreshold: 0.65,
+							emptyInsertThreshold: 5,
+							animation: 150,
+							onSort: function onSort(event) {
+								_this6.setSettings();
+							},
+							onAdd: function onAdd(event) {
+								if (_this6.isDuplicate(event.clone.dataset)) {
+									event.item.remove();
+									_this6.addErrorNotification('This item already exist in the selected featured area.');
+								} else if (_this6.isFull()) {
+									event.item.remove();
+									_this6.addErrorNotification('The selected featured area is full.');
+								}
+							}
+						};
+
+						new Sortable(sortable, args);
 					}
 				}, {
 					key: "addErrorNotification",
@@ -441,6 +463,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 
 			featuredArea = new FeaturedArea();
+			featuredArea.loadSettings();
 		}
 	});
 
