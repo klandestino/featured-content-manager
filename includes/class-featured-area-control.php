@@ -21,14 +21,14 @@ class Featured_Area_Control extends \WP_Customize_Control {
 
 	public $id = '';
 
-	public $max = 0;
+	public $max = 10;
 
 	public $levels = 1;
 
 	public function __construct( $manager, $id, $args = array() ) {
 		parent::__construct( $manager, $id, $args );
 		$this->id             = $id;
-		$this->max            = $args['max'] ?? 0;
+		$this->max            = $args['max'] ?? 10;
 		$this->levels         = $args['levels'] ?? 1;
 		$this->object_type    = $args['object_type'] ?? 'post';
 		$this->object_subtype = $args['object_subtype'] ?? 'post';

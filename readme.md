@@ -12,7 +12,8 @@ add_theme_support( 'featured-content-manager',
 		'featured_areas' => [
 			'posts'    => [
 				'title'           => 'Featured Posts Area',
-				'max'             => 10,
+				'max'             => 10, // Default is 10.
+				'levels'          => 2,  // Default is 1.
 				'object_type'     => 'post',
 				'object_subtypes' => [ 'post' ],
 			],
