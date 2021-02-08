@@ -11,16 +11,16 @@ add_theme_support( 'featured-content-manager',
 	array(
 		'featured_areas' => [
 			'posts'    => [
-				'title'          => 'Featured Posts Area',
-				'max'            => 10,
-				'object_type'    => 'post',
-				'object_subtype' => 'post'
+				'title'           => 'Featured Posts Area',
+				'max'             => 10,
+				'object_type'     => 'post',
+				'object_subtypes' => [ 'post' ],
 			],
 			'category' => [
-				'title'          => 'Featured Categories Area',
-				'max'            => 5,
-				'type'           => 'term',
-				'object_subtype' => 'category',
+				'title'           => 'Featured Categories Area',
+				'max'             => 5,
+				'object_type'     => 'term',
+				'object_subtypes' => [ 'category', 'post_tag' ],
 			]
 		],
 	)

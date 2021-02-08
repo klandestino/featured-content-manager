@@ -59,10 +59,12 @@ class Customizer {
 						$wp_customize,
 						$featured_area_slug,
 						array(
-							'label'       => esc_html__( 'Featured Area', 'customizer-background-control' ),
-							'section'     => $featured_area_slug,
-							'max'         => $featured_area['max'] ?? null,
-							'object_type' => $featured_area['object_type'] ?? 'post',
+							'label'          => esc_html__( 'Featured Area', 'customizer-background-control' ),
+							'section'        => $featured_area_slug,
+							'max'            => $featured_area['max'] ?? null,
+							'levels'         => $featured_area['levels'] ?? null,
+							'object_type'    => $featured_area['object_type'] ?? 'post',
+							'object_subtype' => $featured_area['object_subtype'] ?? 'post',
 						)
 					)
 				);
@@ -74,7 +76,6 @@ class Customizer {
 	 * Enque customizer scripts for Featured Content.
 	 */
 	public static function enqueue_customize_control() {
-		$fields = Featured_Content::get_fields();
 		wp_enqueue_media();
 		wp_enqueue_style(
 			'featured-area-style',
@@ -124,12 +125,12 @@ class Customizer {
 				dirname( __DIR__, 1 ) . '/languages'
 			);
 		}
+
 		wp_localize_script(
 			'featured-area-script',
 			'wpFeaturedContentApiSettings',
 			array(
 				'base'   => 'featured-content-manager/v1/',
-				'fields' => wp_json_encode( $fields ),
 			)
 		);
 		wp_enqueue_script( 'featured-area-script' );
@@ -168,25 +169,24 @@ class Customizer {
 	 * Function that prints WP Template markup for an item.
 	 */
 	public static function customize_print_featured_item_template() {
-		$fields = Featured_Content::get_fields();
 		?>
 		<script type="text/html" id="tmpl-featured-item">
-			<li data-id="{{data.id}}" data-title="{{data.title}}" data-type="{{data.type}}" class="featured-item-tpl">
+			<li data-id="{{data.id}}" data-title="{{data.title}}" data-type="{{data.type}}" data-subtype="{{data.subtype}}" class="featured-item-tpl">
 				<# if ( data.title ) { #>
 				<div class="handle">
 					<span class="featured-item-title">
 						{{data.title}}
 					</span>
 					<span class="featured-item-controls">
-						<span class="featured-item-type" aria-hidden="true">{{data.type}}</span>
+						<span class="featured-item-type" aria-hidden="true">{{data.subtype}}</span>
 						<button type="button" class="button-link button-link-delete featured-item-delete">
 							<span class="screen-reader-text">
-								Remove Featured Item: {{data.title}} ({{data.type}})
+								Remove Featured Item: {{data.title}} ({{data.subtype}})
 							</span>
 						</button>
 						<button type="button" class="button-link button-link-add featured-item-add">
 							<span class="screen-reader-text">
-								Add Featured Item: {{data.title}} ({{data.type}})
+								Add Featured Item: {{data.title}} ({{data.subtype}})
 							</span>
 						</button>
 					</span>
@@ -195,6 +195,39 @@ class Customizer {
 			</li>
 			<# } #>
 		</script>
+		<?php
+	}
+
+	/**
+	 * Print some *hack* css style.
+	 */
+	public static function customizer_colors() {
+		$featured_areas = Featured_Content::get_featured_areas();
+		?>
+		<style type="text/css">
+		<?php
+		foreach ( $featured_areas as $id => $featured_area ) {
+			$levels    = $featured_area['levels'] ?? 0;
+			$max       = $featured_area['max'] ? $featured_area['max'] + 1 : 10;
+			$level_css = '>li>ol';
+
+			for ($i=1; $i < $levels; $i++) { 
+				echo "ol#$id $level_css { display: block; }";
+			}
+
+			?>
+			ol#<?php echo $id; ?> li:nth-child(<?php echo $max; ?>)::before {
+				content: "";
+				border-bottom: 1px dashed lightgray;
+				margin: 10px 0;
+				display: block;
+				-webkit-font-smoothing: antialiased;
+				-moz-osx-font-smoothing: grayscale;
+			}
+			<?php
+		}
+		?>
+		</style>
 		<?php
 	}
 }

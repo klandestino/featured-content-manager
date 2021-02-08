@@ -35,6 +35,7 @@ add_action(
 	'init',
 	function() {
 		if ( current_theme_supports( 'featured-content-manager' ) ) {
+			add_action( 'admin_print_styles', array( 'Featured_Content_Manager\Customizer', 'customizer_colors' ) );
 			add_action( 'customize_register', array( 'Featured_Content_Manager\Customizer', 'customize_register' ) );
 			add_action( 'customize_controls_enqueue_scripts', array( 'Featured_Content_Manager\Customizer', 'enqueue_customize_control' ) );
 			add_action( 'customize_controls_print_footer_scripts', array( 'Featured_Content_Manager\Customizer', 'customize_print_featured_item_template' ) );

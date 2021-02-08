@@ -26,6 +26,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 			    search_timer = void 0,
 			    max = void 0,
 			    type = void 0,
+			    subtype = void 0,
 			    timer_ms = 500;
 
 			var FeaturedItem = function () {
@@ -76,7 +77,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 						// If the item has a parent the add its element as a child to the parent.
 						// In other case place it in the list sent to the constructor.
-						if (typeof this.parent !== 'undefined') {
+						if (typeof this.parent !== 'undefined' && featuredAreaList.dataset.levels > 1) {
 							var parentItemOl = this.list.querySelector('[data-id="' + this.parent + '"] ol');
 							parentItemOl.appendChild(this.element);
 						} else {
@@ -237,7 +238,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 							});
 
 							// Start AJAX request.
-							window.fetch(wpApiSettings.root + wpFeaturedContentApiSettings.base + "posts?s=" + _search + "&type=" + type, {
+							window.fetch(wpApiSettings.root + wpFeaturedContentApiSettings.base + "posts?s=" + _search + "&type=" + type + "&subtype=" + subtype, {
 								method: "GET",
 								headers: {
 									Accept: "application/json",
@@ -272,6 +273,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					// Set featured area globals.
 					max = featuredAreaList.dataset.max;
 					type = featuredAreaList.dataset.type;
+					subtype = featuredAreaList.dataset.subtype;
 
 					// Add eventlistener on add button click to toggle search panel.
 					addItemButton.addEventListener("click", function (event) {
@@ -298,8 +300,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 							settings = settings;
 						}
 
-						// Remove items larger than the featured are max value.
-						settings = settings.slice(0, max);
+						// Remove items larger than 50.
+						settings = settings.slice(0, 50);
 
 						// Add items from settings to the DOM.
 						settings.forEach(function (item) {
@@ -436,9 +438,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 								if (_this6.isDuplicate(event.clone.dataset)) {
 									event.item.remove();
 									_this6.addErrorNotification('This item already exist in the selected featured area.');
-								} else if (_this6.isFull()) {
-									event.item.remove();
-									_this6.addErrorNotification('The selected featured area is full.');
 								}
 							}
 						};

@@ -11,6 +11,7 @@
 				search_timer,
 				max,
 				type,
+				subtype,
 				timer_ms = 500;
 
 			class FeaturedItem {
@@ -63,7 +64,8 @@
 					// If the item has a parent the add its element as a child to the parent.
 					// In other case place it in the list sent to the constructor.
 					if (
-						typeof this.parent !== 'undefined'
+						typeof this.parent !== 'undefined' &&
+						featuredAreaList.dataset.levels > 1
 					) {
 						const parentItemOl = this.list.querySelector('[data-id="' + this.parent + '"] ol');
 						parentItemOl.appendChild(this.element);
@@ -209,7 +211,9 @@
 								"posts?s=" +
 								search +
 								"&type=" +
-								type,
+								type +
+								"&subtype=" +
+								subtype,
 							{
 								method: "GET",
 								headers: {
@@ -242,6 +246,7 @@
 					// Set featured area globals.
 					max = featuredAreaList.dataset.max;
 					type = featuredAreaList.dataset.type;
+					subtype = featuredAreaList.dataset.subtype;
 
 					// Add eventlistener on add button click to toggle search panel.
 					addItemButton.addEventListener("click", event =>
@@ -264,8 +269,8 @@
 						settings = settings;
 					}
 
-					// Remove items larger than the featured are max value.
-					settings = settings.slice(0, max);
+					// Remove items larger than 50.
+					settings = settings.slice(0, 50);
 
 					// Add items from settings to the DOM.
 					settings.forEach(item => {
@@ -378,9 +383,6 @@
 							if ( this.isDuplicate( event.clone.dataset ) ) {
 								event.item.remove();
 								this.addErrorNotification('This item already exist in the selected featured area.');
-							} else if ( this.isFull() ) {
-								event.item.remove();
-								this.addErrorNotification('The selected featured area is full.');
 							}
 						}
 					}

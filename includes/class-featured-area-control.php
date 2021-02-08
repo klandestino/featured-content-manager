@@ -19,18 +19,27 @@ class Featured_Area_Control extends \WP_Customize_Control {
 	 */
 	public $type = 'featured-area';
 
+	public $id = '';
+
 	public $max = 0;
+
+	public $levels = 1;
 
 	public function __construct( $manager, $id, $args = array() ) {
 		parent::__construct( $manager, $id, $args );
-		$this->max         = $args['max'] ?? 0;
-		$this->object_type = $args['object_type'] ?? 'post';
+		$this->id             = $id;
+		$this->max            = $args['max'] ?? 0;
+		$this->levels         = $args['levels'] ?? 1;
+		$this->object_type    = $args['object_type'] ?? 'post';
+		$this->object_subtype = $args['object_subtype'] ?? 'post';
 	}
 
 	public function to_json() {
 		parent::to_json();
-		$this->json['max']         = $this->max;
-		$this->json['object_type'] = $this->object_type;
+		$this->json['max']            = $this->max;
+		$this->json['levels']         = $this->levels;
+		$this->json['object_type']    = $this->object_type;
+		$this->json['object_subtype'] = $this->object_subtype;
 	}
 
 	/**
@@ -38,7 +47,7 @@ class Featured_Area_Control extends \WP_Customize_Control {
 	 */
 	public function content_template() {
 		?>
-		<ol id={{data.section}} class="nested-sortable featured-area" data-max="{{data.max}}" data-type="{{data.object_type}}"></ol>
+		<ol id={{data.section}} class="nested-sortable featured-area" data-max="{{data.max}}" data-levels="{{data.levels}}" data-type="{{data.object_type}}" data-subtype="{{data.object_subtype}}"></ol>
 		<button class="add-featured-item button">Lägg till</button>
 		<div class="search-panel"></div>
 		<?php

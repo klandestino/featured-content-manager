@@ -113,50 +113,9 @@ ol.accordion-section-content {
             font: normal 16px/1 dashicons;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale; }
-    ol.featured-area li .featured-item-settings,
-    ol.accordion-section-content li .featured-item-settings {
-      display: none;
-      position: relative;
-      padding: 10px 15px;
-      border: 1px solid #999;
-      border-top: none;
-      z-index: 1 !important;
-      -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
-      box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04); }
-      ol.featured-area li .featured-item-settings p,
-      ol.accordion-section-content li .featured-item-settings p {
-        width: 100%;
-        height: auto;
-        margin: 0 0 8px;
-        font-size: 13px; }
-        ol.featured-area li .featured-item-settings p label input[type=text],
-        ol.accordion-section-content li .featured-item-settings p label input[type=text] {
-          width: 100%; }
-        ol.featured-area li .featured-item-settings p label textarea,
-        ol.accordion-section-content li .featured-item-settings p label textarea {
-          width: 100%;
-          resize: none; }
-      ol.featured-area li .featured-item-settings .featured-item-actions,
-      ol.accordion-section-content li .featured-item-settings .featured-item-actions {
-        width: 100%;
-        height: auto; }
-        ol.featured-area li .featured-item-settings .featured-item-actions .button-link-delete,
-        ol.accordion-section-content li .featured-item-settings .featured-item-actions .button-link-delete {
-          margin: 0;
-          padding: 0;
-          cursor: pointer;
-          color: #a00; }
-        ol.featured-area li .featured-item-settings .featured-item-actions .spinner,
-        ol.accordion-section-content li .featured-item-settings .featured-item-actions .spinner {
-          position: absolute;
-          top: 20px;
-          right: 21px;
-          margin: 0 !important; }
-        ol.featured-area li .featured-item-settings .featured-item-actions:after,
-        ol.accordion-section-content li .featured-item-settings .featured-item-actions:after {
-          display: none; }
     ol.featured-area li ol,
     ol.accordion-section-content li ol {
+      display: none;
       position: relative;
       list-style: none;
       margin-left: 20px; }

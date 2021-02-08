@@ -136,63 +136,9 @@ ol.accordion-section-content {
 				}
 			}
 		}
-			
-		.featured-item-settings {
-			display: none;
-
-			position: relative;
-			padding: 10px 15px;
-			border: 1px solid #999;
-			border-top: none;
-			z-index: 1 !important;
-
-			-webkit-box-shadow: 0 1px 1px rgba(0,0,0,.04);
-			box-shadow: 0 1px 1px rgba(0,0,0,.04);  
-
-			p {
-				width: 100%;
-				height: auto;
-				margin: 0 0 8px;
-
-				font-size: 13px;
-
-				label {
-					input[type=text] {
-						width: 100%;
-					}
-					textarea {
-						width: 100%;
-						resize: none;
-					}
-				}
-			}
-
-			.featured-item-actions {
-				width: 100%;
-				height: auto;
-
-					.button-link-delete {
-						margin: 0;
-						padding: 0;
-						cursor: pointer;
-
-						color: #a00;
-					}
-
-					.spinner {
-						position: absolute;
-						top: 20px;
-						right: 21px;
-						margin: 0 !important;
-				}
-
-				&:after {
-					display: none;
-				}
-			}
-		}
 
 		ol {
+			display: none;
 			position: relative;
 			list-style: none;
 			margin-left: 20px;

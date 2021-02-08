@@ -13,43 +13,6 @@ namespace Featured_Content_Manager;
  */
 class Featured_Content {
 	/**
-	 * Getting fields for this theme setup.
-	 */
-	public static function get_fields() {
-		$fields = array();
-		$args   = get_theme_support( 'featured-content-manager' )[0];
-		if ( isset( $args['fields'] ) ) {
-			foreach ( $args['fields'] as $key => $field ) {
-				switch ( $field ) {
-					case 'post_title':
-						$fields['post_title']['name']         = 'post_title';
-						$fields['post_title']['display_name'] = 'Post title';
-						$fields['post_title']['type']         = 'input';
-						break;
-					case 'post_excerpt':
-						$fields['post_excerpt']['name']         = 'post_excerpt';
-						$fields['post_excerpt']['display_name'] = 'Post excerpt';
-						$fields['post_excerpt']['type']         = 'textarea';
-						break;
-					case 'thumbnail':
-						$fields['thumbnail']['name']         = 'thumbnail';
-						$fields['thumbnail']['display_name'] = 'Thumbnail';
-						$fields['thumbnail']['type']         = 'media';
-						break;
-				}
-				if ( 'select' === $key ) {
-					$field_name                            = $field['name'];
-					$fields[ $field_name ]['name']         = $field['name'];
-					$fields[ $field_name ]['display_name'] = $field['display_name'];
-					$fields[ $field_name ]['type']         = 'select';
-					$fields[ $field_name ]['values']       = $field['values'];
-				}
-			}
-		}
-		return $fields;
-	}
-
-	/**
 	 * Get all the registred areas.
 	 */
 	public static function get_featured_areas() {
@@ -80,5 +43,4 @@ class Featured_Content {
 		}
 		return array();
 	}
-
 }
