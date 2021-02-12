@@ -49,7 +49,6 @@ class Customizer {
 					$featured_area_slug,
 					array(
 						'title'    => esc_html( $featured_area['title'] ),
-						'description' => 'Förstasidan',
 						'priority' => 1,
 						'panel'    => 'featured_content_panel',
 					)

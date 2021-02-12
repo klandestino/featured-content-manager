@@ -101,7 +101,7 @@ class Rest {
 	 *
 	 * @param $result An array of search results.
 	 */
-	public function fcm_post_filter_result( $result = array() ) {
+	public static function fcm_post_filter_result( $result = array() ) {
 		$filtered_result = array();
 		foreach ( $result as $post ) {
 			$filtered_result[] = self::prepare_post( $post );
@@ -114,7 +114,7 @@ class Rest {
 	 *
 	 * @param $result An array of search results.
 	 */
-	public function fcm_term_filter_result( $result = array() ) {
+	public static function fcm_term_filter_result( $result = array() ) {
 		$filtered_result = array();
 		foreach ( $result as $term ) {
 			$filtered_result[] = self::prepare_term( $term );
