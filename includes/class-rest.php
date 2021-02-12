@@ -49,7 +49,7 @@ class Rest {
 	 *
 	 * @param $args An array of search argumetns.
 	 */
-	public function fcm_post_search( $args = array( 'search_term' => '' ) ) {
+	public static function fcm_post_search( $args = array( 'search_term' => '' ) ) {
 		$query  = array(
 			'post_type'      => $args['object_subtype'],
 			'posts_per_page' => 10,
@@ -65,7 +65,7 @@ class Rest {
 	 *
 	 * @param $args An array of search argumetns.
 	 */
-	public function fcm_term_search( $args = array( 'search_term' => '' ) ) {
+	public static function fcm_term_search( $args = array( 'search_term' => '' ) ) {
 		$query  = array(
 			'taxonomy' => $args['object_subtype'],
 			'number'   => 10,
