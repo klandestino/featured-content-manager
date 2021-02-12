@@ -48,7 +48,7 @@ class Featured_Area_Control extends \WP_Customize_Control {
 	public function content_template() {
 		?>
 		<ol id={{data.section}} class="nested-sortable featured-area" data-max="{{data.max}}" data-levels="{{data.levels}}" data-type="{{data.object_type}}" data-subtype="{{data.object_subtype}}"></ol>
-		<button class="add-featured-item button">Lägg till</button>
+		<button class="add-featured-item button"><?php _e( 'Lägg till', 'featured-content-manager' ); ?></button>
 		<div class="search-panel"></div>
 		<?php
 	}

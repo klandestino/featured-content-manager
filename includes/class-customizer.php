@@ -49,6 +49,7 @@ class Customizer {
 					$featured_area_slug,
 					array(
 						'title'    => esc_html( $featured_area['title'] ),
+						'description' => 'Förstasidan',
 						'priority' => 1,
 						'panel'    => 'featured_content_panel',
 					)
@@ -59,7 +60,7 @@ class Customizer {
 						$wp_customize,
 						$featured_area_slug,
 						array(
-							'label'          => esc_html__( 'Featured Area', 'customizer-background-control' ),
+							'label'          => esc_html__( 'Featured Area', 'featured-content-manager' ),
 							'section'        => $featured_area_slug,
 							'max'            => $featured_area['max'] ?? null,
 							'levels'         => $featured_area['levels'] ?? null,
