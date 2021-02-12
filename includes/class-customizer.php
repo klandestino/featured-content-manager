@@ -178,15 +178,15 @@ class Customizer {
 						{{data.title}}
 					</span>
 					<span class="featured-item-controls">
-						<span class="featured-item-type" aria-hidden="true">{{data.subtype}}</span>
+						<span class="featured-item-type" aria-hidden="true">{{data.subtype_label}}</span>
 						<button type="button" class="button-link button-link-delete featured-item-delete">
 							<span class="screen-reader-text">
-								Remove Featured Item: {{data.title}} ({{data.subtype}})
+								Remove Featured Item: {{data.title}} ({{data.subtype_label}})
 							</span>
 						</button>
 						<button type="button" class="button-link button-link-add featured-item-add">
 							<span class="screen-reader-text">
-								Add Featured Item: {{data.title}} ({{data.subtype}})
+								Add Featured Item: {{data.title}} ({{data.subtype_label}})
 							</span>
 						</button>
 					</span>

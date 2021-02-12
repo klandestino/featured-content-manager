@@ -63,7 +63,7 @@ ol.accordion-section-content {
         display: inline-block;
         flex-grow: 1;
         position: relative;
-        overflow-y: hidden;
+        overflow: hidden;
         font-weight: 600;
         line-height: 20px;
         font-weight: 600; }

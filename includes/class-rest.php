@@ -129,12 +129,13 @@ class Rest {
 	 * @param \WP_Term $term The term object to strip.
 	 */
 	private static function prepare_term( \WP_Term $term ): array {
-		$prepared_term            = array();
-		$prepared_term['id']      = $term->term_id;
-		$prepared_term['title']   = $term->name;
-		$prepared_term['type']    = __( 'Term' );
-		$prepared_term['subtype'] = $term->taxonomy;
-		$prepared_term['meta']    = array();
+		$prepared_term                  = array();
+		$prepared_term['id']            = $term->term_id;
+		$prepared_term['title']         = $term->name;
+		$prepared_term['type']          = __( 'Term' );
+		$prepared_term['subtype']       = $term->taxonomy;
+		$prepared_term['subtype_label'] = get_taxonomy( $term->taxonomy )->labels->singular_name;
+		$prepared_term['meta']          = array();
 		return $prepared_term;
 	}
 
@@ -150,6 +151,7 @@ class Rest {
 		$prepared_post['title']                   = $post->post_title;
 		$prepared_post['type']                    = __( 'Post' );
 		$prepared_post['subtype']                 = $post->post_type;
+		$prepared_post['subtype_label']           = get_post_type_object( $post->post_type )->labels->singular_name;
 		$prepared_post['meta']                    = array();
 		$prepared_post['meta']['human_time_diff'] = human_time_diff( get_the_time( 'U', $post ), strtotime( wp_date( 'Y-m-d H:i:s' ) ) );
 		$prepared_post['meta']['post_status']     = $post->post_status;
