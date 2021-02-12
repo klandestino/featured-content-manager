@@ -172,7 +172,7 @@ class Customizer {
 	public static function customize_print_featured_item_template() {
 		?>
 		<script type="text/html" id="tmpl-featured-item">
-			<li data-id="{{data.id}}" data-title="{{data.title}}" data-type="{{data.type}}" data-subtype="{{data.subtype}}" class="featured-item-tpl">
+			<li data-id="{{data.id}}" data-title="{{data.title}}" data-type="{{data.type}}" data-subtype="{{data.subtype}}" data-subtype_label="{{data.subtype_label}}" class="featured-item-tpl">
 				<# if ( data.title ) { #>
 				<div class="handle">
 					<span class="featured-item-title">
