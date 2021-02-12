@@ -22,7 +22,7 @@ class Featured_Content {
 			foreach ( $args['featured_areas'] as $slug => $area ) {
 				// Back compat, allow unkeyed arrays when registering featured areas.
 				if ( is_int( $slug ) ) {
-					$slug = sanitize_title( $slug );
+					$slug = sanitize_title( $area );
 				}
 				$areas[ $slug ] = $area;
 			}

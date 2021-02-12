@@ -201,7 +201,7 @@ class Customizer {
 	/**
 	 * Print some *hack* css style.
 	 */
-	public static function customizer_colors() {
+	public static function customizer_css() {
 		$featured_areas = Featured_Content::get_featured_areas();
 		?>
 		<style type="text/css">
