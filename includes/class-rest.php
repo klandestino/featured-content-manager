@@ -51,7 +51,7 @@ class Rest {
 	 */
 	public static function fcm_post_search( $args = array( 'search_term' => '' ) ) {
 		$query  = array(
-			'post_type'      => $args['object_subtype'],
+			'post_type'      => explode( ',', $args['object_subtype'] ),
 			'posts_per_page' => 10,
 			'post_status'    => apply_filters( 'fcm_post_status', array( 'publish', 'future' ) ),
 			's'              => $args['search_term'],
@@ -67,7 +67,7 @@ class Rest {
 	 */
 	public static function fcm_term_search( $args = array( 'search_term' => '' ) ) {
 		$query  = array(
-			'taxonomy' => $args['object_subtype'],
+			'taxonomy' => explode( ',', $args['object_subtype'] ),
 			'number'   => 10,
 			'search'   => $args['search_term'],
 		);
