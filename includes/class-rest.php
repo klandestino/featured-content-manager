@@ -47,7 +47,7 @@ class Rest {
 	/**
 	 * Search posts.
 	 *
-	 * @param $args An array of search argumetns.
+	 * @param mixed[] $args An array of search argumetns.
 	 */
 	public static function fcm_post_search( $args = array( 'search_term' => '' ) ) {
 		$query  = array(
@@ -63,7 +63,7 @@ class Rest {
 	/**
 	 * Search terms.
 	 *
-	 * @param $args An array of search argumetns.
+	 * @param mixed[] $args An array of search argumetns.
 	 */
 	public static function fcm_term_search( $args = array( 'search_term' => '' ) ) {
 		$query  = array(
@@ -99,7 +99,7 @@ class Rest {
 	/**
 	 * Filtering post search result.
 	 *
-	 * @param $result An array of search results.
+	 * @param mixed[] $result An array of search results.
 	 */
 	public static function fcm_post_filter_result( $result = array() ) {
 		$filtered_result = array();
@@ -112,7 +112,7 @@ class Rest {
 	/**
 	 * Filtering term search result.
 	 *
-	 * @param $result An array of search results.
+	 * @param mixed[] $result An array of search results.
 	 */
 	public static function fcm_term_filter_result( $result = array() ) {
 		$filtered_result = array();

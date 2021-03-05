@@ -147,19 +147,19 @@ class Customizer {
 						<span class="screen-reader-text">Back</span>
 					</button>
 					<h3>
-						<span class="customize-action"><?php echo __( 'Customizing ▸ Featured Area', 'featured-content-manager' ); ?></span>
-						<?php echo __( 'Add Featured Items', 'featured-content-manager' ); ?>
+						<span class="customize-action"><?php esc_html_e( 'Customizing ▸ Featured Area', 'featured-content-manager' ); ?></span>
+						<?php esc_html_e( 'Add Featured Items', 'featured-content-manager' ); ?>
 					</h3>
 				</div>
 				<div id="featured-items-search-title">
 					<div class="search-icon" aria-hidden="true"></div>
-					<label class="screen-reader-text" for="featured-items-search"><?php echo esc_html( __( 'Search Featured Items', 'featured-content-manager' ) ); ?></label>
-					<input type="text" id="featured-items-search-input" placeholder="<?php echo esc_html( __( 'Search Featured Items', 'featured-content-manager' ) ); ?>" aria-describedby="featured-items-search-desc" />
-					<p class="screen-reader-text" id="featured-items-search-desc"><?php echo esc_html( __( 'The search results will be updated as you type.', 'featured-content-manager' ) ); ?></p>
+					<label class="screen-reader-text" for="featured-items-search"><?php esc_html_e( 'Search Featured Items', 'featured-content-manager' ); ?></label>
+					<input type="text" id="featured-items-search-input" placeholder="<?php esc_html_e( 'Search Featured Items', 'featured-content-manager' ); ?>" aria-describedby="featured-items-search-desc" />
+					<p class="screen-reader-text" id="featured-items-search-desc"><?php esc_html_e( 'The search results will be updated as you type.', 'featured-content-manager' ); ?></p>
 					<span class="spinner"></span>
 				</div>
 				<ol id="featured-items-search-list" class="accordion-section-content">
-					<li class="nothing-found"><?php echo esc_html( __( 'No results found.', 'featured-content-manager' ) ); ?></li>
+					<li class="nothing-found"><?php echo esc_html_e( 'No results found.', 'featured-content-manager' ); ?></li>
 				</ol>
 			</div>
 		<?php
@@ -212,11 +212,11 @@ class Customizer {
 			$level_css = '>li>ol';
 
 			for ( $i = 1; $i < $levels; $i++ ) {
-				echo "ol#$id $level_css { display: block; }";
+				echo esc_html( "ol#$id $level_css { display: block; }" );
 			}
 
 			?>
-			ol#<?php echo $id; ?> li:nth-child(<?php echo $max; ?>)::before {
+			ol#<?php echo esc_attr( $id ); ?> li:nth-child(<?php echo esc_attr( $max ); ?>)::before {
 				content: "";
 				border-bottom: 1px dashed lightgray;
 				margin: 10px 0;
