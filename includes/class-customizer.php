@@ -64,7 +64,7 @@ class Customizer {
 							'max'            => $featured_area['max'] ?? null,
 							'levels'         => $featured_area['levels'] ?? null,
 							'object_type'    => $featured_area['object_type'] ?? 'post',
-							'object_subtype' => $featured_area['object_subtype'] ?? 'post',
+							'object_subtype' => $featured_area['object_subtype'] ?? [ 'post' ],
 						)
 					)
 				);

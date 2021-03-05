@@ -55,7 +55,7 @@ class Featured_Area_Control extends \WP_Customize_Control {
 		$this->max            = $args['max'] ?? 10;
 		$this->levels         = $args['levels'] ?? 1;
 		$this->object_type    = $args['object_type'] ?? 'post';
-		$this->object_subtype = $args['object_subtype'] ?? 'post';
+		$this->object_subtype = $args['object_subtype'] ?? [ 'post' ];
 	}
 
 	/**

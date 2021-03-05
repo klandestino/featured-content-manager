@@ -207,15 +207,9 @@
 						// Start AJAX request.
 						window.fetch(
 							wpApiSettings.root +
-								wpFeaturedContentApiSettings.base +
-								"posts?s=" +
-								search +
-								"&type=" +
-								type +
-								"&subtype=" +
-								subtype,
+								wpFeaturedContentApiSettings.base + "posts",
 							{
-								method: "GET",
+								method: "POST",
 								headers: {
 									Accept:
 										"application/json",
@@ -224,6 +218,13 @@
 									"X-WP-Nonce":
 										wpApiSettings.nonce
 								},
+								body: JSON.stringify(
+									{
+										"s": search,
+										"type": type,
+										"subtype": subtype
+									}
+								),
 								credentials: "same-origin",
 							}
 						)
@@ -246,7 +247,7 @@
 					// Set featured area globals.
 					max = featuredAreaList.dataset.max;
 					type = featuredAreaList.dataset.type;
-					subtype = featuredAreaList.dataset.subtype;
+					subtype = featuredAreaList.dataset.subtype.split(',');
 
 					// Add eventlistener on add button click to toggle search panel.
 					addItemButton.addEventListener("click", event =>

@@ -26,7 +26,7 @@ class Rest {
 			'/' . $posts,
 			array(
 				array(
-					'methods'             => \WP_REST_Server::READABLE,
+					'methods'             => 'POST',
 					'callback'            => array(
 						'Featured_Content_Manager\Rest',
 						'search_posts',
@@ -51,7 +51,7 @@ class Rest {
 	 */
 	public static function fcm_post_search( $args = array( 'search_term' => '' ) ) {
 		$query  = array(
-			'post_type'      => explode( ',', $args['object_subtype'] ),
+			'post_type'      => $args['object_subtype'],
 			'posts_per_page' => 10,
 			'post_status'    => apply_filters( 'fcm_post_status', array( 'publish', 'future' ) ),
 			's'              => $args['search_term'],
@@ -67,7 +67,7 @@ class Rest {
 	 */
 	public static function fcm_term_search( $args = array( 'search_term' => '' ) ) {
 		$query  = array(
-			'taxonomy' => explode( ',', $args['object_subtype'] ),
+			'taxonomy' => $args['object_subtype'],
 			'number'   => 10,
 			'search'   => $args['search_term'],
 		);
@@ -81,9 +81,9 @@ class Rest {
 	 * @param \WP_REST_Request $request The request as an array.
 	 */
 	public static function search_posts( \WP_REST_Request $request ) {
-		$search_term     = ( isset( $request['s'] ) ? $request['s'] : '' );
-		$object_type     = ( isset( $request['type'] ) ? $request['type'] : 'post' );
-		$object_subtype  = ( isset( $request['subtype'] ) ? $request['subtype'] : 'post' );
+		$search_term     = ( ! empty( $request['s'] ) ? $request['s'] : '' );
+		$object_type     = ( ! empty( $request['type'] ) ? $request['type'] : [ 'post' ] );
+		$object_subtype  = ( ! empty( $request['subtype'] ) ? $request['subtype'] : [ 'post' ] );
 		$result          = apply_filters(
 			"fcm_{$object_type}_search",
 			array(

@@ -238,13 +238,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 							});
 
 							// Start AJAX request.
-							window.fetch(wpApiSettings.root + wpFeaturedContentApiSettings.base + "posts?s=" + _search + "&type=" + type + "&subtype=" + subtype, {
-								method: "GET",
+							window.fetch(wpApiSettings.root + wpFeaturedContentApiSettings.base + "posts", {
+								method: "POST",
 								headers: {
 									Accept: "application/json",
 									"Content-Type": "application/json",
 									"X-WP-Nonce": wpApiSettings.nonce
 								},
+								body: JSON.stringify({
+									"s": _search,
+									"type": type,
+									"subtype": subtype
+								}),
 								credentials: "same-origin"
 							}).then(function (data) {
 								return data.json();
@@ -273,7 +278,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					// Set featured area globals.
 					max = featuredAreaList.dataset.max;
 					type = featuredAreaList.dataset.type;
-					subtype = featuredAreaList.dataset.subtype;
+					subtype = featuredAreaList.dataset.subtype.split(',');
 
 					// Add eventlistener on add button click to toggle search panel.
 					addItemButton.addEventListener("click", function (event) {
