@@ -32,6 +32,6 @@ add_theme_support( 'featured-content-manager',
 
 This is a short list of features that may be included in the future.
 
-* ☐ Add level of nestable in theme_support.
+* x Add level of nestable in theme_support.
 * x Add max number of items in list in theme_support
 * ☐ Add post_status as a setting in theme_support
