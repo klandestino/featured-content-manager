@@ -1,42 +1,37 @@
 # Featured Content Manager
 
-Detta plugin skapar en posttyp med tillhörande taxonomier för att kunna styra hur innehåll skall sorteras och visas i ett visst flöde. Genom functionen ```add_theme_support()``` kan du i ditt tema bestämma vilka flöden som skall finnas samt vilken postdata som man skall kunna ändra för flödets innehåll.
+This plugin lets you create sortable and nested lists (Featured Content Areas) of content you want to feature on your website. These sortable lists can contain content of ```object_type``` ```post``` and ```term```.
 
-## Installation och användning
+## Installation
 
-För att komma igång med Featured Content Manager behöver du lägga till stöd för det i ditt tema enligt exemplet nedan:
+To start using Featured Content Manager you nead to add support for it in your WordPress theme like the example below.
 
 ```php
 add_theme_support( 'featured-content-manager',
 	array(
-		'fields' => [
-			'post_title',
-			'post_excerpt',
-			'thumbnail',
-			'select' => [
-				'name'         => 'style',
-				'display_name' => 'Utseende',
-				'values'       => [
-					'standard' => 'Standard',
-					'large'    => 'Stor',
-				],
-			],
-		],
 		'featured_areas' => [
-			'slug'   => 'Titel',
-			'slug-2' => 'Annan titel',
+			'posts'    => [
+				'title'           => 'Featured Posts Area',
+				'max'             => 10, // Default is 10.
+				'levels'          => 2,  // Default is 1.
+				'object_type'     => 'post',
+				'object_subtypes' => [ 'post' ],
+			],
+			'category' => [
+				'title'           => 'Featured Categories Area',
+				'max'             => 5,
+				'object_type'     => 'term',
+				'object_subtypes' => [ 'category', 'post_tag' ],
+			]
 		],
 	)
 );
 ```
 
-## Att göra:
+## Todo:
 
-Dessa saker finns kvar att göra
+This is a short list of features that may be included in the future.
 
-* ☐ Lägg till nivåer som inställnig i theme_support
-* ☐ Lägg till antal tillåtna inlägg som inställnig i theme_support
-* ☐ Lägg till inställnig för om future skall tillåtas i theme_support
-* ☐ Lyft över fields till att ligga i enskilda areas
-* ☐ Gör ett white list lager i JS där fields läses för varje area
-* ☐ Lägg till stöd för att sortera på touch-screen. Inspiration från hur WP gör med menyer i customizern. Se [_setupSortable](https://github.com/WordPress/wordpress-develop/search?q=_setupSortable&unscoped_q=_setupSortable)
+* ☐ Add level of nestable in theme_support.
+* x Add max number of items in list in theme_support
+* ☐ Add post_status as a setting in theme_support

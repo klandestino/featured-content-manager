@@ -15,7 +15,7 @@ gulp.task('script', function() {
     .pipe(uglify())
     .pipe(rename({ suffix: '.min' }))
     .pipe(gulp.dest('dist/js'));
-    gulp.src('node_modules/nestedSortable/jquery.mjs.nestedSortable.js')
+    gulp.src('node_modules/sortablejs/Sortable.min.js')
         .pipe(gulp.dest('dist/js'));
     return gulp.src('node_modules/whatwg-fetch/fetch.js')
         .pipe(gulp.dest('dist/js'));
