@@ -209,7 +209,7 @@ class Customizer {
 		foreach ( $featured_areas as $id => $featured_area ) {
 			$levels    = $featured_area['levels'] ?? 0;
 			$max       = isset( $featured_area['max'] ) ? $featured_area['max'] + 1 : 11; // Setting this to +1 to get the :before css at the right place.
-      $level_css = '';
+			$level_css = '';
 			for ( $i = 1; $i < $levels; $i++ ) {
 				$level_css .= '>li>ol';
 				echo "ol#{$id}{$level_css} { display: block; }\n";
