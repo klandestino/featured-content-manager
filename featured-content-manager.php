@@ -46,6 +46,29 @@ add_action(
 				add_filter( "fcm_{$object_type}_search", array( 'Featured_Content_Manager\Rest', "fcm_{$object_type}_search" ), 10, 1 );
 				add_filter( "fcm_{$object_type}_filter_result", array( 'Featured_Content_Manager\Rest', "fcm_{$object_type}_filter_result" ), 10, 1 );
 			}
+			
+			// Backwards compatibilty. Map old values from options to new.
+			foreach ( Featured_Content::get_featured_areas() as $slug => $area ) {
+				add_filter(
+					"customize_sanitize_js_{$slug}",
+					function( $value ) {
+						$value = json_decode( $value );
+						foreach ( $value as $key => $item ) {
+							if ( ! isset( $item->title ) ) {
+								$new_item                = new \stdclass();
+								$new_item->id            = $item->original_post_id ?? $item->id;
+								$new_item->title         = $item->post_title;
+								$new_item->type          = 'post';
+								$new_item->subtype       = 'post';
+								$new_item->subtype_label = 'Artikel';
+								$value[ $key ]           = $new_item;
+							}
+						}
+						$value = wp_json_encode( $value );
+						return $value;
+					}
+				);
+			}
 		}
 	},
 	1
