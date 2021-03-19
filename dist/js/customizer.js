@@ -71,6 +71,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 							return _this.cloneItem(event);
 						});
 
+						this.addSettings(this.element);
+
 						// Initiate nested sortable in new featured item.
 						var nestedSortable = this.element.querySelector('.nested-sortable');
 						featuredArea.initSortable(nestedSortable);
@@ -90,6 +92,36 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 								new FeaturedItem(child, _this.list, _this.data.id);
 							});
 						}
+					}
+				}, {
+					key: "addSettings",
+					value: function addSettings(element) {
+						var _this2 = this;
+
+						var settings = JSON.parse(featuredAreaList.dataset.settings);
+						var data = this.data;
+						Object.keys(settings).forEach(function (key) {
+							var setting = settings[key];
+							var setting_key = key;
+							if ('select' === setting.type) {
+								var selectList = document.createElement('select');
+								//Create and append the options
+								Object.keys(setting.values).forEach(function (key) {
+									var option = setting.values[key];
+									var optionElement = document.createElement("option");
+									optionElement.value = key;
+									optionElement.text = option;
+									optionElement.selected = data[setting_key] === key;
+
+									selectList.appendChild(optionElement);
+								});
+								element.querySelector('.settings').appendChild(selectList);
+								element.addEventListener('change', function (event) {
+									element.dataset[key] = event.target.value;
+									_this2.data[key] = event.target.value;
+								});
+							}
+						});
 					}
 
 					// Removes the element.
@@ -134,7 +166,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 			var FeaturedItemSearch = function () {
 				function FeaturedItemSearch() {
-					var _this2 = this;
+					var _this3 = this;
 
 					_classCallCheck(this, FeaturedItemSearch);
 
@@ -144,19 +176,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 					// Event when something is written into the search input.
 					document.getElementById("featured-items-search-input").addEventListener("keyup", function (event) {
-						return _this2.onInputChange(event);
+						return _this3.onInputChange(event);
 					});
 
 					// If something outside the searchpanel i clicked.
 					document.addEventListener("click", function (event) {
 						if (!event.target.classList.contains("add-featured-item") && !isChildOf(event.target, "featured-item-container")) {
-							_this2.close();
+							_this3.close();
 						}
 					});
 
 					// Event when mobile section back button is clicked.
 					document.querySelector("#featured-items-search-panel .customize-section-back").addEventListener("click", function (event) {
-						return _this2.close();
+						return _this3.close();
 					});
 				}
 
@@ -220,7 +252,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				}, {
 					key: "search",
 					value: function search(_search) {
-						var _this3 = this;
+						var _this4 = this;
 
 						// Do nothing if searchpanel is closed.
 						if (!this.active) return;
@@ -232,7 +264,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 							// Show searching message and remove old result.
 							var body = document.querySelector("body");
 							body.classList.add("searching");
-							var search_item_tpl = _this3.searchResult.querySelectorAll(".featured-item-tpl");
+							var search_item_tpl = _this4.searchResult.querySelectorAll(".featured-item-tpl");
 							[].forEach.call(search_item_tpl, function (item) {
 								item.remove();
 							});
@@ -257,7 +289,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 								// Remove searching message and add result in DOM.
 								body.classList.remove("searching");
 								data.forEach(function (obj, index) {
-									new FeaturedItem(obj, _this3.searchResult);
+									new FeaturedItem(obj, _this4.searchResult);
 								});
 							});
 						}, timer_ms);
@@ -269,7 +301,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 			var FeaturedArea = function () {
 				function FeaturedArea() {
-					var _this4 = this;
+					var _this5 = this;
 
 					_classCallCheck(this, FeaturedArea);
 
@@ -282,7 +314,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 					// Add eventlistener on add button click to toggle search panel.
 					addItemButton.addEventListener("click", function (event) {
-						return _this4.toggleSearchPanel(event);
+						return _this5.toggleSearchPanel(event);
 					});
 
 					// Load the featured area settings from customizer.
@@ -334,12 +366,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				}, {
 					key: "setSettings",
 					value: function setSettings() {
-						var _this5 = this;
+						var _this6 = this;
 
 						// Set timeout to avoid race contitions.
 						clearTimeout(settings_timer);
 						settings_timer = setTimeout(function () {
-							var settings = _this5.serialize(featuredAreaList);
+							var settings = _this6.serialize(featuredAreaList);
 							control.setting.set(JSON.stringify(settings));
 
 							// Update customizer preview.
@@ -429,7 +461,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				}, {
 					key: "initSortable",
 					value: function initSortable(sortable) {
-						var _this6 = this;
+						var _this7 = this;
 
 						var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {
 							group: 'nested',
@@ -437,12 +469,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 							emptyInsertThreshold: 5,
 							animation: 150,
 							onSort: function onSort(event) {
-								_this6.setSettings();
+								_this7.setSettings();
 							},
 							onAdd: function onAdd(event) {
-								if (_this6.isDuplicate(event.clone.dataset)) {
+								if (_this7.isDuplicate(event.clone.dataset)) {
 									event.item.remove();
-									_this6.addErrorNotification('This item already exist in the selected featured area.');
+									_this7.addErrorNotification('This item already exist in the selected featured area.');
 								}
 							}
 						};

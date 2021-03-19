@@ -65,6 +65,7 @@ class Customizer {
 							'levels'         => $featured_area['levels'] ?? null,
 							'object_type'    => $featured_area['object_type'] ?? 'post',
 							'object_subtype' => $featured_area['object_subtype'] ?? [ 'post' ],
+							'fsettings'      => $featured_area['settings'] ?? [],
 						)
 					)
 				);
@@ -191,6 +192,7 @@ class Customizer {
 						</button>
 					</span>
 				</div>
+				<div class="settings"></div>
 				<ol class="nested-sortable"></ol>
 			</li>
 			<# } #>

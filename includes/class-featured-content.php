@@ -31,6 +31,26 @@ class Featured_Content {
 	}
 
 	/**
+	 * Getting fields for this theme setup.
+	 */
+	public static function get_fields() {
+		$fields = array();
+		$args   = get_theme_support( 'featured-content-manager' )[0];
+		if ( isset( $args['fields'] ) ) {
+			foreach ( $args['fields'] as $key => $field ) {
+				if ( 'select' === $key ) {
+					$field_name                            = $field['name'];
+					$fields[ $field_name ]['name']         = $field['name'];
+					$fields[ $field_name ]['display_name'] = $field['display_name'];
+					$fields[ $field_name ]['type']         = 'select';
+					$fields[ $field_name ]['values']       = $field['values'];
+				}
+			}
+		}
+		return $fields;
+	}
+
+	/**
 	 * Returns a array of featured items for a specific area.
 	 *
 	 * @param string $featured_area The name or slug for the area.
