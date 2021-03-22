@@ -61,7 +61,10 @@ add_action(
 								$new_item->type          = 'post';
 								$new_item->subtype       = 'post';
 								$new_item->subtype_label = 'Artikel';
-								$value[ $key ]           = $new_item;
+								if ( isset( $item->fcm_select_style ) ) {
+									$new_item->fcm_select_style = $item->fcm_select_style;
+								}
+								$value[ $key ] = $new_item;
 							}
 						}
 						$value = wp_json_encode( $value );
