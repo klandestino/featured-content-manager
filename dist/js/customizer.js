@@ -60,6 +60,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 						// Create item html element
 						var featuredItemTemplate = wp.template("featured-item");
+						if (this.data.decoded_title == null) this.data.decoded_title = decodeHTML(this.data.title);
 						var innerHTML = featuredItemTemplate(this.data);
 						this.element = htmlToElement(innerHTML);
 
@@ -527,3 +528,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		return template.content.firstChild;
 	}
 })(wp, jQuery);
+
+var decodeHTML = function decodeHTML(html) {
+	var txt = document.createElement('textarea');
+	txt.innerHTML = html;
+	return txt.value;
+};

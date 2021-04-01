@@ -148,7 +148,8 @@ class Rest {
 	private static function prepare_post( \WP_Post $post ): array {
 		$prepared_post                            = array();
 		$prepared_post['id']                      = $post->ID;
-		$prepared_post['title']                   = $post->post_title;
+		$prepared_post['title']                   = esc_html( $post->post_title );
+		$prepared_post['decoded_title']           = $post->post_title;
 		$prepared_post['type']                    = __( 'Post', 'featured-content-manager' );
 		$prepared_post['subtype']                 = $post->post_type;
 		$prepared_post['subtype_label']           = get_post_type_object( $post->post_type )->labels->singular_name;

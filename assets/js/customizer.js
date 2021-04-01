@@ -40,6 +40,8 @@
 				addItem() {
 					// Create item html element
 					let featuredItemTemplate = wp.template("featured-item");
+					if(this.data.decoded_title==null)
+						this.data.decoded_title = decodeHTML( this.data.title );
 					let innerHTML = featuredItemTemplate(
 						this.data
 					);
@@ -468,3 +470,10 @@
 	}
 
 })(wp, jQuery);
+
+
+var decodeHTML = function (html) {
+	var txt = document.createElement('textarea');
+	txt.innerHTML = html;
+	return txt.value;
+};

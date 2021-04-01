@@ -173,21 +173,21 @@ class Customizer {
 		?>
 		<script type="text/html" id="tmpl-featured-item">
 			<li data-id="{{data.id}}" data-title="{{data.title}}" data-type="{{data.type}}" data-subtype="{{data.subtype}}" data-subtype_label="{{data.subtype_label}}" class="featured-item-tpl">
-				<# if ( data.title ) { #>
+				<# if ( data.decoded_title ) { #>
 				<div class="handle">
 					<span class="featured-item-title">
-						{{data.title}}
+						{{data.decoded_title}}
 					</span>
 					<span class="featured-item-controls">
 						<span class="featured-item-type" aria-hidden="true">{{data.subtype_label}}</span>
 						<button type="button" class="button-link button-link-delete featured-item-delete">
 							<span class="screen-reader-text">
-								Remove Featured Item: {{data.title}} ({{data.subtype_label}})
+								Remove Featured Item: {{data.decoded_title}} ({{data.subtype_label}})
 							</span>
 						</button>
 						<button type="button" class="button-link button-link-add featured-item-add">
 							<span class="screen-reader-text">
-								Add Featured Item: {{data.title}} ({{data.subtype_label}})
+								Add Featured Item: {{data.decoded_title}} ({{data.subtype_label}})
 							</span>
 						</button>
 					</span>
