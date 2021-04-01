@@ -113,6 +113,14 @@ ol.accordion-section-content {
             font: normal 16px/1 dashicons;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale; }
+    ol.featured-area li .settings,
+    ol.accordion-section-content li .settings {
+      display: none;
+      margin-bottom: 1px;
+      background-color: #eee;
+      border: 1px solid #999;
+      border-top: none;
+      padding: 15px; }
     ol.featured-area li ol,
     ol.accordion-section-content li ol {
       display: none;
@@ -133,6 +141,9 @@ ol.accordion-section-content {
         ol.featured-area li.open > .handle .toggle-indicator:before,
         ol.accordion-section-content li.open > .handle .toggle-indicator:before {
           content: "\f142"; }
+      ol.featured-area li.open .settings,
+      ol.accordion-section-content li.open .settings {
+        display: block; }
 
 #featured-items-search-panel {
   position: absolute;

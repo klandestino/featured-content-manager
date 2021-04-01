@@ -56,6 +56,11 @@
 						.addEventListener("click", event =>
 							this.cloneItem(event)
 						);
+					this.element
+						.querySelector(".handle")
+						.addEventListener("click", event =>
+							this.element.classList.toggle("open")
+						);
 
 					this.addSettings( this.element );
 
@@ -107,7 +112,8 @@
 							element.addEventListener( 'change', event => {
 								element.dataset[key] = event.target.value;
 								this.data[key] = event.target.value;
-							})
+								featuredArea.setSettings();
+							});
 						}
 					});
 				}

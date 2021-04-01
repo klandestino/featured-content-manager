@@ -70,6 +70,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 						this.element.querySelector(".featured-item-add").addEventListener("click", function (event) {
 							return _this.cloneItem(event);
 						});
+						this.element.querySelector(".handle").addEventListener("click", function (event) {
+							return _this.element.classList.toggle("open");
+						});
 
 						this.addSettings(this.element);
 
@@ -119,6 +122,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 								element.addEventListener('change', function (event) {
 									element.dataset[key] = event.target.value;
 									_this2.data[key] = event.target.value;
+									featuredArea.setSettings();
 								});
 							}
 						});

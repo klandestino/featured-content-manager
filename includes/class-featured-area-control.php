@@ -45,7 +45,7 @@ class Featured_Area_Control extends \WP_Customize_Control {
 	 *
 	 * @var int $levels The levels.
 	 */
-	public $ssettings = [];
+	public $fsettings = [];
 
 	/**
 	 * Constructor.
