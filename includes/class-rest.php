@@ -55,6 +55,7 @@ class Rest {
 			'posts_per_page' => 10,
 			'post_status'    => apply_filters( 'fcm_post_status', array( 'publish', 'future' ) ),
 			's'              => $args['search_term'],
+			'post__not_in'   => $args['not_in'],
 		);
 		$result = get_posts( $query );
 		return $result;
@@ -70,6 +71,7 @@ class Rest {
 			'taxonomy' => $args['object_subtype'],
 			'number'   => 10,
 			'search'   => $args['search_term'],
+			'exclude'  => $args['not_in'],
 		);
 		$result = get_terms( $query );
 		return $result;
@@ -84,11 +86,13 @@ class Rest {
 		$search_term     = ( ! empty( $request['s'] ) ? $request['s'] : '' );
 		$object_type     = ( ! empty( $request['type'] ) ? $request['type'] : [ 'post' ] );
 		$object_subtype  = ( ! empty( $request['subtype'] ) ? $request['subtype'] : [ 'post' ] );
+		$not_in          = ( ! empty( $request['not_in'] ) ? $request['not_in'] : [] );
 		$result          = apply_filters(
 			"fcm_{$object_type}_search",
 			array(
 				'search_term'    => $search_term,
 				'object_subtype' => $object_subtype,
+				'not_in'         => $not_in,
 			)
 		);
 		$filtered_result = apply_filters( "fcm_{$object_type}_filter_result", $result );

@@ -273,6 +273,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 								item.remove();
 							});
 
+							var items_in_list = featuredAreaList.querySelectorAll('.featured-item-tpl');
+							var item_ids_in_list = Array();
+							if (items_in_list.length > 1) {
+								items_in_list.forEach(function (item) {
+									return item_ids_in_list.push(Number(item.dataset.id));
+								});
+							}
+
 							// Start AJAX request.
 							window.fetch(wpApiSettings.root + wpFeaturedContentApiSettings.base + "posts", {
 								method: "POST",
@@ -284,7 +292,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 								body: JSON.stringify({
 									"s": _search,
 									"type": type,
-									"subtype": subtype
+									"subtype": subtype,
+									'not_in': item_ids_in_list
 								}),
 								credentials: "same-origin"
 							}).then(function (data) {
@@ -320,12 +329,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					addItemButton.addEventListener("click", function (event) {
 						return _this5.toggleSearchPanel(event);
 					});
-
-					// Load the featured area settings from customizer.
-					//this.loadSettings();
-
-					// Initialize nestledSortable
-					//this.initSortables();
 				}
 
 				// Load the featured area settings from customizer.

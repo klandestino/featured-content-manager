@@ -239,6 +239,12 @@
 							item.remove();
 						});
 
+						var items_in_list = featuredAreaList.querySelectorAll('.featured-item-tpl');
+						var item_ids_in_list = Array();
+						if ( items_in_list.length > 1 ) {
+							items_in_list.forEach(item => item_ids_in_list.push(Number(item.dataset.id)));
+						}
+
 						// Start AJAX request.
 						window.fetch(
 							wpApiSettings.root +
@@ -257,7 +263,8 @@
 									{
 										"s": search,
 										"type": type,
-										"subtype": subtype
+										"subtype": subtype,
+										'not_in': item_ids_in_list
 									}
 								),
 								credentials: "same-origin",
@@ -288,12 +295,6 @@
 					addItemButton.addEventListener("click", event =>
 						this.toggleSearchPanel(event)
 					);
-
-					// Load the featured area settings from customizer.
-					//this.loadSettings();
-
-					// Initialize nestledSortable
-					//this.initSortables();
 				}
 
 				// Load the featured area settings from customizer.
