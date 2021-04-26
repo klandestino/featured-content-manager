@@ -131,7 +131,7 @@ class Rest {
 	private static function prepare_term( \WP_Term $term ): array {
 		$prepared_term                  = array();
 		$prepared_term['id']            = $term->term_id;
-		$prepared_term['title']         = $term->name;
+		$prepared_term['title']         = html_entity_decode( $term->name );
 		$prepared_term['type']          = 'term';
 		$prepared_term['subtype']       = $term->taxonomy;
 		$prepared_term['subtype_label'] = get_taxonomy( $term->taxonomy )->labels->singular_name;
@@ -148,8 +148,7 @@ class Rest {
 	private static function prepare_post( \WP_Post $post ): array {
 		$prepared_post                            = array();
 		$prepared_post['id']                      = $post->ID;
-		$prepared_post['title']                   = esc_html( $post->post_title );
-		$prepared_post['decoded_title']           = $post->post_title;
+		$prepared_post['title']                   = html_entity_decode( $post->post_title );
 		$prepared_post['type']                    = 'post';
 		$prepared_post['subtype']                 = $post->post_type;
 		$prepared_post['subtype_label']           = get_post_type_object( $post->post_type )->labels->singular_name;

@@ -40,8 +40,6 @@
 				addItem() {
 					// Create item html element
 					let featuredItemTemplate = wp.template("featured-item");
-					if(this.data.decoded_title==null)
-						this.data.decoded_title = decodeHTML( this.data.title );
 					let innerHTML = featuredItemTemplate(
 						this.data
 					);
@@ -304,7 +302,8 @@
 					try {
 						settings = JSON.parse(settings); 
 					} catch (e) {
-						settings = settings;
+						console.log(e);
+						settings = [ {} ];
 					}
 
 					// Remove items larger than 50.
@@ -470,10 +469,3 @@
 	}
 
 })(wp, jQuery);
-
-
-var decodeHTML = function (html) {
-	var txt = document.createElement('textarea');
-	txt.innerHTML = html;
-	return txt.value;
-};
