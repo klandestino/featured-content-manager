@@ -40,6 +40,8 @@
 				addItem() {
 					// Create item html element
 					let featuredItemTemplate = wp.template("featured-item");
+					if(this.data.decoded_title==null)
+						this.data.decoded_title = decodeHTML( this.data.title );
 					let innerHTML = featuredItemTemplate(
 						this.data
 					);
@@ -56,6 +58,13 @@
 						.addEventListener("click", event =>
 							this.cloneItem(event)
 						);
+					this.element
+						.querySelector(".handle")
+						.addEventListener("click", event =>
+							this.element.classList.toggle("open")
+						);
+
+					this.addSettings( this.element );
 
 					// Initiate nested sortable in new featured item.
 					let nestedSortable = this.element.querySelector('.nested-sortable');
@@ -81,6 +90,34 @@
 							new FeaturedItem(child, this.list, this.data.id);
 						});
 					}
+				}
+
+				addSettings( element ) {
+					let settings = JSON.parse( featuredAreaList.dataset.settings );
+					let data = this.data;
+					Object.keys(settings).forEach( key => {
+						let setting = settings[key];
+						let setting_key = key;
+						if( 'select' === setting.type ) {
+							let selectList = document.createElement('select');
+							//Create and append the options
+							Object.keys(setting.values).forEach( key => {
+								let option = setting.values[key];
+							    var optionElement = document.createElement("option");
+							    optionElement.value = key;
+							    optionElement.text = option;
+							    optionElement.selected = ( data[setting_key] === key );
+
+							    selectList.appendChild(optionElement);
+							});
+							element.querySelector('.settings').appendChild(selectList);
+							element.addEventListener( 'change', event => {
+								element.dataset[key] = event.target.value;
+								this.data[key] = event.target.value;
+								featuredArea.setSettings();
+							});
+						}
+					});
 				}
 
 				// Removes the element.
@@ -433,3 +470,10 @@
 	}
 
 })(wp, jQuery);
+
+
+var decodeHTML = function (html) {
+	var txt = document.createElement('textarea');
+	txt.innerHTML = html;
+	return txt.value;
+};

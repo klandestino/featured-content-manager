@@ -41,6 +41,13 @@ class Featured_Area_Control extends \WP_Customize_Control {
 	public $levels = 1;
 
 	/**
+	 * The number of levels to stack featured items.
+	 *
+	 * @var int $levels The levels.
+	 */
+	public $fsettings = [];
+
+	/**
 	 * Constructor.
 	 *
 	 * @see WP_Customize_Control::__construct()
@@ -56,6 +63,7 @@ class Featured_Area_Control extends \WP_Customize_Control {
 		$this->levels         = $args['levels'] ?? 1;
 		$this->object_type    = $args['object_type'] ?? 'post';
 		$this->object_subtype = $args['object_subtype'] ?? [ 'post' ];
+		$this->fsettings      = $args['fsettings'] ?? [];
 	}
 
 	/**
@@ -67,6 +75,7 @@ class Featured_Area_Control extends \WP_Customize_Control {
 		$this->json['levels']         = $this->levels;
 		$this->json['object_type']    = $this->object_type;
 		$this->json['object_subtype'] = $this->object_subtype;
+		$this->json['fsettings']      = json_encode( $this->fsettings );
 	}
 
 	/**
@@ -74,7 +83,7 @@ class Featured_Area_Control extends \WP_Customize_Control {
 	 */
 	public function content_template() {
 		?>
-		<ol id={{data.section}} class="nested-sortable featured-area" data-max="{{data.max}}" data-levels="{{data.levels}}" data-type="{{data.object_type}}" data-subtype="{{data.object_subtype}}"></ol>
+		<ol id={{data.section}} class="nested-sortable featured-area" data-max="{{data.max}}" data-levels="{{data.levels}}" data-type="{{data.object_type}}" data-subtype="{{data.object_subtype}}" data-settings="{{data.fsettings}}"></ol>
 		<button class="add-featured-item button"><?php esc_html_e( 'Add', 'featured-content-manager' ); ?></button>
 		<div class="search-panel"></div>
 		<?php
