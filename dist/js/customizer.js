@@ -70,8 +70,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 						this.element.querySelector(".featured-item-add").addEventListener("click", function (event) {
 							return _this.cloneItem(event);
 						});
-						this.element.querySelector(".handle").addEventListener("click", function (event) {
-							return _this.element.classList.toggle("open");
+						this.element.querySelector(".handle").addEventListener("click", function () {
+							if (!Array.isArray(JSON.parse(featuredAreaList.dataset.settings))) {
+								_this.element.classList.toggle("open");
+							}
 						});
 
 						this.addSettings(this.element);
@@ -275,7 +277,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 							var items_in_list = featuredAreaList.querySelectorAll('.featured-item-tpl');
 							var item_ids_in_list = Array();
-							if (items_in_list.length > 1) {
+							if (items_in_list.length) {
 								items_in_list.forEach(function (item) {
 									return item_ids_in_list.push(Number(item.dataset.id));
 								});

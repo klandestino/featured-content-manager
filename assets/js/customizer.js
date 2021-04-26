@@ -58,9 +58,11 @@
 						);
 					this.element
 						.querySelector(".handle")
-						.addEventListener("click", event =>
-							this.element.classList.toggle("open")
-						);
+						.addEventListener("click", () => {
+							if ( ! Array.isArray( JSON.parse( featuredAreaList.dataset.settings ) ) ) {
+								this.element.classList.toggle("open");
+							}
+						} );
 
 					this.addSettings( this.element );
 
@@ -241,7 +243,7 @@
 
 						var items_in_list = featuredAreaList.querySelectorAll('.featured-item-tpl');
 						var item_ids_in_list = Array();
-						if ( items_in_list.length > 1 ) {
+						if ( items_in_list.length ) {
 							items_in_list.forEach(item => item_ids_in_list.push(Number(item.dataset.id)));
 						}
 
