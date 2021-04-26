@@ -65,6 +65,7 @@ class Customizer {
 							'levels'         => $featured_area['levels'] ?? null,
 							'object_type'    => $featured_area['object_type'] ?? 'post',
 							'object_subtype' => $featured_area['object_subtype'] ?? [ 'post' ],
+							'fsettings'      => $featured_area['settings'] ?? [],
 						)
 					)
 				);
@@ -171,28 +172,29 @@ class Customizer {
 	public static function customize_print_featured_item_template() {
 		?>
 		<script type="text/html" id="tmpl-featured-item">
-			<li data-id="{{data.id}}" data-title="{{data.title}}" data-type="{{data.type}}" data-subtype="{{data.subtype}}" data-subtype_label="{{data.subtype_label}}" class="featured-item-tpl">
-				<# if ( data.title ) { #>
-				<div class="handle">
-					<span class="featured-item-title">
-						{{data.title}}
-					</span>
-					<span class="featured-item-controls">
-						<span class="featured-item-type" aria-hidden="true">{{data.subtype_label}}</span>
-						<button type="button" class="button-link button-link-delete featured-item-delete">
-							<span class="screen-reader-text">
-								Remove Featured Item: {{data.title}} ({{data.subtype_label}})
-							</span>
-						</button>
-						<button type="button" class="button-link button-link-add featured-item-add">
-							<span class="screen-reader-text">
-								Add Featured Item: {{data.title}} ({{data.subtype_label}})
-							</span>
-						</button>
-					</span>
-				</div>
-				<ol class="nested-sortable"></ol>
-			</li>
+			<# if ( data.title ) { #>
+				<li data-id="{{data.id}}" data-title="{{data.title}}" data-type="{{data.type}}" data-subtype="{{data.subtype}}" data-subtype_label="{{data.subtype_label}}" class="featured-item-tpl">
+					<div class="handle">
+						<span class="featured-item-title">
+							{{data.title}}
+						</span>
+						<span class="featured-item-controls">
+							<span class="featured-item-type" aria-hidden="true">{{data.subtype_label}}</span>
+							<button type="button" class="button-link button-link-delete featured-item-delete">
+								<span class="screen-reader-text">
+									Remove Featured Item: {{data.title}} ({{data.subtype_label}})
+								</span>
+							</button>
+							<button type="button" class="button-link button-link-add featured-item-add">
+								<span class="screen-reader-text">
+									Add Featured Item: {{data.title}} ({{data.subtype_label}})
+								</span>
+							</button>
+						</span>
+					</div>
+					<div class="settings"></div>
+					<ol class="nested-sortable"></ol>
+				</li>
 			<# } #>
 		</script>
 		<?php

@@ -137,6 +137,15 @@ ol.accordion-section-content {
 			}
 		}
 
+		.settings {
+			display: none;
+			margin-bottom: 1px;
+			background-color: #eee;
+			border: 1px solid #999;
+			border-top: none;
+			padding: 15px;
+		}
+
 		ol {
 			display: none;
 			position: relative;
@@ -159,6 +168,9 @@ ol.accordion-section-content {
 				.toggle-indicator:before {
 					content: "\f142";
 				}
+			}
+			.settings {
+				display: block;
 			}
 		}
 	}
