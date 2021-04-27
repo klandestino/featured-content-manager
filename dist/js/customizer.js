@@ -70,8 +70,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 						this.element.querySelector(".featured-item-add").addEventListener("click", function (event) {
 							return _this.cloneItem(event);
 						});
-						this.element.querySelector(".handle").addEventListener("click", function (event) {
-							return _this.element.classList.toggle("open");
+						this.element.querySelector(".handle").addEventListener("click", function () {
+							if (!Array.isArray(JSON.parse(featuredAreaList.dataset.settings))) {
+								_this.element.classList.toggle("open");
+							}
 						});
 
 						this.addSettings(this.element);

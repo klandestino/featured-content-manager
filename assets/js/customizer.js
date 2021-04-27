@@ -58,9 +58,11 @@
 						);
 					this.element
 						.querySelector(".handle")
-						.addEventListener("click", event =>
-							this.element.classList.toggle("open")
-						);
+						.addEventListener("click", () => {
+							if ( ! Array.isArray(JSON.parse(featuredAreaList.dataset.settings)) ) {
+								this.element.classList.toggle("open");
+							}
+						});
 
 					this.addSettings( this.element );
 
