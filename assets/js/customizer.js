@@ -110,6 +110,8 @@
 
 							    selectList.appendChild(optionElement);
 							});
+							if(undefined!==data[setting_key])
+								element.dataset[key] = data[setting_key];
 							element.querySelector('.settings').appendChild(selectList);
 							element.addEventListener( 'change', event => {
 								element.dataset[key] = event.target.value;
