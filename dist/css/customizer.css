@@ -141,8 +141,8 @@ ol.accordion-section-content {
         ol.featured-area li.open > .handle .toggle-indicator:before,
         ol.accordion-section-content li.open > .handle .toggle-indicator:before {
           content: "\f142"; }
-      ol.featured-area li.open .settings,
-      ol.accordion-section-content li.open .settings {
+      ol.featured-area li.open > .settings,
+      ol.accordion-section-content li.open > .settings {
         display: block; }
 
 #featured-items-search-panel {
@@ -284,10 +284,11 @@ body.adding-featured-items .add-featured-item {
     -webkit-transform: rotate(45deg);
     -ms-transform: rotate(45deg);
     transform: rotate(45deg); }
-
 body.adding-featured-items .wp-full-overlay-main {
   left: 300px;
   opacity: .4; }
   @media screen and (max-width: 600px) {
     body.adding-featured-items .wp-full-overlay-main {
       left: auto; } }
+
+/*# sourceMappingURL=customizer.css.map */
