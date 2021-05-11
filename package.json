@@ -22,7 +22,6 @@
     "gulp-babel": "^7.0.0",
     "gulp-imagemin": "^6.0.0",
     "gulp-rename": "^1.4.0",
-    "gulp-sass": "^3.1.0",
     "gulp-uglify": "^3.0.2",
     "gulp-watch": "^4.2.4",
     "po2json": "^1.0.0-alpha",

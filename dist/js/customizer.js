@@ -120,6 +120,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 									selectList.appendChild(optionElement);
 								});
+								if (undefined !== data[setting_key]) element.dataset[key] = data[setting_key];
 								element.querySelector('.settings').appendChild(selectList);
 								element.addEventListener('change', function (event) {
 									element.dataset[key] = event.target.value;

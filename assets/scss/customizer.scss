@@ -169,7 +169,7 @@ ol.accordion-section-content {
 					content: "\f142";
 				}
 			}
-			.settings {
+			& > .settings {
 				display: block;
 			}
 		}
