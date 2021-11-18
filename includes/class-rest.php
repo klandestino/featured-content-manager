@@ -117,7 +117,7 @@ class Rest {
 	public static function fcm_term_filter_result( $result = array() ) {
 		$filtered_result = array();
 		foreach ( $result as $term ) {
-			$filtered_result[] = self::prepare_term( $term );
+			$filtered_result[] = self::prepare_term( get_term( $term ) );
 		}
 		return $filtered_result;
 	}
