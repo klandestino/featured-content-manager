@@ -55,6 +55,7 @@ class Rest {
 			'posts_per_page' => 10,
 			'post_status'    => apply_filters( 'fcm_post_status', array( 'publish', 'future' ) ),
 			's'              => $args['search_term'],
+			'orderby'        => apply_filters( 'fcm_post_orderby', 'date' ),
 		);
 		$result = get_posts( $query );
 		return $result;
