@@ -1,6 +1,17 @@
+.customize-control-featured-area {
+	display: flex;
+	flex-direction: column;
+}
+
+.button-container {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+}
+
 button.add-featured-item {
 	cursor: pointer;
-	float: right;
 	margin-left: 10px;
 
 	-webkit-transition: all .2s;
@@ -26,10 +37,14 @@ button.add-featured-item {
 	}
 }
 
+.clear-overflow {
+	
+}
+
 ol.featured-area,
 ol.accordion-section-content {
 	position: relative;
-	margin: 0 0 12px 0;
+	margin: 12px 0;
 	padding: 0;
 	list-style: none;
 

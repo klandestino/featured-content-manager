@@ -4,7 +4,8 @@
 			const control = this,
 				container = this.container[0],
 				featuredAreaList = container.querySelector("ol.nested-sortable"),
-				addItemButton = container.querySelector(".add-featured-item");
+				addItemButton = container.querySelector(".add-featured-item"),
+				clearOverflowButton = container.querySelector(".clear-overflow");
 			const { __, _x, _n, _nx } = wp.i18n;
 			let featuredArea,
 				settings_timer,
@@ -292,12 +293,11 @@
 					addItemButton.addEventListener("click", event =>
 						this.toggleSearchPanel(event)
 					);
-
-					// Load the featured area settings from customizer.
-					//this.loadSettings();
-
-					// Initialize nestledSortable
-					//this.initSortables();
+					
+					// Clear overflow.
+					clearOverflowButton.addEventListener("click", event =>
+						this.clearOverflow(event)
+					);
 				}
 
 				// Load the featured area settings from customizer.
@@ -385,6 +385,16 @@
 						this.searchPanel = new FeaturedItemSearch();
 						this.searchPanel.toggle();
 					}
+				}
+				
+				// Clear overflow.
+				clearOverflow(event) {
+					event.preventDefault();
+					var children = [].slice.call(featuredAreaList.querySelectorAll('.featured-item-tpl'));
+					children.splice(max).forEach( child => {
+						child.remove();
+						this.setSettings();
+					});
 				}
 
 				// Initialize sortablejs elemtens.

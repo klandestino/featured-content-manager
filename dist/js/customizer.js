@@ -14,7 +14,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 			var control = this,
 			    container = this.container[0],
 			    featuredAreaList = container.querySelector("ol.nested-sortable"),
-			    addItemButton = container.querySelector(".add-featured-item");
+			    addItemButton = container.querySelector(".add-featured-item"),
+			    clearOverflowButton = container.querySelector(".clear-overflow");
 			var _wp$i18n = wp.i18n,
 			    __ = _wp$i18n.__,
 			    _x = _wp$i18n._x,
@@ -324,11 +325,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 						return _this5.toggleSearchPanel(event);
 					});
 
-					// Load the featured area settings from customizer.
-					//this.loadSettings();
-
-					// Initialize nestledSortable
-					//this.initSortables();
+					// Clear overflow.
+					clearOverflowButton.addEventListener("click", function (event) {
+						return _this5.clearOverflow(event);
+					});
 				}
 
 				// Load the featured area settings from customizer.
@@ -439,6 +439,21 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 						}
 					}
 
+					// Clear overflow.
+
+				}, {
+					key: "clearOverflow",
+					value: function clearOverflow(event) {
+						var _this7 = this;
+
+						event.preventDefault();
+						var children = [].slice.call(featuredAreaList.querySelectorAll('.featured-item-tpl'));
+						children.splice(max).forEach(function (child) {
+							child.remove();
+							_this7.setSettings();
+						});
+					}
+
 					// Initialize sortablejs elemtens.
 
 				}, {
@@ -469,7 +484,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				}, {
 					key: "initSortable",
 					value: function initSortable(sortable) {
-						var _this7 = this;
+						var _this8 = this;
 
 						var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {
 							group: 'nested',
@@ -477,12 +492,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 							emptyInsertThreshold: 5,
 							animation: 150,
 							onSort: function onSort(event) {
-								_this7.setSettings();
+								_this8.setSettings();
 							},
 							onAdd: function onAdd(event) {
-								if (_this7.isDuplicate(event.clone.dataset)) {
+								if (_this8.isDuplicate(event.clone.dataset)) {
 									event.item.remove();
-									_this7.addErrorNotification('This item already exist in the selected featured area.');
+									_this8.addErrorNotification('This item already exist in the selected featured area.');
 								}
 							}
 						};
