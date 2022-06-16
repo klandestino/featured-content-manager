@@ -84,7 +84,7 @@ class Featured_Area_Control extends \WP_Customize_Control {
 	public function content_template() {
 		?>
 		<div class="button-container">
-			<span><?php esc_html_e( 'Add & arrange', 'featured-content-manager' ); ?></span>
+			<span><?php esc_html_e( 'Content items', 'featured-content-manager' ); ?></span>
 			<button class="add-featured-item button"><?php esc_html_e( 'Add', 'featured-content-manager' ); ?></button>
 		</div>
 		<ol id={{data.section}} class="nested-sortable featured-area" data-max="{{data.max}}" data-levels="{{data.levels}}" data-type="{{data.object_type}}" data-subtype="{{data.object_subtype}}" data-settings="{{data.fsettings}}"></ol>
