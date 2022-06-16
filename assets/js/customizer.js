@@ -4,7 +4,7 @@
 			const control = this,
 				container = this.container[0],
 				featuredAreaList = container.querySelector("ol.nested-sortable"),
-				addItemButton = container.querySelector(".add-featured-item"),
+				addItemButtons = container.querySelectorAll(".add-featured-item"),
 				clearOverflowButton = container.querySelector(".clear-overflow");
 			const { __, _x, _n, _nx } = wp.i18n;
 			let featuredArea,
@@ -290,9 +290,11 @@
 					subtype = featuredAreaList.dataset.subtype.split(',');
 
 					// Add eventlistener on add button click to toggle search panel.
-					addItemButton.addEventListener("click", event =>
-						this.toggleSearchPanel(event)
-					);
+					addItemButtons.forEach( (button) => {
+						button.addEventListener("click", event =>
+							this.toggleSearchPanel(event)
+						);
+					});
 					
 					// Clear overflow.
 					clearOverflowButton.addEventListener("click", event =>

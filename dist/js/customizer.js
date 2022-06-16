@@ -14,7 +14,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 			var control = this,
 			    container = this.container[0],
 			    featuredAreaList = container.querySelector("ol.nested-sortable"),
-			    addItemButton = container.querySelector(".add-featured-item"),
+			    addItemButtons = container.querySelectorAll(".add-featured-item"),
 			    clearOverflowButton = container.querySelector(".clear-overflow");
 			var _wp$i18n = wp.i18n,
 			    __ = _wp$i18n.__,
@@ -321,8 +321,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					subtype = featuredAreaList.dataset.subtype.split(',');
 
 					// Add eventlistener on add button click to toggle search panel.
-					addItemButton.addEventListener("click", function (event) {
-						return _this5.toggleSearchPanel(event);
+					addItemButtons.forEach(function (button) {
+						button.addEventListener("click", function (event) {
+							return _this5.toggleSearchPanel(event);
+						});
 					});
 
 					// Clear overflow.
