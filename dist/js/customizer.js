@@ -331,9 +331,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					clearOverflowButton.addEventListener("click", function (event) {
 						return _this5.clearOverflow(event);
 					});
-
-					// Toggle Clear Overflow button.
-					this.toggleClearOverflow();
 				}
 
 				// Load the featured area settings from customizer.
@@ -359,6 +356,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 								new FeaturedItem(item, featuredAreaList);
 							}
 						});
+
+						// Toggle Clear Overflow button.
+						this.toggleClearOverflow();
 
 						this.initSortables();
 					}
