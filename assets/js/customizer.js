@@ -300,9 +300,6 @@
 					clearOverflowButton.addEventListener("click", event =>
 						this.clearOverflow(event)
 					);
-					
-					// Toggle Clear Overflow button.
-					this.toggleClearOverflow();
 				}
 
 				// Load the featured area settings from customizer.
@@ -324,6 +321,9 @@
 							new FeaturedItem(item, featuredAreaList);
 						}
 					});
+					
+					// Toggle Clear Overflow button.
+					this.toggleClearOverflow();
 
 					this.initSortables();
 				}
