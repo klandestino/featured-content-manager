@@ -8,10 +8,12 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  flex-direction: row-reverse;
   align-items: center;
 }
 
 button.add-featured-item {
+  justify-self: end;
   cursor: pointer;
   margin-left: 10px;
   -webkit-transition: all 0.2s;
@@ -361,6 +363,10 @@ body.adding-featured-items .wp-full-overlay-main {
   body.adding-featured-items .wp-full-overlay-main {
     left: auto;
   }
+}
+
+.hidden {
+  visibility: hidden !important;
 }
 
 /*# sourceMappingURL=customizer.css.map */

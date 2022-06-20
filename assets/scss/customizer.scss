@@ -7,10 +7,12 @@
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
+	flex-direction: row-reverse;
 	align-items: center;
 }
 
 button.add-featured-item {
+	justify-self: end;
 	cursor: pointer;
 	margin-left: 10px;
 
@@ -394,4 +396,8 @@ body.adding-featured-items {
 			left: auto;
 		}
 	}
+}
+
+.hidden {
+	visibility: hidden !important;
 }

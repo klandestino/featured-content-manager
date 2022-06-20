@@ -331,6 +331,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					clearOverflowButton.addEventListener("click", function (event) {
 						return _this5.clearOverflow(event);
 					});
+
+					// Toggle Clear Overflow button.
+					this.toggleClearOverflow();
 				}
 
 				// Load the featured area settings from customizer.
@@ -380,6 +383,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 						// Set timeout to avoid race contitions.
 						clearTimeout(settings_timer);
+						this.toggleClearOverflow();
 						settings_timer = setTimeout(function () {
 							var settings = _this6.serialize(featuredAreaList);
 							control.setting.set(JSON.stringify(settings));
@@ -440,6 +444,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 							this.searchPanel.toggle();
 						}
 					}
+				}, {
+					key: "toggleClearOverflow",
+					value: function toggleClearOverflow() {
+						if (this.isFull()) {
+							clearOverflowButton.classList.remove('hidden');
+						} else {
+							clearOverflowButton.classList.add('hidden');
+						}
+					}
 
 					// Clear overflow.
 
@@ -461,7 +474,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				}, {
 					key: "initSortables",
 					value: function initSortables() {
-
 						// Create featured area list.
 						// This lists can recive cloned items from search result list.
 						var featuredAreaList = container.querySelector('.featured-area');

@@ -300,6 +300,9 @@
 					clearOverflowButton.addEventListener("click", event =>
 						this.clearOverflow(event)
 					);
+					
+					// Toggle Clear Overflow button.
+					this.toggleClearOverflow();
 				}
 
 				// Load the featured area settings from customizer.
@@ -337,6 +340,7 @@
 				setSettings() {
 					// Set timeout to avoid race contitions.
 					clearTimeout(settings_timer);
+					this.toggleClearOverflow();
 					settings_timer = setTimeout(() => {
 						let settings = this.serialize( featuredAreaList );
 						control.setting.set(JSON.stringify(settings));
@@ -389,6 +393,14 @@
 					}
 				}
 				
+				toggleClearOverflow() {
+					if( this.isFull() ) {
+						clearOverflowButton.classList.remove('hidden');
+					} else {
+						clearOverflowButton.classList.add('hidden');
+					}
+				}
+				
 				// Clear overflow.
 				clearOverflow(event) {
 					event.preventDefault();
@@ -401,7 +413,6 @@
 
 				// Initialize sortablejs elemtens.
 				initSortables() {
-
 					// Create featured area list.
 					// This lists can recive cloned items from search result list.
 					let featuredAreaList = container.querySelector('.featured-area');
