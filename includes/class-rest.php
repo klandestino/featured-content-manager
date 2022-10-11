@@ -68,9 +68,10 @@ class Rest {
 	 */
 	public static function fcm_term_search( $args = array( 'search_term' => '' ) ) {
 		$query  = array(
-			'taxonomy' => $args['object_subtype'],
-			'number'   => 10,
-			'search'   => $args['search_term'],
+			'taxonomy'   => $args['object_subtype'],
+			'number'     => 10,
+			'search'     => $args['search_term'],
+			'hide_empty' => apply_filters( 'fcm_term_hide_empty', true ),
 		);
 		$result = get_terms( $query );
 		return $result;
