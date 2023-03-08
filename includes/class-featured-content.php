@@ -39,7 +39,7 @@ class Featured_Content {
 		$featured_area       = sanitize_title( $featured_area );
 		$featured_area_items = get_theme_mod( $featured_area );
 		if (
-			isset( $featured_area_items )
+			! empty( $featured_area_items )
 		) {
 			return ( is_array( $featured_area_items ) ) ? $featured_area_items : json_decode( $featured_area_items );
 		}
