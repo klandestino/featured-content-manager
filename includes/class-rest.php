@@ -73,6 +73,7 @@ class Rest {
 			'search'     => $args['search_term'],
 			'hide_empty' => apply_filters( 'fcm_term_hide_empty', true ),
 		);
+		$query  = apply_filters( 'fcm_term_search_query', $query );
 		$result = get_terms( $query );
 		return $result;
 	}
