@@ -57,6 +57,7 @@ class Rest {
 			's'              => $args['search_term'],
 			'orderby'        => apply_filters( 'fcm_post_orderby', 'date' ),
 		);
+		$query  = apply_filters( 'fcm_post_search_query', $query, $args['list'] );
 		$result = get_posts( $query );
 		return $result;
 	}
@@ -73,7 +74,7 @@ class Rest {
 			'search'     => $args['search_term'],
 			'hide_empty' => apply_filters( 'fcm_term_hide_empty', true ),
 		);
-		$query  = apply_filters( 'fcm_term_search_query', $query );
+		$query  = apply_filters( 'fcm_term_search_query', $query, $args['list'] );
 		$result = get_terms( $query );
 		return $result;
 	}
@@ -87,11 +88,13 @@ class Rest {
 		$search_term     = ( ! empty( $request['s'] ) ? $request['s'] : '' );
 		$object_type     = ( ! empty( $request['type'] ) ? $request['type'] : [ 'post' ] );
 		$object_subtype  = ( ! empty( $request['subtype'] ) ? $request['subtype'] : [ 'post' ] );
+		$list            = $request['list'] ?? false;
 		$result          = apply_filters(
 			"fcm_{$object_type}_search",
 			array(
 				'search_term'    => $search_term,
 				'object_subtype' => $object_subtype,
+				'list'           => $list,
 			)
 		);
 		$filtered_result = apply_filters( "fcm_{$object_type}_filter_result", $result );

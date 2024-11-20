@@ -152,7 +152,8 @@
 			}
 
 			class FeaturedItemSearch {
-				constructor() {
+				constructor( featuredArea ) {
+					this.featuredArea = featuredArea;
 					this.active = true;
 					this.searchResult = document.getElementById(
 						"featured-items-search-list"
@@ -262,7 +263,8 @@
 									{
 										"s": search,
 										"type": type,
-										"subtype": subtype
+										"subtype": subtype,
+										"list": this.featuredArea,
 									}
 								),
 								credentials: "same-origin",
@@ -388,7 +390,7 @@
 					if (this.searchPanel) {
 						this.searchPanel.toggle();
 					} else {
-						this.searchPanel = new FeaturedItemSearch();
+						this.searchPanel = new FeaturedItemSearch( featuredAreaList.id );
 						this.searchPanel.toggle();
 					}
 				}

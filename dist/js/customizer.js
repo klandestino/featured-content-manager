@@ -173,11 +173,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 			}();
 
 			var FeaturedItemSearch = function () {
-				function FeaturedItemSearch() {
+				function FeaturedItemSearch(featuredArea) {
 					var _this3 = this;
 
 					_classCallCheck(this, FeaturedItemSearch);
 
+					this.featuredArea = featuredArea;
 					this.active = true;
 					this.searchResult = document.getElementById("featured-items-search-list");
 					this.search('');
@@ -288,7 +289,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 								body: JSON.stringify({
 									"s": _search,
 									"type": type,
-									"subtype": subtype
+									"subtype": subtype,
+									"list": _this4.featuredArea
 								}),
 								credentials: "same-origin"
 							}).then(function (data) {
@@ -440,7 +442,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 						if (this.searchPanel) {
 							this.searchPanel.toggle();
 						} else {
-							this.searchPanel = new FeaturedItemSearch();
+							this.searchPanel = new FeaturedItemSearch(featuredAreaList.id);
 							this.searchPanel.toggle();
 						}
 					}
