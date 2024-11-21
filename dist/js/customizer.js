@@ -179,6 +179,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					_classCallCheck(this, FeaturedItemSearch);
 
 					this.featuredArea = featuredArea;
+					this.featuredAreaItems = [];
 					this.active = true;
 					this.searchResult = document.getElementById("featured-items-search-list");
 					this.search('');
@@ -201,15 +202,37 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					});
 				}
 
-				// Show the search panel.
-
-
 				_createClass(FeaturedItemSearch, [{
+					key: "setItems",
+					value: function setItems(settings) {
+						try {
+							settings = JSON.parse(settings);
+						} catch (e) {
+							console.log(e);
+							settings = [{}];
+						}
+
+						// Remove items larger than 50.
+						settings = settings.slice(0, 50);
+
+						var items = [];
+						settings.forEach(function (item) {
+							if (item != null) {
+								items.push(parseInt(item['id']));
+							}
+						});
+						this.featuredAreaItems = items;
+					}
+
+					// Show the search panel.
+
+				}, {
 					key: "open",
-					value: function open() {
+					value: function open(settings) {
 						var body = document.querySelector("body");
 						body.classList.add("adding-featured-items");
 						this.active = true;
+						this.setItems(settings);
 						this.search('');
 					}
 
@@ -228,12 +251,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 				}, {
 					key: "toggle",
-					value: function toggle() {
+					value: function toggle(settings) {
 						var body = document.querySelector("body");
 						if (body.classList.contains("adding-featured-items")) {
 							this.close();
 						} else {
-							this.open();
+							this.open(settings);
 						}
 					}
 
@@ -290,7 +313,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 									"s": _search,
 									"type": type,
 									"subtype": subtype,
-									"list": _this4.featuredArea
+									"list": _this4.featuredArea,
+									"items": _this4.featuredAreaItems
 								}),
 								credentials: "same-origin"
 							}).then(function (data) {
@@ -440,10 +464,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					value: function toggleSearchPanel(event) {
 						event.preventDefault();
 						if (this.searchPanel) {
-							this.searchPanel.toggle();
+							this.searchPanel.toggle(control.setting.get());
 						} else {
 							this.searchPanel = new FeaturedItemSearch(featuredAreaList.id);
-							this.searchPanel.toggle();
+							this.searchPanel.toggle(control.setting.get());
 						}
 					}
 				}, {
@@ -487,7 +511,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 						this.initSortable(searchList, {
 							group: {
 								name: 'nested',
-								pull: 'clone',
 								put: false // Do not allow items to be put into this list
 							},
 							animation: 150,

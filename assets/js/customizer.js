@@ -154,6 +154,7 @@
 			class FeaturedItemSearch {
 				constructor( featuredArea ) {
 					this.featuredArea = featuredArea;
+					this.featuredAreaItems = [];
 					this.active = true;
 					this.searchResult = document.getElementById(
 						"featured-items-search-list"
@@ -188,11 +189,32 @@
 						.addEventListener("click", event => this.close());
 				}
 
+				setItems( settings ) {
+					try {
+						settings = JSON.parse(settings);
+					} catch (e) {
+						console.log(e);
+						settings = [ {} ];
+					}
+
+					// Remove items larger than 50.
+					settings = settings.slice(0, 50);
+
+					const items = [];
+					settings.forEach(item => {
+						if ( item != null ) {
+							items.push( parseInt( item['id'] ) );
+						}
+					});
+					this.featuredAreaItems = items;
+				}
+
 				// Show the search panel.
-				open() {
+				open( settings ) {
 					const body = document.querySelector("body");
 					body.classList.add("adding-featured-items");
 					this.active = true;
+					this.setItems( settings );
 					this.search('');
 				}
 
@@ -205,12 +227,12 @@
 				}
 
 				// Toggle the search panel.
-				toggle() {
+				toggle( settings ) {
 					const body = document.querySelector("body");
 					if (body.classList.contains("adding-featured-items")) {
 						this.close();
 					} else {
-						this.open();
+						this.open( settings );
 					}
 				}
 
@@ -265,6 +287,7 @@
 										"type": type,
 										"subtype": subtype,
 										"list": this.featuredArea,
+										"items": this.featuredAreaItems,
 									}
 								),
 								credentials: "same-origin",
@@ -308,7 +331,7 @@
 				loadSettings() {
 					let settings = control.setting.get();
 					try {
-						settings = JSON.parse(settings); 
+						settings = JSON.parse(settings);
 					} catch (e) {
 						console.log(e);
 						settings = [ {} ];
@@ -388,10 +411,10 @@
 				toggleSearchPanel(event) {
 					event.preventDefault();
 					if (this.searchPanel) {
-						this.searchPanel.toggle();
+						this.searchPanel.toggle( control.setting.get() );
 					} else {
 						this.searchPanel = new FeaturedItemSearch( featuredAreaList.id );
-						this.searchPanel.toggle();
+						this.searchPanel.toggle( control.setting.get() );
 					}
 				}
 				
@@ -426,7 +449,6 @@
 					this.initSortable(searchList, {
 					    group: {
 					        name: 'nested',
-					        pull: 'clone',
 					        put: false // Do not allow items to be put into this list
 					    },
 					    animation: 150,
