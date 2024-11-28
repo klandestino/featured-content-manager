@@ -131,7 +131,8 @@ class Customizer {
 			'featured-area-script',
 			'wpFeaturedContentApiSettings',
 			array(
-				'base' => 'featured-content-manager/v1/',
+				'base'       => 'featured-content-manager/v1/',
+				'go_to_urls' => self::get_go_to_urls(),
 			)
 		);
 		wp_enqueue_script( 'featured-area-script' );
@@ -231,5 +232,20 @@ class Customizer {
 		?>
 		</style>
 		<?php
+	}
+
+	/**
+	 * If an area has registered a url to go to when it's opened,
+	 * add it here.
+	 */
+	public static function get_go_to_urls() {
+		$featured_areas = Featured_Content::get_featured_areas();
+		$go_to_urls     = [];
+		foreach ( $featured_areas as $id => $featured_area ) {
+			if ( ! empty( $featured_area['go_to_url'] ) ) {
+				$go_to_urls[ $id ] = $featured_area['go_to_url'];
+			}
+		}
+		return $go_to_urls;
 	}
 }
