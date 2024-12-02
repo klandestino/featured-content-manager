@@ -520,3 +520,22 @@
 	}
 
 })(wp, jQuery);
+
+/**
+ * If an area has registered a url to go to when it's opened,
+ * add it here.
+ */
+(function ( api ) {
+	const sectionsWithGoToUrls = wpFeaturedContentApiSettings.go_to_urls;
+	for ( const [ key, value ] of Object.entries( sectionsWithGoToUrls ) ) {
+		api.section( key, function( section ) {
+			section.expanded.bind( function( isExpanded ) {
+				if ( isExpanded ) {
+					api.previewer.previewUrl.set( api.settings.url.home + value );
+				} else {
+					api.previewer.previewUrl.set( api.settings.url.home );
+				}
+			} );
+		} );
+	  }
+} ( wp.customize ) );
