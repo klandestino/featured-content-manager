@@ -15,6 +15,8 @@
 
 namespace Featured_Content_Manager;
 
+use stdClass;
+
 /**
  * Autoloading classes.
  *
@@ -46,14 +48,16 @@ add_action(
 				add_filter( "fcm_{$object_type}_search", array( 'Featured_Content_Manager\Rest', "fcm_{$object_type}_search" ), 10, 1 );
 				add_filter( "fcm_{$object_type}_filter_result", array( 'Featured_Content_Manager\Rest', "fcm_{$object_type}_filter_result" ), 10, 1 );
 			}
-			
-			// Backwards compatibilty. Map old values from options to new.
+
 			foreach ( Featured_Content::get_featured_areas() as $slug => $area ) {
 				add_filter(
 					"customize_sanitize_js_{$slug}",
 					function( $value ) {
 						$value = json_decode( $value );
+						$ids   = array_column( $value, 'id' );
+						_prime_post_caches( $ids, false, false );
 						foreach ( $value as $key => $item ) {
+							// Backwards compatibilty. Map old values from options to new.
 							if ( ! isset( $item->title ) ) {
 								$new_item                = new \stdclass();
 								$new_item->id            = $item->original_post_id ?? $item->id;
@@ -66,6 +70,13 @@ add_action(
 								}
 								$value[ $key ] = $new_item;
 							}
+							// Update title and post_status from original post.
+							$original_post        = get_post( $value[ $key ]->id );
+							$value[ $key ]->title = esc_attr( $original_post->post_title );
+							if ( ! isset( $value[ $key ]->meta ) ) {
+								$value[ $key ]->meta = new \stdClass();
+							}
+							$value[ $key ]->meta->post_status = esc_attr( $original_post->post_status );
 						}
 						$value = wp_json_encode( $value );
 						return $value;
