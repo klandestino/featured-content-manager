@@ -325,7 +325,12 @@ ol.accordion-section-content {
 
 			.featured-item-tpl {
 				 margin: 0;
-
+				.dashicons.dashicons-clock {
+					padding-right: 2px;
+				}
+				&:has( .dashicons.dashicons-clock ) {
+					opacity: 0.7;
+				}
 				.handle {
 					position: relative;
 					background: #fff;
