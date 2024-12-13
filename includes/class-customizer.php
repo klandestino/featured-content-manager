@@ -176,6 +176,9 @@ class Customizer {
 			<# if ( data.title ) { #>
 				<li data-id="{{data.id}}" data-title="{{data.title}}" data-type="{{data.type}}" data-subtype="{{data.subtype}}" data-subtype_label="{{data.subtype_label}}" class="featured-item-tpl">
 					<div class="handle">
+						<# if ( data.meta && data.meta.post_status && 'future' == data.meta.post_status	) { #>
+							<span class="dashicons dashicons-clock"></span>
+						<# } #>
 						<span class="featured-item-title">
 							{{data.title}}
 						</span>
