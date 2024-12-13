@@ -2,6 +2,11 @@
 
 This plugin lets you create sortable and nested lists (Featured Content Areas) of content you want to feature on your website. These sortable lists can contain content of ```object_type``` ```post``` and ```term```.
 
+## Build
+
+1. Run `$ npm install` to install dependencies.
+2. Run `$ npm build` to build assets as javascript, styles and images.
+
 ## Installation
 
 To start using Featured Content Manager you nead to add support for it in your WordPress theme like the example below.

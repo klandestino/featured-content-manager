@@ -1,33 +1,52 @@
 {
   "name": "featured-content-manager",
   "version": "0.1.1",
-  "main": "Gulpfile.js",
   "author": "Jesper Nilsson",
   "license": "GPL-3.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/klandestino/featured-content-manager.git"
   },
-  "babel": {
-    "plugins": [
-      "transform-object-rest-spread"
-    ]
-  },
   "devDependencies": {
-    "babel-cli": "^6.18.0",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-preset-env": "^1.6.1",
-    "es6-promise": "^4.2.2",
-    "gulp": "^4.0.2",
-    "gulp-babel": "^7.0.0",
-    "gulp-imagemin": "^6.0.0",
-    "gulp-rename": "^1.4.0",
-    "gulp-uglify": "^3.0.2",
-    "gulp-watch": "^4.2.4",
+    "copy-files-from-to": "^3.12.0",
     "po2json": "^1.0.0-alpha",
+    "sass": "^1.83.0",
     "whatwg-fetch": "^2.0.3"
   },
   "dependencies": {
     "sortablejs": "^1.13.0"
+  },
+  "scripts": {
+    "build": "sass assets/scss/customizer.scss dist/css/customizer.css --style compressed; copy-files-from-to"
+  },
+  "copyFiles": [
+    {
+      "from": "assets/js/customizer.js",
+      "to": "dist/js/customizer.js"
+    },
+    {
+      "from": "node_modules/sortablejs/Sortable.min.js",
+      "to": "dist/js/Sortable.min.js"
+    },
+    {
+      "from": "node_modules/whatwg-fetch/fetch.js",
+      "to": "dist/js/fetch.js"
+    },
+    {
+      "from": "assets/images/spinner-2x.gif",
+      "to": "dist/images/spinner-2x.gif"
+    }
+  ],
+  "copyFilesSettings": {
+    "minifyJs": true,
+    "minifyJsTerserOptions": {
+      "compress": {
+        "sequences": false
+      },
+      "mangle": false,
+      "format": {
+        "semicolons": false
+      }
+    }
   }
 }
