@@ -4,7 +4,8 @@ class FeaturedItem{constructor(data,list,parent){this.data=data
 this.list=list
 this.parent=parent
 this.element=null
-this.isFeaturedItemObject(this.data)&&this.addItem()}isFeaturedItemObject(obj){return obj.hasOwnProperty("id")&&obj.hasOwnProperty("title")&&obj.hasOwnProperty("id")}addItem(){let innerHTML=wp.template("featured-item")(this.data)
+this.isFeaturedItemObject(this.data)&&this.addItem()}isFeaturedItemObject(obj){return obj.hasOwnProperty("id")&&obj.hasOwnProperty("title")&&obj.hasOwnProperty("id")}addItem(){0===this.data.title.length&&(this.data.title="(no title)")
+let innerHTML=wp.template("featured-item")(this.data)
 this.element=function(html){var template=document.createElement("template")
 html=html.trim()
 template.innerHTML=html

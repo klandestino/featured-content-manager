@@ -101,9 +101,9 @@ class Customizer {
 		);
 		wp_register_script(
 			'featured-area-script',
-			plugins_url( 'assets/js/customizer.js', dirname( __FILE__ ) ),
+			plugins_url( 'dist/js/customizer.js', dirname( __FILE__ ) ),
 			array( 'customize-controls', 'sortable-js', 'wp-i18n' ),
-			filemtime( dirname( __DIR__, 1 ) . '/assets/js/customizer.js' ),
+			filemtime( dirname( __DIR__, 1 ) . '/dist/js/customizer.js' ),
 			true
 		);
 		wp_set_script_translations(

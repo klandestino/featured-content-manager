@@ -39,6 +39,11 @@
 
 				// Create featured item element and add to list.
 				addItem() {
+					// If title is empty, set placeholder.
+					if ( this.data.title.length === 0 ) {
+						this.data.title = '(no title)';
+					}
+
 					// Create item html element
 					let featuredItemTemplate = wp.template("featured-item");
 					let innerHTML = featuredItemTemplate(
