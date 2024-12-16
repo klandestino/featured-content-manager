@@ -71,12 +71,14 @@ add_action(
 								$value[ $key ] = $new_item;
 							}
 							// Update title and post_status from original post.
-							$original_post        = get_post( $value[ $key ]->id );
-							$value[ $key ]->title = esc_attr( $original_post->post_title );
-							if ( ! isset( $value[ $key ]->meta ) ) {
-								$value[ $key ]->meta = new \stdClass();
+							$original_post = get_post( $value[ $key ]->id );
+							if ( $original_post ) {
+								$value[ $key ]->title = esc_attr( $original_post->post_title );
+								if ( ! isset( $value[ $key ]->meta ) ) {
+									$value[ $key ]->meta = new \stdClass();
+								}
+								$value[ $key ]->meta->post_status = esc_attr( $original_post->post_status );
 							}
-							$value[ $key ]->meta->post_status = esc_attr( $original_post->post_status );
 						}
 						$value = wp_json_encode( $value );
 						return $value;
