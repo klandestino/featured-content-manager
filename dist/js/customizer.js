@@ -44,7 +44,7 @@ this.search("")
 document.getElementById("featured-items-search-input").addEventListener("keyup",(event=>this.onInputChange(event)))
 document.addEventListener("click",(event=>{event.target.classList.contains("add-featured-item")||isChildOf(event.target,"featured-item-container")||this.close()}))
 document.querySelector("#featured-items-search-panel .customize-section-back").addEventListener("click",(event=>this.close()))}setItems(settings){try{settings=JSON.parse(settings)}catch(e){console.log(e)
-settings=[{}]}settings=settings.slice(0,50)
+settings=[{}]}settings=settings.slice(0,max+10)
 const items=[]
 settings.forEach((item=>{null!=item&&items.push(parseInt(item.id))}))
 this.featuredAreaItems=items}open(settings){document.querySelector("body").classList.add("adding-featured-items")
@@ -61,13 +61,13 @@ body.classList.add("searching")
 var search_item_tpl=this.searchResult.querySelectorAll(".featured-item-tpl");[].forEach.call(search_item_tpl,(function(item){item.remove()}))
 window.fetch(wpApiSettings.root+wpFeaturedContentApiSettings.base+"posts",{method:"POST",headers:{Accept:"application/json","Content-Type":"application/json","X-WP-Nonce":wpApiSettings.nonce},body:JSON.stringify({s:search,type:type,subtype:subtype,list:this.featuredArea,items:this.featuredAreaItems}),credentials:"same-origin"}).then((data=>data.json())).then((data=>{body.classList.remove("searching")
 data.forEach(((obj,index)=>{new FeaturedItem(obj,this.searchResult)}))}))}),500)}}}featuredArea=new class{constructor(){this.nestedSortables=[]
-max=featuredAreaList.dataset.max
+max=parseInt(featuredAreaList.dataset.max)
 type=featuredAreaList.dataset.type
 subtype=featuredAreaList.dataset.subtype.split(",")
 addItemButtons.forEach((button=>{button.addEventListener("click",(event=>this.toggleSearchPanel(event)))}))
 clearOverflowButton.addEventListener("click",(event=>this.clearOverflow(event)))}loadSettings(){let settings=control.setting.get()
 try{settings=JSON.parse(settings)}catch(e){console.log(e)
-settings=[{}]}settings=settings.slice(0,50)
+settings=[{}]}settings=settings.slice(0,max+10)
 settings.forEach((item=>{null!=item&&new FeaturedItem(item,featuredAreaList)}))
 this.toggleClearOverflow()
 this.initSortables()}getDataAttributes(dataset){return Object.keys(dataset).reduce((function(object,key){object[key]=dataset[key]
