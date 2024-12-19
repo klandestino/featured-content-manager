@@ -58,6 +58,14 @@ ol.accordion-section-content {
 		position: relative;
 		margin: 0;
 		padding: 0;
+		&.featured-item-tpl {
+		   .dashicons.dashicons-clock {
+			   padding-right: 5px;
+		   }
+		   &:has( .dashicons.dashicons-clock ) {
+			   opacity: 0.5;
+		   }
+		}
 
 		.handle {
 			position: relative;
@@ -325,7 +333,12 @@ ol.accordion-section-content {
 
 			.featured-item-tpl {
 				 margin: 0;
-
+				.dashicons.dashicons-clock {
+					padding-right: 5px;
+				}
+				&:has( .dashicons.dashicons-clock ) {
+					opacity: 0.5;
+				}
 				.handle {
 					position: relative;
 					background: #fff;

@@ -1,639 +1,97 @@
-"use strict";
-
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-(function (wp) {
-	wp.customize.FeaturedAreaControl = wp.customize.Control.extend({
-		ready: function ready() {
-			var control = this,
-			    container = this.container[0],
-			    featuredAreaList = container.querySelector("ol.nested-sortable"),
-			    addItemButtons = container.querySelectorAll(".add-featured-item"),
-			    clearOverflowButton = container.querySelector(".clear-overflow");
-			var _wp$i18n = wp.i18n,
-			    __ = _wp$i18n.__,
-			    _x = _wp$i18n._x,
-			    _n = _wp$i18n._n,
-			    _nx = _wp$i18n._nx;
-
-			var featuredArea = void 0,
-			    settings_timer = void 0,
-			    search_timer = void 0,
-			    max = void 0,
-			    type = void 0,
-			    subtype = void 0,
-			    timer_ms = 500;
-
-			var FeaturedItem = function () {
-				function FeaturedItem(data, list, parent) {
-					_classCallCheck(this, FeaturedItem);
-
-					this.data = data;
-					this.list = list;
-					this.parent = parent;
-					this.element = null;
-
-					if (this.isFeaturedItemObject(this.data)) {
-
-						// Add item.
-						this.addItem();
-					}
-				}
-
-				_createClass(FeaturedItem, [{
-					key: "isFeaturedItemObject",
-					value: function isFeaturedItemObject(obj) {
-						return obj.hasOwnProperty('id') && obj.hasOwnProperty('title') && obj.hasOwnProperty('id');
-					}
-
-					// Create featured item element and add to list.
-
-				}, {
-					key: "addItem",
-					value: function addItem() {
-						var _this = this;
-
-						// Create item html element
-						var featuredItemTemplate = wp.template("featured-item");
-						var innerHTML = featuredItemTemplate(this.data);
-						this.element = htmlToElement(innerHTML);
-
-						// Add event listeners for item.
-						this.element.querySelector(".button-link-delete").addEventListener("click", function (event) {
-							return _this.deleteItem(event);
-						});
-						this.element.querySelector(".featured-item-add").addEventListener("click", function (event) {
-							return _this.cloneItem(event);
-						});
-						this.element.querySelector(".handle").addEventListener("click", function () {
-							if (!Array.isArray(JSON.parse(featuredAreaList.dataset.settings))) {
-								_this.element.classList.toggle("open");
-							}
-						});
-
-						this.addSettings(this.element);
-
-						// Initiate nested sortable in new featured item.
-						var nestedSortable = this.element.querySelector('.nested-sortable');
-						featuredArea.initSortable(nestedSortable);
-
-						// If the item has a parent the add its element as a child to the parent.
-						// In other case place it in the list sent to the constructor.
-						if (typeof this.parent !== 'undefined' && featuredAreaList.dataset.levels > 1) {
-							var parentItemOl = this.list.querySelector('[data-id="' + this.parent + '"] ol');
-							parentItemOl.appendChild(this.element);
-						} else {
-							this.list.appendChild(this.element);
-						}
-
-						// If item has children then create items for them to.
-						if (_typeof(this.data.children) === 'object') {
-							this.data.children.forEach(function (child) {
-								new FeaturedItem(child, _this.list, _this.data.id);
-							});
-						}
-					}
-				}, {
-					key: "addSettings",
-					value: function addSettings(element) {
-						var _this2 = this;
-
-						var settings = JSON.parse(featuredAreaList.dataset.settings);
-						var data = this.data;
-						Object.keys(settings).forEach(function (key) {
-							var setting = settings[key];
-							var setting_key = key;
-							if ('select' === setting.type) {
-								var selectList = document.createElement('select');
-								//Create and append the options
-								Object.keys(setting.values).forEach(function (key) {
-									var option = setting.values[key];
-									var optionElement = document.createElement("option");
-									optionElement.value = key;
-									optionElement.text = option;
-									optionElement.selected = data[setting_key] === key;
-
-									selectList.appendChild(optionElement);
-								});
-								if (undefined !== data[setting_key]) element.dataset[key] = data[setting_key];
-								element.querySelector('.settings').appendChild(selectList);
-								element.addEventListener('change', function (event) {
-									element.dataset[key] = event.target.value;
-									_this2.data[key] = event.target.value;
-									featuredArea.setSettings();
-								});
-							}
-						});
-					}
-
-					// Removes the element.
-
-				}, {
-					key: "removeItem",
-					value: function removeItem() {
-						this.element.remove();
-					}
-
-					// Add featured item to featured area.
-
-				}, {
-					key: "cloneItem",
-					value: function cloneItem(event) {
-						var item = new FeaturedItem(this.data, featuredAreaList);
-						featuredArea.toggleSearchPanel(event);
-						if (featuredArea.isDuplicate(this.data)) {
-							featuredArea.addErrorNotification('This item already exist in the selected featured area.');
-							item.removeItem();
-						} else if (featuredArea.isFull()) {
-							featuredArea.addErrorNotification('The selected featured area is full.');
-							item.removeItem();
-							return;
-						}
-						featuredArea.setSettings();
-					}
-
-					// Delete item from the DOM and then update Settings.
-
-				}, {
-					key: "deleteItem",
-					value: function deleteItem() {
-						var item = featuredAreaList.querySelector('[data-id="' + this.data.id + '"]');
-						item.remove();
-						featuredArea.setSettings();
-					}
-				}]);
-
-				return FeaturedItem;
-			}();
-
-			var FeaturedItemSearch = function () {
-				function FeaturedItemSearch(featuredArea) {
-					var _this3 = this;
-
-					_classCallCheck(this, FeaturedItemSearch);
-
-					this.featuredArea = featuredArea;
-					this.featuredAreaItems = [];
-					this.active = true;
-					this.searchResult = document.getElementById("featured-items-search-list");
-					this.search('');
-
-					// Event when something is written into the search input.
-					document.getElementById("featured-items-search-input").addEventListener("keyup", function (event) {
-						return _this3.onInputChange(event);
-					});
-
-					// If something outside the searchpanel i clicked.
-					document.addEventListener("click", function (event) {
-						if (!event.target.classList.contains("add-featured-item") && !isChildOf(event.target, "featured-item-container")) {
-							_this3.close();
-						}
-					});
-
-					// Event when mobile section back button is clicked.
-					document.querySelector("#featured-items-search-panel .customize-section-back").addEventListener("click", function (event) {
-						return _this3.close();
-					});
-				}
-
-				_createClass(FeaturedItemSearch, [{
-					key: "setItems",
-					value: function setItems(settings) {
-						try {
-							settings = JSON.parse(settings);
-						} catch (e) {
-							console.log(e);
-							settings = [{}];
-						}
-
-						// Remove items larger than 50.
-						settings = settings.slice(0, 50);
-
-						var items = [];
-						settings.forEach(function (item) {
-							if (item != null) {
-								items.push(parseInt(item['id']));
-							}
-						});
-						this.featuredAreaItems = items;
-					}
-
-					// Show the search panel.
-
-				}, {
-					key: "open",
-					value: function open(settings) {
-						var body = document.querySelector("body");
-						body.classList.add("adding-featured-items");
-						this.active = true;
-						this.setItems(settings);
-						this.search('');
-					}
-
-					// Hide the search panel.
-
-				}, {
-					key: "close",
-					value: function close() {
-						var body = document.querySelector("body");
-						body.classList.remove("adding-featured-items");
-						this.active = false;
-						this.clear();
-					}
-
-					// Toggle the search panel.
-
-				}, {
-					key: "toggle",
-					value: function toggle(settings) {
-						var body = document.querySelector("body");
-						if (body.classList.contains("adding-featured-items")) {
-							this.close();
-						} else {
-							this.open(settings);
-						}
-					}
-
-					// Clear the search field input.
-
-				}, {
-					key: "clear",
-					value: function clear() {
-						this.active = false;
-						document.getElementById("featured-items-search-input").value = "";
-					}
-
-					// Start search when triggered.
-
-				}, {
-					key: "onInputChange",
-					value: function onInputChange(event) {
-						event.preventDefault();
-						var search = event.target.value;
-						this.search(search);
-					}
-
-					// Start search by AJAX REST API.
-
-				}, {
-					key: "search",
-					value: function search(_search) {
-						var _this4 = this;
-
-						// Do nothing if searchpanel is closed.
-						if (!this.active) return;
-
-						//Clear timeout and start a new to avoid race conditions.
-						clearTimeout(search_timer);
-						search_timer = setTimeout(function () {
-
-							// Show searching message and remove old result.
-							var body = document.querySelector("body");
-							body.classList.add("searching");
-							var search_item_tpl = _this4.searchResult.querySelectorAll(".featured-item-tpl");
-							[].forEach.call(search_item_tpl, function (item) {
-								item.remove();
-							});
-
-							// Start AJAX request.
-							window.fetch(wpApiSettings.root + wpFeaturedContentApiSettings.base + "posts", {
-								method: "POST",
-								headers: {
-									Accept: "application/json",
-									"Content-Type": "application/json",
-									"X-WP-Nonce": wpApiSettings.nonce
-								},
-								body: JSON.stringify({
-									"s": _search,
-									"type": type,
-									"subtype": subtype,
-									"list": _this4.featuredArea,
-									"items": _this4.featuredAreaItems
-								}),
-								credentials: "same-origin"
-							}).then(function (data) {
-								return data.json();
-							}).then(function (data) {
-								// Remove searching message and add result in DOM.
-								body.classList.remove("searching");
-								data.forEach(function (obj, index) {
-									new FeaturedItem(obj, _this4.searchResult);
-								});
-							});
-						}, timer_ms);
-					}
-				}]);
-
-				return FeaturedItemSearch;
-			}();
-
-			var FeaturedArea = function () {
-				function FeaturedArea() {
-					var _this5 = this;
-
-					_classCallCheck(this, FeaturedArea);
-
-					this.nestedSortables = [];
-
-					// Set featured area globals.
-					max = featuredAreaList.dataset.max;
-					type = featuredAreaList.dataset.type;
-					subtype = featuredAreaList.dataset.subtype.split(',');
-
-					// Add eventlistener on add button click to toggle search panel.
-					addItemButtons.forEach(function (button) {
-						button.addEventListener("click", function (event) {
-							return _this5.toggleSearchPanel(event);
-						});
-					});
-
-					// Clear overflow.
-					clearOverflowButton.addEventListener("click", function (event) {
-						return _this5.clearOverflow(event);
-					});
-				}
-
-				// Load the featured area settings from customizer.
-
-
-				_createClass(FeaturedArea, [{
-					key: "loadSettings",
-					value: function loadSettings() {
-						var settings = control.setting.get();
-						try {
-							settings = JSON.parse(settings);
-						} catch (e) {
-							console.log(e);
-							settings = [{}];
-						}
-
-						// Remove items larger than 50.
-						settings = settings.slice(0, 50);
-
-						// Add items from settings to the DOM.
-						settings.forEach(function (item) {
-							if (item != null) {
-								new FeaturedItem(item, featuredAreaList);
-							}
-						});
-
-						// Toggle Clear Overflow button.
-						this.toggleClearOverflow();
-
-						this.initSortables();
-					}
-
-					// Returns object with data attributes from element.
-
-				}, {
-					key: "getDataAttributes",
-					value: function getDataAttributes(dataset) {
-						return Object.keys(dataset).reduce(function (object, key) {
-							object[key] = dataset[key];
-							return object;
-						}, {});
-					}
-
-					// Update the customizer control settings.
-
-				}, {
-					key: "setSettings",
-					value: function setSettings() {
-						var _this6 = this;
-
-						// Set timeout to avoid race contitions.
-						clearTimeout(settings_timer);
-						this.toggleClearOverflow();
-						settings_timer = setTimeout(function () {
-							var settings = _this6.serialize(featuredAreaList);
-							control.setting.set(JSON.stringify(settings));
-
-							// Update customizer preview.
-							wp.customize.previewer.refresh();
-						}, timer_ms);
-					}
-
-					// Serializes the sortable list and returns array.
-
-				}, {
-					key: "serialize",
-					value: function serialize(sortable) {
-						var serialized = [];
-						var children = [].slice.call(sortable.children);
-						for (var i in children) {
-							var nested = children[i].querySelector('.nested-sortable');
-							var attributes = this.getDataAttributes(children[i].dataset);
-							serialized.push(_extends({}, attributes, {
-								children: nested ? this.serialize(nested) : []
-							}));
-						}
-						return serialized;
-					}
-
-					// Check if the object exist as an element in the featured area list.
-
-				}, {
-					key: "isDuplicate",
-					value: function isDuplicate(obj) {
-						var result = false;
-						if (featuredAreaList.querySelectorAll('[data-id="' + obj.id + '"]').length > 1) {
-							result = true;
-						}
-						return result;
-					}
-
-					// Check if the featured area list contiains max amount of items already.
-
-				}, {
-					key: "isFull",
-					value: function isFull() {
-						var children = featuredAreaList.querySelectorAll('.featured-item-tpl');
-						return max < children.length;
-					}
-
-					// Toggle the search panel.
-
-				}, {
-					key: "toggleSearchPanel",
-					value: function toggleSearchPanel(event) {
-						event.preventDefault();
-						if (this.searchPanel) {
-							this.searchPanel.toggle(control.setting.get());
-						} else {
-							this.searchPanel = new FeaturedItemSearch(featuredAreaList.id);
-							this.searchPanel.toggle(control.setting.get());
-						}
-					}
-				}, {
-					key: "toggleClearOverflow",
-					value: function toggleClearOverflow() {
-						if (this.isFull()) {
-							clearOverflowButton.classList.remove('hidden');
-						} else {
-							clearOverflowButton.classList.add('hidden');
-						}
-					}
-
-					// Clear overflow.
-
-				}, {
-					key: "clearOverflow",
-					value: function clearOverflow(event) {
-						var _this7 = this;
-
-						event.preventDefault();
-						var children = [].slice.call(featuredAreaList.querySelectorAll('.featured-item-tpl'));
-						children.splice(max).forEach(function (child) {
-							child.remove();
-							_this7.setSettings();
-						});
-					}
-
-					// Initialize sortablejs elemtens.
-
-				}, {
-					key: "initSortables",
-					value: function initSortables() {
-						// Create featured area list.
-						// This lists can recive cloned items from search result list.
-						var featuredAreaList = container.querySelector('.featured-area');
-						this.initSortable(featuredAreaList);
-
-						// Create search result list.
-						// This list can clone each items to featured area lists.
-						var searchList = document.querySelector('#featured-items-search-list');
-						this.initSortable(searchList, {
-							group: {
-								name: 'nested',
-								put: false // Do not allow items to be put into this list
-							},
-							animation: 150,
-							sort: false // To disable sorting: set sort to false
-						});
-					}
-
-					// Initiate sortable witht default values for nest-sortables.
-
-				}, {
-					key: "initSortable",
-					value: function initSortable(sortable) {
-						var _this8 = this;
-
-						var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {
-							group: 'nested',
-							swapThreshold: 0.65,
-							emptyInsertThreshold: 5,
-							animation: 150,
-							onSort: function onSort(event) {
-								_this8.setSettings();
-							},
-							onAdd: function onAdd(event) {
-								if (_this8.isDuplicate(event.clone.dataset)) {
-									event.item.remove();
-									_this8.addErrorNotification('This item already exist in the selected featured area.');
-								}
-							}
-						};
-
-						new Sortable(sortable, args);
-					}
-				}, {
-					key: "addErrorNotification",
-					value: function addErrorNotification(message) {
-						wp.customize.notifications.add('error', new wp.customize.Notification('error', {
-							dismissible: true,
-							message: __(message, 'featured-content-manager'),
-							type: 'error'
-						}));
-					}
-				}]);
-
-				return FeaturedArea;
-			}();
-
-			// Initiate the featured area and loat its settings.
-
-
-			featuredArea = new FeaturedArea();
-			featuredArea.loadSettings();
-		}
-	});
-
-	// Extend controlConstructor to our own custom FeaturedAreaControl.
-	_.extend(wp.customize.controlConstructor, {
-		"featured-area": wp.customize.FeaturedAreaControl
-	});
-
-	// Test if the elements is a child of a ekement with a classname.
-	function isChildOf(element, classname) {
-		if (!element.parentNode) return false;
-		if (element.className.split(" ").indexOf(classname) >= 0) return true;
-		return isChildOf(element.parentNode, classname);
-	}
-
-	// Recives a html string and returns a DOM element from it.
-	function htmlToElement(html) {
-		var template = document.createElement('template');
-		html = html.trim(); // Never return a text node of whitespace as the result
-		template.innerHTML = html;
-		return template.content.firstChild;
-	}
-})(wp, jQuery);
-
-/**
- * If an area has registered a url to go to when it's opened,
- * add it here.
- */
-(function (api) {
-	var sectionsWithGoToUrls = wpFeaturedContentApiSettings.go_to_urls;
-
-	var _loop = function _loop(key, value) {
-		api.section(key, function (section) {
-			section.expanded.bind(function (isExpanded) {
-				if (isExpanded) {
-					api.previewer.previewUrl.set(api.settings.url.home + value);
-				} else {
-					api.previewer.previewUrl.set(api.settings.url.home);
-				}
-			});
-		});
-	};
-
-	var _iteratorNormalCompletion = true;
-	var _didIteratorError = false;
-	var _iteratorError = undefined;
-
-	try {
-		for (var _iterator = Object.entries(sectionsWithGoToUrls)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-			var _ref = _step.value;
-
-			var _ref2 = _slicedToArray(_ref, 2);
-
-			var key = _ref2[0];
-			var value = _ref2[1];
-
-			_loop(key, value);
-		}
-	} catch (err) {
-		_didIteratorError = true;
-		_iteratorError = err;
-	} finally {
-		try {
-			if (!_iteratorNormalCompletion && _iterator.return) {
-				_iterator.return();
-			}
-		} finally {
-			if (_didIteratorError) {
-				throw _iteratorError;
-			}
-		}
-	}
-})(wp.customize);
+!function(wp){wp.customize.FeaturedAreaControl=wp.customize.Control.extend({ready:function(){const control=this,container=this.container[0],featuredAreaList=container.querySelector("ol.nested-sortable"),addItemButtons=container.querySelectorAll(".add-featured-item"),clearOverflowButton=container.querySelector(".clear-overflow"),{__:__,_x:_x,_n:_n,_nx:_nx}=wp.i18n
+let featuredArea,settings_timer,search_timer,max,type,subtype
+class FeaturedItem{constructor(data,list,parent){this.data=data
+this.list=list
+this.parent=parent
+this.element=null
+this.isFeaturedItemObject(this.data)&&this.addItem()}isFeaturedItemObject(obj){return obj.hasOwnProperty("id")&&obj.hasOwnProperty("title")&&obj.hasOwnProperty("id")}addItem(){0===this.data.title.length&&(this.data.title="(no title)")
+let innerHTML=wp.template("featured-item")(this.data)
+this.element=function(html){var template=document.createElement("template")
+html=html.trim()
+template.innerHTML=html
+return template.content.firstChild}(innerHTML)
+this.element.querySelector(".button-link-delete").addEventListener("click",(event=>this.deleteItem(event)))
+this.element.querySelector(".featured-item-add").addEventListener("click",(event=>this.cloneItem(event)))
+this.element.querySelector(".handle").addEventListener("click",(()=>{Array.isArray(JSON.parse(featuredAreaList.dataset.settings))||this.element.classList.toggle("open")}))
+this.addSettings(this.element)
+let nestedSortable=this.element.querySelector(".nested-sortable")
+featuredArea.initSortable(nestedSortable)
+if(void 0!==this.parent&&featuredAreaList.dataset.levels>1){this.list.querySelector('[data-id="'+this.parent+'"] ol').appendChild(this.element)}else this.list.appendChild(this.element)
+"object"==typeof this.data.children&&this.data.children.forEach((child=>{new FeaturedItem(child,this.list,this.data.id)}))}addSettings(element){let settings=JSON.parse(featuredAreaList.dataset.settings),data=this.data
+Object.keys(settings).forEach((key=>{let setting=settings[key],setting_key=key
+if("select"===setting.type){let selectList=document.createElement("select")
+Object.keys(setting.values).forEach((key=>{let option=setting.values[key]
+var optionElement=document.createElement("option")
+optionElement.value=key
+optionElement.text=option
+optionElement.selected=data[setting_key]===key
+selectList.appendChild(optionElement)}))
+void 0!==data[setting_key]&&(element.dataset[key]=data[setting_key])
+element.querySelector(".settings").appendChild(selectList)
+element.addEventListener("change",(event=>{element.dataset[key]=event.target.value
+this.data[key]=event.target.value
+featuredArea.setSettings()}))}}))}removeItem(){this.element.remove()}cloneItem(event){let item=new FeaturedItem(this.data,featuredAreaList)
+featuredArea.toggleSearchPanel(event)
+if(featuredArea.isDuplicate(this.data)){featuredArea.addErrorNotification("This item already exist in the selected featured area.")
+item.removeItem()}else if(featuredArea.isFull()){featuredArea.addErrorNotification("The selected featured area is full.")
+item.removeItem()
+return}featuredArea.setSettings()}deleteItem(){featuredAreaList.querySelector('[data-id="'+this.data.id+'"]').remove()
+featuredArea.setSettings()}}class FeaturedItemSearch{constructor(featuredArea){this.featuredArea=featuredArea
+this.featuredAreaItems=[]
+this.active=!0
+this.searchResult=document.getElementById("featured-items-search-list")
+this.search("")
+document.getElementById("featured-items-search-input").addEventListener("keyup",(event=>this.onInputChange(event)))
+document.addEventListener("click",(event=>{event.target.classList.contains("add-featured-item")||isChildOf(event.target,"featured-item-container")||this.close()}))
+document.querySelector("#featured-items-search-panel .customize-section-back").addEventListener("click",(event=>this.close()))}setItems(settings){try{settings=JSON.parse(settings)}catch(e){console.log(e)
+settings=[{}]}settings=settings.slice(0,50)
+const items=[]
+settings.forEach((item=>{null!=item&&items.push(parseInt(item.id))}))
+this.featuredAreaItems=items}open(settings){document.querySelector("body").classList.add("adding-featured-items")
+this.active=!0
+this.setItems(settings)
+this.search("")}close(){document.querySelector("body").classList.remove("adding-featured-items")
+this.active=!1
+this.clear()}toggle(settings){document.querySelector("body").classList.contains("adding-featured-items")?this.close():this.open(settings)}clear(){this.active=!1
+document.getElementById("featured-items-search-input").value=""}onInputChange(event){event.preventDefault()
+const search=event.target.value
+this.search(search)}search(search){if(this.active){clearTimeout(search_timer)
+search_timer=setTimeout((()=>{const body=document.querySelector("body")
+body.classList.add("searching")
+var search_item_tpl=this.searchResult.querySelectorAll(".featured-item-tpl");[].forEach.call(search_item_tpl,(function(item){item.remove()}))
+window.fetch(wpApiSettings.root+wpFeaturedContentApiSettings.base+"posts",{method:"POST",headers:{Accept:"application/json","Content-Type":"application/json","X-WP-Nonce":wpApiSettings.nonce},body:JSON.stringify({s:search,type:type,subtype:subtype,list:this.featuredArea,items:this.featuredAreaItems}),credentials:"same-origin"}).then((data=>data.json())).then((data=>{body.classList.remove("searching")
+data.forEach(((obj,index)=>{new FeaturedItem(obj,this.searchResult)}))}))}),500)}}}featuredArea=new class{constructor(){this.nestedSortables=[]
+max=featuredAreaList.dataset.max
+type=featuredAreaList.dataset.type
+subtype=featuredAreaList.dataset.subtype.split(",")
+addItemButtons.forEach((button=>{button.addEventListener("click",(event=>this.toggleSearchPanel(event)))}))
+clearOverflowButton.addEventListener("click",(event=>this.clearOverflow(event)))}loadSettings(){let settings=control.setting.get()
+try{settings=JSON.parse(settings)}catch(e){console.log(e)
+settings=[{}]}settings=settings.slice(0,50)
+settings.forEach((item=>{null!=item&&new FeaturedItem(item,featuredAreaList)}))
+this.toggleClearOverflow()
+this.initSortables()}getDataAttributes(dataset){return Object.keys(dataset).reduce((function(object,key){object[key]=dataset[key]
+return object}),{})}setSettings(){clearTimeout(settings_timer)
+this.toggleClearOverflow()
+settings_timer=setTimeout((()=>{let settings=this.serialize(featuredAreaList)
+control.setting.set(JSON.stringify(settings))
+wp.customize.previewer.refresh()}),500)}serialize(sortable){var serialized=[],children=[].slice.call(sortable.children)
+for(var i in children){var nested=children[i].querySelector(".nested-sortable")
+let attributes=this.getDataAttributes(children[i].dataset)
+serialized.push({...attributes,children:nested?this.serialize(nested):[]})}return serialized}isDuplicate(obj){let result=!1
+featuredAreaList.querySelectorAll('[data-id="'+obj.id+'"]').length>1&&(result=!0)
+return result}isFull(){let children=featuredAreaList.querySelectorAll(".featured-item-tpl")
+return max<children.length}toggleSearchPanel(event){event.preventDefault()
+if(this.searchPanel)this.searchPanel.toggle(control.setting.get())
+else{this.searchPanel=new FeaturedItemSearch(featuredAreaList.id)
+this.searchPanel.toggle(control.setting.get())}}toggleClearOverflow(){this.isFull()?clearOverflowButton.classList.remove("hidden"):clearOverflowButton.classList.add("hidden")}clearOverflow(event){event.preventDefault();[].slice.call(featuredAreaList.querySelectorAll(".featured-item-tpl")).splice(max).forEach((child=>{child.remove()
+this.setSettings()}))}initSortables(){let featuredAreaList=container.querySelector(".featured-area")
+this.initSortable(featuredAreaList)
+let searchList=document.querySelector("#featured-items-search-list")
+this.initSortable(searchList,{group:{name:"nested",put:!1},animation:150,sort:!1})}initSortable(sortable,args={group:"nested",swapThreshold:.65,emptyInsertThreshold:5,animation:150,onSort:event=>{this.setSettings()},onAdd:event=>{if(this.isDuplicate(event.clone.dataset)){event.item.remove()
+this.addErrorNotification("This item already exist in the selected featured area.")}}}){new Sortable(sortable,args)}addErrorNotification(message){wp.customize.notifications.add("error",new wp.customize.Notification("error",{dismissible:!0,message:__(message,"featured-content-manager"),type:"error"}))}}
+featuredArea.loadSettings()}})
+_.extend(wp.customize.controlConstructor,{"featured-area":wp.customize.FeaturedAreaControl})
+function isChildOf(element,classname){return!!element.parentNode&&(element.className.split(" ").indexOf(classname)>=0||isChildOf(element.parentNode,classname))}}(wp,jQuery)
+!function(api){const sectionsWithGoToUrls=wpFeaturedContentApiSettings.go_to_urls
+for(const[key,value]of Object.entries(sectionsWithGoToUrls))api.section(key,(function(section){section.expanded.bind((function(isExpanded){isExpanded?api.previewer.previewUrl.set(api.settings.url.home+value):api.previewer.previewUrl.set(api.settings.url.home)}))}))}(wp.customize)
