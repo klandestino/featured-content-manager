@@ -202,8 +202,8 @@
 						settings = [ {} ];
 					}
 
-					// Remove items larger than 50.
-					settings = settings.slice(0, 50);
+					// Remove items if there's ten more than max.
+					settings = settings.slice(0, max + 10);
 
 					const items = [];
 					settings.forEach(item => {
@@ -315,7 +315,7 @@
 					this.nestedSortables = [];
 
 					// Set featured area globals.
-					max = featuredAreaList.dataset.max;
+					max = parseInt( featuredAreaList.dataset.max );
 					type = featuredAreaList.dataset.type;
 					subtype = featuredAreaList.dataset.subtype.split(',');
 
@@ -342,8 +342,8 @@
 						settings = [ {} ];
 					}
 
-					// Remove items larger than 50.
-					settings = settings.slice(0, 50);
+					// Remove items if there's ten more than max.
+					settings = settings.slice(0, max + 10);
 
 					// Add items from settings to the DOM.
 					settings.forEach(item => {
