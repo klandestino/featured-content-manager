@@ -73,7 +73,7 @@ add_action(
 							// Update title and post_status from original post.
 							$original_post = get_post( $value[ $key ]->id );
 							if ( $original_post ) {
-								$value[ $key ]->title = esc_attr( $original_post->post_title );
+								$value[ $key ]->title = esc_attr( get_the_title( $original_post ) );
 								if ( ! isset( $value[ $key ]->meta ) ) {
 									$value[ $key ]->meta = new \stdClass();
 								}
