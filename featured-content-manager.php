@@ -50,6 +50,10 @@ add_action(
 			}
 
 			foreach ( Featured_Content::get_featured_areas() as $slug => $area ) {
+				// Only filter posts, not terms.
+				if ( 'post' !== $area['object_type'] ) {
+					continue;
+				}
 				add_filter(
 					"customize_sanitize_js_{$slug}",
 					function( $value ) {
