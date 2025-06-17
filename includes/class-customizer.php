@@ -85,6 +85,7 @@ class Customizer {
 			filemtime( dirname( __DIR__, 1 ) . '/dist/css/customizer.css' ),
 			'screen'
 		);
+		wp_add_inline_style( 'featured-area-style', self::get_customizer_css() );
 		wp_enqueue_script(
 			'whatwg-fetch-script',
 			plugins_url( 'dist/js/fetch.js', dirname( __FILE__ ) ),
@@ -191,34 +192,27 @@ class Customizer {
 	/**
 	 * Print some *hack* css style.
 	 */
-	public static function customizer_css() {
+	public static function get_customizer_css() {
 		$featured_areas = Featured_Content::get_featured_areas();
-		?>
-		<style type="text/css">
-		<?php
+		$css            = '';
 		foreach ( $featured_areas as $id => $featured_area ) {
 			$levels    = $featured_area['levels'] ?? 0;
 			$max       = isset( $featured_area['max'] ) ? $featured_area['max'] + 1 : 11; // Setting this to +1 to get the :before css at the right place.
 			$level_css = '';
 			for ( $i = 1; $i < $levels; $i++ ) {
 				$level_css .= '>li>ol';
-				echo "ol#{$id}{$level_css} { display: block; }\n";
+				$css       .= "ol#{$id}{$level_css} { display: block; }";
 			}
-
-			?>
-			ol#<?php echo esc_attr( $id ); ?> li:nth-child(<?php echo esc_attr( $max ); ?>)::before {
+			$css .= 'ol#' . esc_attr( $id ) . ' li:nth-child(' . esc_attr( $max ) . ')::before {
 				content: "";
 				border-bottom: 1px dashed lightgray;
 				margin: 10px 0;
 				display: block;
 				-webkit-font-smoothing: antialiased;
 				-moz-osx-font-smoothing: grayscale;
-			}
-			<?php
+			}';
 		}
-		?>
-		</style>
-		<?php
+		return $css;
 	}
 
 	/**
