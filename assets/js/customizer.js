@@ -140,10 +140,6 @@
 					if ( featuredArea.isDuplicate( this.data ) ) {
 						featuredArea.addErrorNotification('This item already exist in the selected featured area.');
 						item.removeItem();
-					} else if ( featuredArea.isFull() ) {
-						featuredArea.addErrorNotification('The selected featured area is full.');
-						item.removeItem();
-						return;
 					}
 					featuredArea.setSettings();
 				}

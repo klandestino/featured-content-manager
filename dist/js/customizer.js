@@ -33,9 +33,7 @@ this.data[key]=event.target.value
 featuredArea.setSettings()}))}}))}removeItem(){this.element.remove()}cloneItem(event){let item=new FeaturedItem(this.data,featuredAreaList)
 featuredArea.toggleSearchPanel(event)
 if(featuredArea.isDuplicate(this.data)){featuredArea.addErrorNotification("This item already exist in the selected featured area.")
-item.removeItem()}else if(featuredArea.isFull()){featuredArea.addErrorNotification("The selected featured area is full.")
-item.removeItem()
-return}featuredArea.setSettings()}deleteItem(){featuredAreaList.querySelector('[data-id="'+this.data.id+'"]').remove()
+item.removeItem()}featuredArea.setSettings()}deleteItem(){featuredAreaList.querySelector('[data-id="'+this.data.id+'"]').remove()
 featuredArea.setSettings()}}class FeaturedItemSearch{constructor(featuredArea){this.featuredArea=featuredArea
 this.featuredAreaItems=[]
 this.active=!0
