@@ -82,6 +82,21 @@ add_action(
 								}
 								$value[ $key ]->meta->post_status = esc_attr( $original_post->post_status );
 							}
+							if ( ! empty( $item->children ) ) {
+								$child_ids = array_column( $item->children, 'id' );
+								_prime_post_caches( $child_ids, false, false );
+								foreach ( $item->children as $child_key => $child_item ) {
+									// Update title and post_status from original post.
+									$original_post = get_post( $value[ $key ]->children[ $child_key ]->id );
+									if ( $original_post ) {
+										$value[ $key ]->children[ $child_key ]->title = esc_attr( get_the_title( $original_post ) );
+										if ( ! isset( $value[ $key ]->children[ $child_key ]->meta ) ) {
+											$value[ $key ]->children[ $child_key ]->meta = new \stdClass();
+										}
+										$value[ $key ]->children[ $child_key ]->meta->post_status = esc_attr( $original_post->post_status );
+									}
+								}
+							}
 						}
 						$value = wp_json_encode( $value );
 						return $value;
