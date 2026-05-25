@@ -58,7 +58,7 @@ ol.accordion-section-content {
 		position: relative;
 		margin: 0;
 		padding: 0;
-		&.featured-item-tpl {
+		&.featured-item-tpl .handle {
 		   .dashicons.dashicons-clock {
 			   padding-right: 5px;
 		   }
