@@ -205,6 +205,11 @@
 					settings.forEach(item => {
 						if ( item != null ) {
 							items.push( parseInt( item['id'] ) );
+							if ( item.children.length > 0 ) {
+								item.children.forEach(child => {
+									items.push( parseInt( child['id'] ) );
+								} );
+							}
 						}
 					});
 					this.featuredAreaItems = items;

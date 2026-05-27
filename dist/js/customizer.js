@@ -44,7 +44,8 @@ document.addEventListener("click",(event=>{event.target.classList.contains("add-
 document.querySelector("#featured-items-search-panel .customize-section-back").addEventListener("click",(event=>this.close()))}setItems(settings){try{settings=JSON.parse(settings)}catch(e){console.log(e)
 settings=[{}]}settings=settings.slice(0,max+10)
 const items=[]
-settings.forEach((item=>{null!=item&&items.push(parseInt(item.id))}))
+settings.forEach((item=>{if(null!=item){items.push(parseInt(item.id))
+item.children.length>0&&item.children.forEach((child=>{items.push(parseInt(child.id))}))}}))
 this.featuredAreaItems=items}open(settings){document.querySelector("body").classList.add("adding-featured-items")
 this.active=!0
 this.setItems(settings)
