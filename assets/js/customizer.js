@@ -205,6 +205,11 @@
 					settings.forEach(item => {
 						if ( item != null ) {
 							items.push( parseInt( item['id'] ) );
+							if ( item.children.length > 0 ) {
+								item.children.forEach(child => {
+									items.push( parseInt( child['id'] ) );
+								} );
+							}
 						}
 					});
 					this.featuredAreaItems = items;
@@ -404,7 +409,7 @@
 
 				// Check if the featured area list contiains max amount of items already.
 				isFull() {
-					let children = featuredAreaList.querySelectorAll('.featured-item-tpl');
+					let children = featuredAreaList.querySelectorAll('.featured-area > .featured-item-tpl');
 					return max < children.length;
 				}
 
@@ -430,7 +435,7 @@
 				// Clear overflow.
 				clearOverflow(event) {
 					event.preventDefault();
-					var children = [].slice.call(featuredAreaList.querySelectorAll('.featured-item-tpl'));
+					var children = [].slice.call(featuredAreaList.querySelectorAll('.featured-area > .featured-item-tpl'));
 					children.splice(max).forEach( child => {
 						child.remove();
 						this.setSettings();

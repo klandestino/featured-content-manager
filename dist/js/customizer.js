@@ -44,7 +44,8 @@ document.addEventListener("click",(event=>{event.target.classList.contains("add-
 document.querySelector("#featured-items-search-panel .customize-section-back").addEventListener("click",(event=>this.close()))}setItems(settings){try{settings=JSON.parse(settings)}catch(e){console.log(e)
 settings=[{}]}settings=settings.slice(0,max+10)
 const items=[]
-settings.forEach((item=>{null!=item&&items.push(parseInt(item.id))}))
+settings.forEach((item=>{if(null!=item){items.push(parseInt(item.id))
+item.children.length>0&&item.children.forEach((child=>{items.push(parseInt(child.id))}))}}))
 this.featuredAreaItems=items}open(settings){document.querySelector("body").classList.add("adding-featured-items")
 this.active=!0
 this.setItems(settings)
@@ -78,11 +79,11 @@ for(var i in children){var nested=children[i].querySelector(".nested-sortable")
 let attributes=this.getDataAttributes(children[i].dataset)
 serialized.push({...attributes,children:nested?this.serialize(nested):[]})}return serialized}isDuplicate(obj){let result=!1
 featuredAreaList.querySelectorAll('[data-id="'+obj.id+'"]').length>1&&(result=!0)
-return result}isFull(){let children=featuredAreaList.querySelectorAll(".featured-item-tpl")
+return result}isFull(){let children=featuredAreaList.querySelectorAll(".featured-area > .featured-item-tpl")
 return max<children.length}toggleSearchPanel(event){event.preventDefault()
 if(this.searchPanel)this.searchPanel.toggle(control.setting.get())
 else{this.searchPanel=new FeaturedItemSearch(featuredAreaList.id)
-this.searchPanel.toggle(control.setting.get())}}toggleClearOverflow(){this.isFull()?clearOverflowButton.classList.remove("hidden"):clearOverflowButton.classList.add("hidden")}clearOverflow(event){event.preventDefault();[].slice.call(featuredAreaList.querySelectorAll(".featured-item-tpl")).splice(max).forEach((child=>{child.remove()
+this.searchPanel.toggle(control.setting.get())}}toggleClearOverflow(){this.isFull()?clearOverflowButton.classList.remove("hidden"):clearOverflowButton.classList.add("hidden")}clearOverflow(event){event.preventDefault();[].slice.call(featuredAreaList.querySelectorAll(".featured-area > .featured-item-tpl")).splice(max).forEach((child=>{child.remove()
 this.setSettings()}))}initSortables(){let featuredAreaList=container.querySelector(".featured-area")
 this.initSortable(featuredAreaList)
 let searchList=document.querySelector("#featured-items-search-list")
